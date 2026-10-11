@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Status | Sibaq</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea3a18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-red: #ea3a18;
+      --brand-red-hover: #d23111;
+      --brand-red-soft: #fdf1ee;
+      --brand-red-border: #fecbc2;
+      
+      --brand-yellow: #eeb400;
+      --brand-yellow-hover: #dca500;
+      --brand-yellow-soft: #fef8e7;
+      --brand-yellow-border: #fae69e;
+      
+      --bg-page: #faf8f5;
+      --surface-white: #ffffff;
+      --border-subtle: #eae5de;
+      
+      --text-main: #1f1b18;
+      --text-muted: #79716b;
+      --text-placeholder: #a8a199;
+      
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+      --amber-text: #b45309;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Brand Header */
+    .brand-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo-img {
+      width: 64px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Main Status Card */
+    .status-card {
+      width: 100%;
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 34px 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-top-accent {
+      display: flex;
+      height: 4px;
+      width: 100%;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .card-top-accent .stripe-yellow {
+      width: 50%;
+      background: var(--brand-yellow);
+    }
+
+    .card-top-accent .stripe-red {
+      width: 50%;
+      background: var(--brand-red);
+    }
+
+    /* User Profile Bar */
+    .user-profile-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .user-details {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--brand-yellow);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-name-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .user-email-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Unpromoted Badge */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-text);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .status-dot-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand-yellow);
+    }
+
+    /* Status Notice */
+    .notice-box {
+      background: #fffdf7;
+      border: 1px solid var(--amber-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .notice-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--brand-yellow-soft);
+      color: #b45309;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notice-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+
+    .notice-desc {
+      font-size: 0.86rem;
+      color: #78350f;
+      line-height: 1.5;
+    }
+
+    /* Feature Explanation List */
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .info-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--brand-red);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-item strong {
+      color: var(--text-main);
+    }
+
+    /* Action Buttons */
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-check-status {
+      flex: 1;
+      height: 46px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .btn-check-status:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .btn-logout {
+      height: 46px;
+      padding: 0 18px;
+      background: #faf8f5;
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.15s;
+    }
+
+    .btn-logout:hover {
+      background: #f1ede8;
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1f1b18;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="brand-section">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="brand-logo-img">
+      <h1 class="brand-title">Sibaq Event Portal</h1>
+      <p class="brand-subtitle">Registration & Role Status</p>
+    </header>
+
+    <!-- Status Card -->
+    <main class="status-card">
+      <div class="card-top-accent">
+        <div class="stripe-yellow"></div>
+        <div class="stripe-red"></div>
+      </div>
+
+      <!-- User Profile Row -->
+      <div class="user-profile-bar">
+        <div class="user-details">
+          <div class="user-avatar-circle" id="userAvatarLetter">U</div>
+          <div>
+            <div class="user-name-text" id="userDisplayName">Registered User</div>
+            <div class="user-email-text" id="userDisplayEmail">user@sibaq.com</div>
+          </div>
+        </div>
+        <div class="status-pill">
+          <span class="status-dot-pulse"></span>
+          <span>Not Promoted</span>
+        </div>
+      </div>
+
+      <!-- Notice Box -->
+      <div class="notice-box">
+        <div class="notice-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div>
+          <h3 class="notice-title">No Event Role Assigned Yet</h3>
+          <p class="notice-desc">
+            Your account credentials are valid and active. However, no coordinator or administrative duties have been allocated to your profile for this event cycle.
+          </p>
+        </div>
+      </div>
+
+      <!-- Info Details -->
+      <div class="info-list">
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <div>
+            <strong>Restricted Data Access:</strong> Participant rosters, task scheduling, evaluations, and stage operations are visible only to promoted coordinators.
+          </div>
+        </div>
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <div>
+            <strong>Administrator Promotion:</strong> The Fest Administration or Chief Coordinator must assign your role (Category Coordinator, Chief Coordinator, or Admin) under the Users Management panel.
+          </div>
+        </div>
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          <div>
+            <strong>Live Sync Available:</strong> As soon as an administrator promotes you, click the button below to immediately access your dashboard.
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-row">
+        <button type="button" class="btn-check-status" id="btnCheckStatus">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          <span>Check Promotion Status</span>
+        </button>
+        <button type="button" class="btn-logout" id="btnLogout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </main>
+
+    <p class="footer-note">Contact event administration at <strong>admin@sibaq.com</strong> for inquiries.</p>
+  </div>
+
+  <div id="toastMsg" class="toast-msg"></div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    // ----------------------------------------------------
+    // Session Verification
+    // ----------------------------------------------------
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+    const currentUser = sessionStorage.getItem('currentUser') || 'User';
+    const currentUserEmail = sessionStorage.getItem('currentUserEmail') || '';
+    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+
+    if (!isAuthenticated) {
+      window.location.replace('index.html');
+    }
+
+    // If user already has a promoted role, route them to their permitted dashboard
+    if (currentUserRole.includes('category coordinator')) {
+      window.location.replace('cateDashboard.html');
+    } else if (currentUserRole.includes('chief')) {
+      window.location.replace('chiefDashboard.html');
+    } else if (currentUserRole.includes('admin')) {
+      window.location.replace('dashboard.html');
+    }
+
+    // Display user details
+    const userDisplayName = document.getElementById('userDisplayName');
+    if (userDisplayName) userDisplayName.textContent = currentUser;
+
+    const userDisplayEmail = document.getElementById('userDisplayEmail');
+    if (userDisplayEmail) userDisplayEmail.textContent = currentUserEmail || 'registered@sibaq.com';
+
+    const userAvatarLetter = document.getElementById('userAvatarLetter');
+    if (userAvatarLetter) userAvatarLetter.textContent = (currentUser.charAt(0) || 'U').toUpperCase();
+
+    // Toast helper
+    const toastEl = document.getElementById('toastMsg');
+    let toastTimeout = null;
+    function showToast(msg) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 3000);
+    }
+
+    // Sign out
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.replace('index.html');
+    });
+
+    // Check Promotion Status actively
+    document.getElementById('btnCheckStatus').addEventListener('click', async () => {
+      const cleanEmail = (currentUserEmail || '').toLowerCase();
+      showToast('Checking role promotion status...');
+
+      let promotedRole = null;
+
+      // 1. Check local users_access
+      try {
+        const accessUsers = JSON.parse(localStorage.getItem('sibaq_users_access_list') || '[]');
+        const u = accessUsers.find(item => (item.email || '').toLowerCase() === cleanEmail);
+        if (u) {
+          const items = [...(Array.isArray(u.assignments) ? u.assignments : []), u.role || ''];
+          if (items.some(r => String(r).toLowerCase().includes('chief'))) promotedRole = 'Chief Coordinator';
+          else if (items.some(r => String(r).toLowerCase().includes('category coordinator') || String(r).toLowerCase().includes('coordinator'))) promotedRole = 'Category Coordinator';
+          else if (items.some(r => String(r).toLowerCase().includes('admin'))) promotedRole = 'Administrator';
+        }
+      } catch (e) {}
+
+      // 2. Check Firestore in real-time
+      if (!promotedRole && window.SibaqFirebase && window.SibaqFirebase.db) {
+        try {
+          const snap = await window.SibaqFirebase.db.collection('users_access').get();
+          snap.forEach(doc => {
+            const u = doc.data();
+            if ((u.email || '').toLowerCase() === cleanEmail) {
+              const items = [...(Array.isArray(u.assignments) ? u.assignments : []), u.role || ''];
+              if (items.some(r => String(r).toLowerCase().includes('chief'))) promotedRole = 'Chief Coordinator';
+              else if (items.some(r => String(r).toLowerCase().includes('category coordinator') || String(r).toLowerCase().includes('coordinator'))) promotedRole = 'Category Coordinator';
+              else if (items.some(r => String(r).toLowerCase().includes('admin'))) promotedRole = 'Administrator';
+            }
+          });
+        } catch (e) {}
+      }
+
+      if (promotedRole) {
+        showToast(`Congratulations! Promoted to ${promotedRole}. Redirecting...`);
+        sessionStorage.setItem('currentUserRole', promotedRole);
+        setTimeout(() => {
+          if (promotedRole.toLowerCase().includes('category coordinator')) {
+            window.location.replace('cateDashboard.html');
+          } else if (promotedRole.toLowerCase().includes('chief')) {
+            window.location.replace('chiefDashboard.html');
+          } else {
+            window.location.replace('dashboard.html');
+          }
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          showToast('Status: Still not promoted. Please contact administrator.');
+        }, 600);
+      }
+    });
+  </script>
+  <script src="pwa-install.js"></script>
+</body>
+</html>

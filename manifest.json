@@ -1,0 +1,42 @@
+{
+  "name": "Sibaq Portal",
+  "short_name": "Sibaq",
+  "description": "Sibaq Monitoring & Management System Portal",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#ea3a18",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Sibaq Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Chief Monitor",
+      "url": "./chiefDashboard.html",
+      "description": "Chief Coordinator Monitoring"
+    },
+    {
+      "name": "Category Portal",
+      "url": "./cateDashboard.html",
+      "description": "Category Coordinator Portal"
+    },
+    {
+      "name": "Teacher Portal",
+      "url": "./teahDashboard.html",
+      "description": "Teacher Dashboard"
+    }
+  ]
+}

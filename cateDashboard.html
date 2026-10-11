@@ -1,0 +1,4346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Coordinator Dashboard | Sibaq</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea3a18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css" />
+  <style>
+    :root {
+      --brand-red: #ea3a18;
+      --brand-red-hover: #d23111;
+      --brand-red-soft: #fdf1ee;
+      --brand-red-border: #fecbc2;
+      
+      --brand-yellow: #eeb400;
+      --brand-yellow-hover: #dca500;
+      --brand-yellow-soft: #fef9e8;
+      --brand-yellow-border: #fae69e;
+      
+      --bg-page: #faf8f5;
+      --surface: #ffffff;
+      --border-subtle: #eae5de;
+      
+      --text-main: #1f1b18;
+      --text-muted: #79716b;
+      --text-placeholder: #a8a199;
+      
+      --sidebar-width: 250px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo-img {
+      width: 38px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .portal-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #7d5900;
+      background: var(--brand-yellow-soft);
+      border: 1px solid var(--brand-yellow-border);
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-left: 10px;
+      margin-bottom: 16px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .nav-item.active .nav-link {
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      border-color: var(--brand-red-border);
+    }
+
+    .nav-link:hover:not(.active) {
+      color: var(--text-main);
+      background: #f5f2ed;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    .has-submenu {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-chevron {
+      margin-left: auto;
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5;
+      transition: transform 0.2s ease;
+    }
+
+    .has-submenu.open .nav-chevron {
+      transform: rotate(90deg);
+    }
+
+    .submenu {
+      list-style: none;
+      padding-left: 20px;
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .submenu-item .submenu-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .submenu-item.active .submenu-link {
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      border-color: var(--brand-red-border);
+    }
+
+    .submenu-item .submenu-link:hover:not(.active) {
+      color: var(--text-main);
+      background: #f5f2ed;
+    }
+
+    .submenu-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    /* Sidebar User Profile */
+    .sidebar-user {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--brand-yellow);
+      color: #ffffff;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .user-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .user-role {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .logout-btn {
+      background: var(--brand-red-soft);
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .logout-btn:hover {
+      background: var(--brand-red);
+      color: #ffffff;
+    }
+
+    /* Main Area */
+    .main-content {
+      flex: 1;
+      padding: 32px 40px;
+      overflow-y: auto;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .page-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .session-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--brand-yellow-soft);
+      border: 1px solid var(--brand-yellow-border);
+      color: #7d5900;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .session-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-yellow);
+    }
+
+    /* Tab Page Containers */
+    .tab-page {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-page.active-page {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Coordinator Page Layout & Cards */
+    .coord-page-container {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .coord-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .coord-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .coord-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .coord-icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coord-icon-badge svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.2;
+    }
+
+    .coord-timer-display {
+      font-family: monospace;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      padding: 6px 14px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Clean Flat Table */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    th {
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: #faf8f5;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f4f0eb;
+      vertical-align: middle;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .pill-red {
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+    }
+
+    .pill-yellow {
+      background: var(--brand-yellow-soft);
+      color: #926600;
+      border: 1px solid var(--brand-yellow-border);
+    }
+
+    .pill-green {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .pill-blue {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--brand-red);
+    }
+
+    .btn-brand-primary {
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-brand-primary:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .btn-fest-pill {
+      background: #fef8e7;
+      border: 1px solid #fae69e;
+      color: #926600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-fest-pill:hover {
+      background: #fae69e;
+    }
+
+    .delete-action-btn {
+      background: transparent;
+      border: none;
+      color: #dc2626;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .delete-action-btn:hover {
+      background: var(--brand-red-soft);
+    }
+
+    .delete-action-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    .eval-img-preview {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+    }
+
+    /* Program multi-select container */
+    .program-multiselect-list {
+      max-height: 160px;
+      overflow-y: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 8px;
+      background: #faf8f5;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .program-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .program-checkbox-item:hover {
+      border-color: var(--brand-red);
+      background: #fdf1ee;
+    }
+
+    .program-checkbox-item input[type="checkbox"] {
+      accent-color: var(--brand-red);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .program-checkbox-item.checked {
+      background: #fdf1ee;
+      border-color: var(--brand-red);
+      font-weight: 700;
+    }
+
+    .program-chip-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: #fef8e7;
+      color: #926600;
+      border: 1px solid #fae69e;
+      margin: 2px 4px 2px 0;
+    }
+
+    .selected-progs-pill-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      min-height: 34px;
+      padding: 6px 10px;
+      background: #faf8f5;
+      border: 1px dashed var(--border-subtle);
+      border-radius: 9px;
+      align-items: center;
+    }
+
+    .selected-prog-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fdf1ee;
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      padding: 3px 10px;
+      border-radius: 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .selected-prog-chip-remove {
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--brand-red);
+      margin-left: 2px;
+    }
+
+    /* Attendance Status Custom Dropdown with Hugeicons */
+    #page-attendance .coord-card,
+    #page-attendance-coach .coord-card {
+      overflow: visible !important;
+    }
+    #page-attendance .table-responsive,
+    #page-attendance-coach .table-responsive {
+      overflow: visible !important;
+    }
+    #page-attendance table,
+    #page-attendance-coach table {
+      position: relative;
+    }
+    #page-attendance tr,
+    #page-attendance-coach tr {
+      position: relative;
+    }
+    #page-attendance td,
+    #page-attendance-coach td {
+      overflow: visible !important;
+      position: relative;
+    }
+    #page-attendance tr:hover,
+    #page-attendance-coach tr:hover {
+      z-index: 10;
+    }
+    .status-dropdown-wrap {
+      position: relative;
+      width: 135px;
+      user-select: none;
+    }
+    .status-dropdown-wrap.open {
+      z-index: 9999 !important;
+    }
+    .status-dropdown-btn {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      font-size: 0.84rem;
+      font-weight: 500; /* Regular weight, not bold */
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--text-main);
+    }
+    .status-dropdown-btn:hover {
+      border-color: #cbd5e1;
+      background: #fafaf9;
+    }
+    .status-dropdown-btn .selected-val {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 500; /* Regular weight */
+    }
+    .status-dropdown-btn .label-text {
+      font-weight: 500; /* Regular weight */
+    }
+    .status-dropdown-btn i.hgi {
+      font-size: 1.05rem;
+    }
+    .status-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      min-width: 140px;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.15), 0 5px 10px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 4px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 99999 !important; /* Overlay above rows and tables */
+    }
+    .status-dropdown-wrap.open .status-dropdown-menu {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    .status-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      font-size: 0.83rem;
+      font-weight: 400; /* Regular weight, not bold */
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.12s;
+      color: var(--text-main);
+    }
+    .status-option:hover {
+      background: #f1f5f9;
+    }
+    .status-option i.hgi {
+      font-size: 1.05rem;
+    }
+    /* Specific status colors */
+    .status-pending {
+      color: #64748b;
+    }
+    .status-present {
+      color: #16a34a;
+    }
+    .status-absent {
+      color: #dc2626;
+    }
+    .status-late {
+      color: #d97706;
+    }
+    .status-leave {
+      color: #2563eb;
+    }
+
+    /* Set / Edit Row Action Button */
+    .btn-set-attend {
+      height: 32px;
+      padding: 0 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 7px;
+      border: 1px solid var(--border-subtle);
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .btn-set-attend:hover:not(:disabled) {
+      border-color: var(--brand-red-border);
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+    }
+    .btn-set-attend.is-set {
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+    .btn-set-attend.is-set:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    .status-dropdown-wrap.is-locked .status-dropdown-btn {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    .sched-search-input-wrap {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .sched-search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .sched-search-input-wrap input {
+      padding-left: 36px !important;
+      height: 40px !important;
+      font-size: 0.88rem !important;
+    }
+
+    .task-prog-dropdown-list {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+      max-height: 230px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .task-prog-dropdown-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid #f8f6f2;
+      transition: background 0.15s ease;
+    }
+
+    .task-prog-dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-prog-dropdown-item:hover {
+      background: #faf5ee;
+    }
+
+    .task-prog-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .task-prog-item-name {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-prog-item-coach {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timeset-preview-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 9px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .program-cat-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: #f4efe6;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .sched-subnav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: #faf8f5;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .sched-subnav-btn:hover {
+      background: #ffffff;
+      color: var(--text-main);
+      border-color: #d1cbc1;
+    }
+    .sched-subnav-btn.active {
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+      border-color: var(--brand-red-border);
+    }
+
+    /* Toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1f1b18;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    /* Mobile Drawer & Responsive Styles */
+    .mobile-topbar {
+      display: none;
+    }
+    .mobile-sidebar-close {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .sidebar-backdrop {
+      display: none;
+    }
+
+    @media (max-width: 992px) {
+      body {
+        flex-direction: column;
+      }
+      .mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 990;
+      }
+      .mobile-menu-btn {
+        background: none;
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+      .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mobile-brand-img {
+        width: 28px;
+        height: auto;
+      }
+      .mobile-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+      }
+      .mobile-status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        display: inline-block;
+      }
+
+      .mobile-sidebar-close {
+        display: block;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        box-shadow: none;
+        overflow-y: auto;
+      }
+      .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0,0,0,0.25);
+      }
+      .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      .sidebar-backdrop.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .main-content {
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+        gap: 12px;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .page-title {
+        font-size: 1.3rem !important;
+      }
+      .modal-card {
+        padding: 16px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Mobile Sticky Topbar -->
+  <header class="mobile-topbar" id="mobileTopbar">
+    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-brand">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="mobile-brand-img">
+      <span class="mobile-brand-text">Category Portal</span>
+    </div>
+    <div class="mobile-topbar-right">
+      <span class="mobile-status-dot" title="Active"></span>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="brand-logo-img">
+      <span class="brand-title">Sibaq</span>
+      <button type="button" class="mobile-sidebar-close" id="mobileSidebarClose" aria-label="Close Sidebar">✕</button>
+    </div>
+
+    <ul class="nav-list" id="sidebarNav">
+      <!-- Attendance -->
+      <li class="nav-item has-submenu open active" data-tab="attendance">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Attendance
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+        <ul class="submenu">
+          <li class="submenu-item active" data-tab="attendance">
+            <a class="submenu-link">
+              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              Students
+            </a>
+          </li>
+          <li class="submenu-item" data-tab="attendance-coach">
+            <a class="submenu-link">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+              Coach
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Tasks -->
+      <li class="nav-item" data-tab="tasks">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Tasks
+        </a>
+      </li>
+
+      <!-- Evaluation -->
+      <li class="nav-item" data-tab="evaluation">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Evaluation
+        </a>
+      </li>
+
+      <!-- Punishment -->
+      <li class="nav-item" data-tab="punishment">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          Punishment
+        </a>
+      </li>
+
+      <!-- Absence -->
+      <li class="nav-item" data-tab="absence">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Absence
+        </a>
+      </li>
+
+      <!-- Schedule Set -->
+      <li class="nav-item" data-tab="schedule">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Schedule Set
+        </a>
+      </li>
+    </ul>
+
+    <!-- Sidebar User Profile -->
+    <div class="sidebar-user">
+      <div class="user-meta">
+        <div class="user-avatar" id="avatarLetter">C</div>
+        <div>
+          <div class="user-name" id="userDisplayName">Coordinator</div>
+          <div class="user-role">Category Coordinator</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn" title="Sign Out" aria-label="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="top-bar">
+      <div>
+        <h2 class="page-title" id="pageTitleText">Student Attendance</h2>
+        <p class="page-desc" id="pageDescText">Take and verify attendance of registered students</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="pwa-trigger-btn pwa-download-btn" title="Download or Install Sibaq App">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download App
+        </button>
+        <div class="session-badge">
+          <span class="session-dot"></span>
+          <span>Category Live Session</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 1. STUDENT ATTENDANCE ==================== -->
+    <div class="tab-page active-page" id="page-attendance">
+      <div class="coord-page-container">
+        <div class="coord-card">
+          <div class="coord-header">
+            <div class="coord-title-wrap">
+              <div class="coord-icon-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800;">Student Attendance Roster</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Mark present, absent, excused, or late for scheduled candidates</p>
+              </div>
+            </div>
+            <div class="coord-actions-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="studentAttendDate" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Attendance Date:</label>
+                <input type="date" id="studentAttendDate" class="form-input" style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
+              </div>
+              <button type="button" class="btn-brand-primary" id="btnSaveStudentAttendance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Save Attendance
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>Program</th>
+                  <th>Category</th>
+                  <th>Student</th>
+                  <th>Status</th>
+                  <th>Remarks / Notes</th>
+                  <th style="width: 95px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="studentAttendanceTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 1B. COACH ATTENDANCE ==================== -->
+    <div class="tab-page" id="page-attendance-coach">
+      <div class="coord-page-container">
+        <div class="coord-card">
+          <div class="coord-header">
+            <div class="coord-title-wrap">
+              <div class="coord-icon-badge" style="background: var(--brand-yellow-soft); color: #855e00;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800;">Coach Attendance & Shifts</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Supervise assigned coaches and stage coordinators</p>
+              </div>
+            </div>
+            <div class="coord-actions-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="coachAttendDate" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Shift Date:</label>
+                <input type="date" id="coachAttendDate" class="form-input" style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
+              </div>
+              <button type="button" class="btn-brand-primary" id="btnSaveCoachAttendance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Save Shift Log
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>Coach Name</th>
+                  <th>Assigned Program</th>
+                  <th>Shift Status</th>
+                  <th>Shift Remarks</th>
+                  <th style="width: 95px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="coachAttendanceTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 2. TASKS ==================== -->
+    <div class="tab-page" id="page-tasks">
+      <div class="coord-page-container">
+        <div style="display: grid; grid-template-columns: 340px 1fr; gap: 20px;">
+          <!-- Task Form Card -->
+          <div class="coord-card">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Create New Task</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Assign task with live countdown timer and remarks</p>
+
+            <form id="createTaskForm">
+              <div class="form-group" style="position: relative;">
+                <label class="form-label" for="taskProgSearch">Program + Category (Search & Select)</label>
+                <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="taskProgSearch" class="form-input" placeholder="Search program name..." autocomplete="off" required />
+                  <input type="hidden" id="taskProgramSelect" required />
+                  <button type="button" id="taskProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <!-- Interactive Dropdown List from DB -->
+                <div id="taskProgDropdownMenu" class="task-prog-dropdown-list" style="display: none;"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="taskTitle">Task Title</label>
+                <input type="text" id="taskTitle" class="form-input" placeholder="e.g. Stage Setup 100m" required />
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" for="taskAssignee" style="margin-bottom: 0;">Assignee (Student)</label>
+                  <span id="assigneeDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Student (DB)</span>
+                </div>
+                <input type="text" id="taskAssignee" class="form-input" placeholder="Auto-filled student from DB (or select/type)" list="taskStudentSuggestions" required />
+                <datalist id="taskStudentSuggestions"></datalist>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="taskDurationMin">Duration Timer (Minutes)</label>
+                <input type="number" id="taskDurationMin" class="form-input" min="1" max="180" value="30" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="taskRemarks">Remarks / Instructions</label>
+                <textarea id="taskRemarks" class="form-input" style="height: 75px; padding: 10px 14px; resize: vertical;" placeholder="Add specific task instructions..."></textarea>
+              </div>
+              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
+                + Start Task & Timer
+              </button>
+            </form>
+          </div>
+
+          <!-- Tasks List Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Active & Completed Tasks</h3>
+              <span class="pill pill-yellow" id="activeTasksBadge">0 Active</span>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Assignee</th>
+                    <th>Live Timer</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tasksTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 3. EVALUATION ==================== -->
+    <div class="tab-page" id="page-evaluation">
+      <div class="coord-page-container">
+        <div style="display: grid; grid-template-columns: 360px 1fr; gap: 20px;">
+          <!-- Evaluation Form Card -->
+          <div class="coord-card">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Record Evaluation</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Score out of 100% and attach proof image</p>
+
+            <form id="evaluationForm">
+              <div class="form-group" style="position: relative;">
+                <label class="form-label" for="evalProgSearch">Program / Event (Search & Select)</label>
+                <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="evalProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" required />
+                  <input type="hidden" id="evalProgram" required />
+                  <button type="button" id="evalProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <!-- Interactive Dropdown List from DB -->
+                <div id="evalProgDropdownMenu" class="task-prog-dropdown-list" style="display: none;"></div>
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" for="evalCandidate" style="margin-bottom: 0;">Candidate Name</label>
+                  <span id="evalCandidateDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                </div>
+                <input type="text" id="evalCandidate" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="evalCandidateSuggestions" required />
+                <datalist id="evalCandidateSuggestions"></datalist>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="evalScore">Mark / Score (0 - 100%)</label>
+                <input type="number" id="evalScore" class="form-input" min="0" max="100" placeholder="e.g. 95" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="evalImageInput">Evaluation Sheet Image (Optional)</label>
+                <input type="file" id="evalImageInput" class="form-input" accept="image/*" style="padding-top: 6px;" />
+                <div id="evalImagePreviewContainer" style="display: none; margin-top: 10px;">
+                  <img id="evalImagePreview" src="" alt="Preview" style="max-height: 100px; border-radius: 8px; border: 1px solid var(--border-subtle);" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="evalRemarks">Evaluator Remarks</label>
+                <textarea id="evalRemarks" class="form-input" style="height: 75px; padding: 10px 14px; resize: vertical;" placeholder="Comments, jury notes..."></textarea>
+              </div>
+              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
+                Save Evaluation Score
+              </button>
+            </form>
+          </div>
+
+          <!-- Evaluation Records Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Evaluations Log</h3>
+              <span class="pill pill-green" id="evalCountBadge">0 Records</span>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 40px;">#</th>
+                    <th>Candidate</th>
+                    <th>Program</th>
+                    <th>Score</th>
+                    <th>Proof</th>
+                    <th>Remarks</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="evalTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 4. PUNISHMENT ==================== -->
+    <div class="tab-page" id="page-punishment">
+      <div class="coord-page-container">
+        <div style="display: grid; grid-template-columns: 340px 1fr; gap: 20px;">
+          <!-- Punishment Form Card -->
+          <div class="coord-card">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Issue Disciplinary Penalty</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Log infraction and start penalty countdown timer</p>
+
+            <form id="punishmentForm">
+              <div class="form-group" style="position: relative;">
+                <label class="form-label" for="punishProgSearch">Program + Category (Search & Select)</label>
+                <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="punishProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" />
+                  <input type="hidden" id="punishProgram" />
+                  <button type="button" id="punishProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <!-- Interactive Dropdown List from DB -->
+                <div id="punishProgDropdownMenu" class="task-prog-dropdown-list" style="display: none;"></div>
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" for="punishPerson" style="margin-bottom: 0;">Person / Candidate</label>
+                  <span id="punishPersonDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                </div>
+                <input type="text" id="punishPerson" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="punishPersonSuggestions" required />
+                <datalist id="punishPersonSuggestions"></datalist>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="punishReason">Infraction Reason</label>
+                <input type="text" id="punishReason" class="form-input" placeholder="e.g. False start or misconduct" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="punishAction">Penalty Action</label>
+                <input type="text" id="punishAction" class="form-input" placeholder="e.g. 15m Stand-down bench" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="punishTimerMin">Penalty Timer (Minutes)</label>
+                <input type="number" id="punishTimerMin" class="form-input" min="1" max="120" value="15" required />
+              </div>
+              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center; background: #dc2626;">
+                Issue Penalty & Start Timer
+              </button>
+            </form>
+          </div>
+
+          <!-- Punishment Log Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Disciplinary Log</h3>
+              <span class="pill pill-red" id="punishCountBadge">0 Records</span>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Candidate</th>
+                    <th>Infraction</th>
+                    <th>Action</th>
+                    <th>Status</th>
+                    <th>Time Remaining</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="punishTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 5. ABSENCE ==================== -->
+    <div class="tab-page" id="page-absence">
+      <div class="coord-page-container">
+        <div style="display: grid; grid-template-columns: 340px 1fr; gap: 20px;">
+          <!-- Absence Form Card -->
+          <div class="coord-card">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Log Absence Record</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Record official, medical, or unexcused leave</p>
+
+            <form id="absenceForm">
+              <div class="form-group" style="position: relative;">
+                <label class="form-label" for="absenceProgSearch">Program + Category (Search & Select)</label>
+                <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="absenceProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" />
+                  <input type="hidden" id="absenceProgram" />
+                  <button type="button" id="absenceProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <!-- Interactive Dropdown List from DB -->
+                <div id="absenceProgDropdownMenu" class="task-prog-dropdown-list" style="display: none;"></div>
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" for="absenceName" style="margin-bottom: 0;">Candidate / Person</label>
+                  <span id="absencePersonDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                </div>
+                <input type="text" id="absenceName" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="absencePersonSuggestions" required />
+                <datalist id="absencePersonSuggestions"></datalist>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="absenceDate">Absence Date</label>
+                <input type="date" id="absenceDate" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="absenceType">Absence Classification</label>
+                <select id="absenceType" class="form-input">
+                  <option value="Leave">Attendance Leave</option>
+                  <option value="Medical">Medical / Health Leave</option>
+                  <option value="Official">Official Exemption</option>
+                  <option value="Unexcused">Unexcused / Absent</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="absenceRemarks">Remarks & Documentation</label>
+                <textarea id="absenceRemarks" class="form-input" style="height: 80px; padding: 10px 14px; resize: vertical;" placeholder="Doctor note, coordinator note..."></textarea>
+              </div>
+              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
+                Save Absence Record
+              </button>
+            </form>
+          </div>
+
+          <!-- Absence Log Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Absence History</h3>
+              <span class="pill pill-yellow" id="absenceCountBadge">0 Records</span>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 40px;">#</th>
+                    <th>Person</th>
+                    <th>Program</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Remarks</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="absenceTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 6. SCHEDULE SET ==================== -->
+    <div class="tab-page" id="page-schedule">
+      <div class="coord-page-container">
+        <!-- Subnav Switcher for Schedule Set -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+          <button type="button" class="sched-subnav-btn active" id="btnSubTabPrograms" onclick="switchScheduleSubTab('programs')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Program Master Schedule
+          </button>
+          <button type="button" class="sched-subnav-btn" id="btnSubTabTimeSets" onclick="switchScheduleSubTab('timesets')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Time Sets Configuration
+          </button>
+        </div>
+
+        <!-- VIEW 1: PROGRAM SCHEDULE SLOTS -->
+        <div id="schedViewPrograms" style="display: grid; grid-template-columns: 380px 1fr; gap: 20px;">
+          <!-- Schedule Form Card -->
+          <div class="coord-card">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Schedule Program Slot</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Select programs, choose preset time sets, and assign venue</p>
+
+            <form id="scheduleForm">
+              <div class="form-group">
+                <label class="form-label" for="schedDate">Overall Date</label>
+                <input type="date" id="schedDate" class="form-input" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Select Program(s)</label>
+                <div class="sched-search-input-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="schedProgSearchInput" class="form-input" placeholder="Search program name..." />
+                </div>
+                <div class="selected-progs-pill-container" id="selectedProgChips">
+                  <span style="font-size: 0.8rem; color: var(--text-placeholder);">No programs selected</span>
+                </div>
+                <div class="program-multiselect-list" id="schedProgramChecklist">
+                  <!-- Populated via JS -->
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" for="schedTimePreset" style="margin-bottom: 0;">Select Time Set</label>
+                  <button type="button" onclick="switchScheduleSubTab('timesets')" style="background: none; border: none; color: var(--brand-red); font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    + Manage Time Sets
+                  </button>
+                </div>
+                <select id="schedTimePreset" class="form-input" required>
+                  <option value="" disabled selected>Select from configured time sets</option>
+                </select>
+                <div class="timeset-preview-card" id="schedTimeSetPreview" style="display: none;">
+                  <div>
+                    <strong id="schedPreviewName" style="color: #15803d; font-size: 0.88rem;">Morning Set</strong>
+                    <div id="schedPreviewRange" style="font-size: 0.78rem; color: var(--text-muted);">08:30 - 11:45</div>
+                  </div>
+                  <span class="pill pill-green">Active Preset</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="schedVenue">Venue / Stage</label>
+                <input type="text" id="schedVenue" class="form-input" placeholder="e.g. Main Track - Lane 1-8" />
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" for="schedCandidate" style="margin-bottom: 0;">Candidate(s) / Participant(s)</label>
+                  <span id="schedCandidateSourceBadge" class="pill pill-green" style="font-size: 0.7rem; padding: 2px 6px; display: none;">Auto-filled (DB)</span>
+                </div>
+                <input type="text" id="schedCandidate" class="form-input" list="schedCandidatesDatalist" placeholder="Auto-filled from selected program(s) or type custom" />
+                <datalist id="schedCandidatesDatalist"></datalist>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="schedCoach">Assigned Coach / Lead</label>
+                <input type="text" id="schedCoach" class="form-input" placeholder="e.g. Coach Tariq" />
+              </div>
+
+              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
+                Save Schedule Slot
+              </button>
+            </form>
+          </div>
+
+          <!-- Schedule Master Table Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Program Master Schedule</h3>
+              <span class="pill pill-yellow" id="scheduleCountBadge">0 Scheduled</span>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 40px;">#</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Program(s)</th>
+                    <th>Candidate(s)</th>
+                    <th>Venue</th>
+                    <th>Lead</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="scheduleTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 2: TIME SETS CONFIGURATION -->
+        <div id="schedViewTimeSets" style="display: none; grid-template-columns: 380px 1fr; gap: 20px;">
+          <!-- Time Set Form Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <div>
+                <h3 style="font-size: 1.05rem; font-weight: 800;">Create Time Set</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Define shift or program period</p>
+              </div>
+              <span class="pill pill-red">Time Set</span>
+            </div>
+
+            <form id="timeSetForm" autocomplete="off">
+              <div class="form-group">
+                <label class="form-label" for="timeSetName">Name / Title</label>
+                <input
+                  type="text"
+                  id="timeSetName"
+                  class="form-input"
+                  placeholder="e.g. Morning Session / 100m Sprint Heats"
+                  required
+                />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label class="form-label" for="timeSetStart">Time Starting</label>
+                  <input
+                    type="time"
+                    id="timeSetStart"
+                    class="form-input"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="timeSetEnd">Time Ending</label>
+                  <input
+                    type="time"
+                    id="timeSetEnd"
+                    class="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="timeSetRemarks">Remarks / Notes</label>
+                <input
+                  type="text"
+                  id="timeSetRemarks"
+                  class="form-input"
+                  placeholder="e.g. Official competition slot"
+                />
+              </div>
+
+              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+                Save Time Set
+              </button>
+            </form>
+          </div>
+
+          <!-- Configured Time Sets Table Card -->
+          <div class="coord-card">
+            <div class="coord-header">
+              <div>
+                <h3 style="font-size: 1.05rem; font-weight: 800;">Configured Time Sets</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Saved time sets available for scheduling</p>
+              </div>
+              <span class="pill pill-yellow" id="timeSetCountBadge">0 Sets</span>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 40px;">#</th>
+                    <th>Time Set Name</th>
+                    <th>Starting Time</th>
+                    <th>Ending Time</th>
+                    <th>Duration</th>
+                    <th>Remarks</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="timeSetTableBody">
+                  <!-- Dynamically populated time sets -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toastMsg" class="toast-msg"></div>
+
+  <!-- Firebase Scripts & Configurations -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="cloudinary-config.js"></script>
+
+  <script>
+    // ----------------------------------------------------
+    // Session Guard
+    // ----------------------------------------------------
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+    const currentUser = sessionStorage.getItem('currentUser');
+    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+
+    // Strict Access: Requires sign-in as Category Coordinator
+    if (!isAuthenticated || !currentUserRole.includes('category coordinator')) {
+      sessionStorage.clear();
+      window.location.replace('index.html?portal=category&msg=signin_required');
+    }
+
+    const userDisplayName = document.getElementById('userDisplayName');
+    if (userDisplayName) userDisplayName.textContent = currentUser;
+    const avatarLetter = document.getElementById('avatarLetter');
+    if (avatarLetter) avatarLetter.textContent = currentUser.charAt(0).toUpperCase();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('isAuthenticated');
+      sessionStorage.removeItem('currentUser');
+      sessionStorage.removeItem('loginTime');
+      window.location.href = 'index.html';
+    });
+
+    // Toast helper
+    const toastEl = document.getElementById('toastMsg');
+    let toastTimeout = null;
+    function showToast(msg) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 3000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ----------------------------------------------------
+    // Tab Navigation
+    // ----------------------------------------------------
+    const navItems = document.querySelectorAll('#sidebarNav .nav-item');
+    const submenuItems = document.querySelectorAll('#sidebarNav .submenu-item');
+    const attendMenuParent = document.querySelector('.has-submenu[data-tab="attendance"]');
+
+    const tabPages = {
+      attendance: document.getElementById('page-attendance'),
+      'attendance-coach': document.getElementById('page-attendance-coach'),
+      tasks: document.getElementById('page-tasks'),
+      evaluation: document.getElementById('page-evaluation'),
+      punishment: document.getElementById('page-punishment'),
+      absence: document.getElementById('page-absence'),
+      schedule: document.getElementById('page-schedule')
+    };
+
+    const pageTitleText = document.getElementById('pageTitleText');
+    const pageDescText = document.getElementById('pageDescText');
+
+    function switchToTab(tabName) {
+      navItems.forEach(item => item.classList.remove('active'));
+      submenuItems.forEach(sub => sub.classList.remove('active'));
+
+      if (tabName === 'attendance') {
+        if (attendMenuParent) attendMenuParent.classList.add('active', 'open');
+        const stuSub = document.querySelector('.submenu-item[data-tab="attendance"]');
+        if (stuSub) stuSub.classList.add('active');
+        pageTitleText.textContent = 'Student Attendance';
+        pageDescText.textContent = 'Take and verify attendance of registered students';
+        renderStudentAttendanceTable();
+      } else if (tabName === 'attendance-coach') {
+        if (attendMenuParent) attendMenuParent.classList.add('active', 'open');
+        const coachSub = document.querySelector('.submenu-item[data-tab="attendance-coach"]');
+        if (coachSub) coachSub.classList.add('active');
+        pageTitleText.textContent = 'Coach Attendance';
+        pageDescText.textContent = 'Supervise coach presence and shift attendance';
+        renderCoachAttendanceTable();
+      } else {
+        navItems.forEach(item => {
+          if (item.getAttribute('data-tab') === tabName) {
+            item.classList.add('active');
+          }
+        });
+
+        if (tabName === 'tasks') {
+          pageTitleText.textContent = 'Task Management';
+          pageDescText.textContent = 'Create tasks, set timers, and write remarks';
+          renderTasksTable();
+        } else if (tabName === 'evaluation') {
+          pageTitleText.textContent = 'Evaluation & Scoring';
+          pageDescText.textContent = 'Score performances in 100% and upload evaluation sheets';
+          renderEvalTable();
+        } else if (tabName === 'punishment') {
+          pageTitleText.textContent = 'Disciplinary & Punishment';
+          pageDescText.textContent = 'Create punishment, assign infractions, and set timers';
+          renderPunishTable();
+        } else if (tabName === 'absence') {
+          pageTitleText.textContent = 'Absence Records';
+          pageDescText.textContent = 'Log dates, types, and remarks for candidate/coach absences';
+          renderAbsenceTable();
+        } else if (tabName === 'schedule') {
+          pageTitleText.textContent = 'Schedule Set & Program Timings';
+          pageDescText.textContent = 'Configure session time sets, schedule programs, and assign venues & coaches';
+          renderScheduleTable();
+          populateScheduleTimeSetsDropdown();
+          renderScheduleProgramList('');
+          renderTimeSetTable();
+        }
+      }
+
+      Object.keys(tabPages).forEach(key => {
+        if (key === tabName && tabPages[key]) {
+          tabPages[key].classList.add('active-page');
+        } else if (tabPages[key]) {
+          tabPages[key].classList.remove('active-page');
+        }
+      });
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.submenu')) return;
+        if (e.target.closest('.nav-chevron') && item.classList.contains('has-submenu')) {
+          e.stopPropagation();
+          item.classList.toggle('open');
+          return;
+        }
+        const tab = item.getAttribute('data-tab');
+        if (tab) switchToTab(tab);
+      });
+    });
+
+    submenuItems.forEach(sub => {
+      sub.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tab = sub.getAttribute('data-tab');
+        if (tab) switchToTab(tab);
+      });
+    });
+
+    // ----------------------------------------------------
+    // Shared Data Loaders (LocalStorage & Firestore)
+    // ----------------------------------------------------
+    const PROGRAM_STORAGE_KEY = 'sibaq_program_records';
+    const TIMESET_STORAGE_KEY = 'sibaq_time_sets';
+
+    function getStoredProgramRecords() {
+      try {
+        const stored = localStorage.getItem(PROGRAM_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return [
+        { id: 'prog_1', name: '100m Dash Championship', category: 'Ūla', candidates: 'Ali, Ziyad, Bilal', coach: 'Coach Tariq' },
+        { id: 'prog_2', name: 'Relay 4x100m', category: 'Bidāya', candidates: 'Saeed, Rayan, Hamza, Noor', coach: 'Coach Salman' },
+        { id: 'prog_3', name: 'Long Jump Challenge', category: 'Thānawiyya', candidates: 'Faris, Karim', coach: 'Coach Rashid' },
+        { id: 'prog_4', name: '200m Sprint', category: 'Ūla', candidates: 'Kareem, Omar', coach: 'Coach Tariq' },
+        { id: 'prog_5', name: 'Football Shootout', category: 'Āliya', candidates: 'Zaid, Hamza', coach: 'Coach Zaid' }
+      ];
+    }
+
+    function getStoredTimeSets() {
+      try {
+        const raw = localStorage.getItem(TIMESET_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return [
+        { id: 'ts_default_1', name: 'Morning Session Set', startTime: '08:30', endTime: '11:45', remarks: 'Track & Field Heats' },
+        { id: 'ts_default_2', name: 'Afternoon Championship Set', startTime: '14:00', endTime: '17:30', remarks: 'Finals & Stage Performances' }
+      ];
+    }
+
+    function saveStoredTimeSets(list) {
+      localStorage.setItem(TIMESET_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    const STUDENT_ATTENDANCE_STORAGE_KEY = 'sibaq_student_attendance';
+
+    function getStoredStudentAttendance(date) {
+      if (!date) return {};
+      try {
+        const raw = localStorage.getItem(STUDENT_ATTENDANCE_STORAGE_KEY);
+        if (raw) {
+          const map = JSON.parse(raw);
+          return map[date] || {};
+        }
+      } catch (e) {}
+      return {};
+    }
+
+    function saveStoredStudentAttendance(date, recordsMap) {
+      if (!date) return;
+      try {
+        const raw = localStorage.getItem(STUDENT_ATTENDANCE_STORAGE_KEY);
+        const map = raw ? JSON.parse(raw) : {};
+        map[date] = recordsMap;
+        localStorage.setItem(STUDENT_ATTENDANCE_STORAGE_KEY, JSON.stringify(map));
+      } catch (e) {}
+    }
+
+    function getAttendanceCandidates() {
+      const records = getStoredProgramRecords();
+      const list = [];
+      records.forEach(p => {
+        let candidatesArr = [];
+        if (Array.isArray(p.candidates)) {
+          candidatesArr = p.candidates;
+        } else if (typeof p.candidates === 'string' && p.candidates.trim()) {
+          candidatesArr = p.candidates.split(',');
+        } else if (p.candidate) {
+          candidatesArr = [p.candidate];
+        }
+
+        candidatesArr.forEach(c => {
+          let name = '';
+          if (typeof c === 'string') {
+            name = c.trim();
+          } else if (c && typeof c === 'object') {
+            name = (c.name || c.studentName || '').trim();
+          }
+          if (name) {
+            list.push({
+              name,
+              program: p.name || p.program || 'Unnamed Program',
+              category: p.category || 'General'
+            });
+          }
+        });
+      });
+      return list;
+    }
+
+    function renderStudentAttendanceTable() {
+      const tbody = document.getElementById('studentAttendanceTableBody');
+      const dateInput = document.getElementById('studentAttendDate');
+      if (!tbody) return;
+
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const savedDateAttendance = getStoredStudentAttendance(selectedDate);
+      const candidates = getAttendanceCandidates();
+      tbody.innerHTML = '';
+
+      if (candidates.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              <strong>No Program Candidate Records Found in Database</strong>
+              <div style="font-size: 0.82rem; margin-top: 4px;">Candidates registered under programs in Program Records will automatically populate here.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      candidates.forEach((cand, idx) => {
+        const rowKey = `${cand.program}_${cand.category}_${cand.name}`.toLowerCase();
+        const existing = savedDateAttendance[rowKey] || {};
+        // If already saved in DB/storage, use that status and lock it as set. Otherwise default to 'Pending'
+        let currentStatus = existing.status || 'Pending';
+        if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Absent' && currentStatus !== 'Late' && currentStatus !== 'Leave') {
+          currentStatus = 'Pending';
+        }
+        const isLocked = existing.status ? true : false;
+        const currentRemarks = existing.remarks || '';
+
+        const statusIcons = {
+          'Pending': '<i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>',
+          'Present': '<i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>',
+          'Absent': '<i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>',
+          'Late': '<i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>',
+          'Leave': '<i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>'
+        };
+
+        const tr = document.createElement('tr');
+        tr.dataset.program = cand.program;
+        tr.dataset.category = cand.category;
+        tr.dataset.student = cand.name;
+        tr.dataset.locked = isLocked ? 'true' : 'false';
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(cand.program)}</td>
+          <td><span class="pill pill-yellow">${escapeHtml(cand.category)}</span></td>
+          <td style="font-weight: 600; color: var(--text-main);">${escapeHtml(cand.name)}</td>
+          <td>
+            <div class="status-dropdown-wrap ${isLocked ? 'is-locked' : ''}" data-status="${currentStatus}">
+              <button type="button" class="status-dropdown-btn" onclick="toggleStatusDropdown(this, event)">
+                <span class="selected-val">
+                  ${statusIcons[currentStatus]}
+                  <span class="label-text">${currentStatus}</span>
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity: 0.6;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="status-dropdown-menu">
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Pending')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>
+                  <span>Pending</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Present')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>
+                  <span>Present</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Absent')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>
+                  <span>Absent</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Late')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>
+                  <span>Late</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Leave')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>
+                  <span>Leave</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <input type="text" class="form-input attend-notes-input" placeholder="Optional notes" value="${escapeHtml(currentRemarks)}" style="height: 34px; font-size: 0.84rem;" />
+          </td>
+          <td style="text-align: center;">
+            <button type="button" class="btn-set-attend ${isLocked ? 'is-set' : ''}" onclick="toggleRowSet(this)">
+              ${isLocked ? `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Edit
+              ` : `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Set
+              `}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Toggle and select methods for attendance status
+    window.toggleStatusDropdown = function(btn, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const wrap = btn.closest('.status-dropdown-wrap');
+      if (!wrap || wrap.classList.contains('is-locked')) return;
+      const wasOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.status-dropdown-wrap.open').forEach(w => {
+        if (w !== wrap) w.classList.remove('open');
+      });
+      if (wasOpen) {
+        wrap.classList.remove('open');
+      } else {
+        wrap.classList.add('open');
+      }
+    };
+
+    window.selectAttendanceStatus = function(optionEl, status) {
+      const wrap = optionEl.closest('.status-dropdown-wrap');
+      if (!wrap || wrap.classList.contains('is-locked')) return;
+      wrap.dataset.status = status;
+      const statusIcons = {
+        'Pending': '<i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>',
+        'Present': '<i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>',
+        'Absent': '<i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>',
+        'Late': '<i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>',
+        'Leave': '<i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>'
+      };
+      const selectedVal = wrap.querySelector('.selected-val');
+      if (selectedVal) {
+        selectedVal.innerHTML = `${statusIcons[status] || ''} <span class="label-text">${status}</span>`;
+      }
+      wrap.classList.remove('open');
+    };
+
+    // Toggle Set / Edit on a specific candidate row
+    window.toggleRowSet = function(button) {
+      const row = button.closest('tr');
+      if (!row) return;
+      const wrap = row.querySelector('.status-dropdown-wrap');
+      const isLocked = row.dataset.locked === 'true';
+
+      if (!isLocked) {
+        // User clicked "Set"
+        const currentStatus = wrap?.dataset.status || 'Pending';
+        if (currentStatus === 'Pending') {
+          showToast('Please select Present, Absent, Late, or Leave before setting.');
+          return;
+        }
+        row.dataset.locked = 'true';
+        wrap?.classList.add('is-locked');
+        wrap?.classList.remove('open');
+        button.classList.add('is-set');
+        button.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Edit
+        `;
+        showToast(`Status set as "${currentStatus}". Click "Save Attendance" to sync.`);
+      } else {
+        // User clicked "Edit"
+        row.dataset.locked = 'false';
+        wrap?.classList.remove('is-locked');
+        button.classList.remove('is-set');
+        button.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Set
+        `;
+      }
+    };
+
+    // Global listener for closing dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.status-dropdown-wrap')) {
+        document.querySelectorAll('.status-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
+      }
+    });
+
+    // Date change listener
+    document.getElementById('studentAttendDate')?.addEventListener('change', () => {
+      const dateInput = document.getElementById('studentAttendDate');
+      const selectedDate = dateInput ? dateInput.value : '';
+      if (selectedDate && window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
+        window.SibaqFirebase.loadStudentAttendanceFromFirestore(selectedDate).then(remoteList => {
+          if (Array.isArray(remoteList)) {
+            const map = {};
+            remoteList.forEach(item => {
+              const key = `${item.program}_${item.category}_${item.student}`.toLowerCase();
+              map[key] = item;
+            });
+            saveStoredStudentAttendance(selectedDate, map);
+          }
+          renderStudentAttendanceTable();
+        }).catch(() => {
+          renderStudentAttendanceTable();
+        });
+      } else {
+        renderStudentAttendanceTable();
+      }
+    });
+
+    document.getElementById('btnSaveStudentAttendance')?.addEventListener('click', () => {
+      const dateInput = document.getElementById('studentAttendDate');
+      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      if (!selectedDate) {
+        alert('Please select an attendance date.');
+        return;
+      }
+
+      const rows = document.querySelectorAll('#studentAttendanceTableBody tr[data-student]');
+      const dateRecordsMap = {};
+      const firestoreList = [];
+
+      rows.forEach(row => {
+        const program = row.dataset.program;
+        const category = row.dataset.category;
+        const student = row.dataset.student;
+        const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Present';
+        const remarks = row.querySelector('.attend-notes-input')?.value.trim() || '';
+
+        const record = { program, category, student, status, remarks, date: selectedDate };
+        const key = `${program}_${category}_${student}`.toLowerCase();
+        dateRecordsMap[key] = record;
+        firestoreList.push(record);
+      });
+
+      saveStoredStudentAttendance(selectedDate, dateRecordsMap);
+
+      if (window.SibaqFirebase && typeof window.SibaqFirebase.syncStudentAttendanceToFirestore === 'function') {
+        window.SibaqFirebase.syncStudentAttendanceToFirestore(selectedDate, firestoreList);
+      }
+
+      showToast(`Student attendance for ${selectedDate} saved successfully!`);
+    });
+
+    const COACH_ATTENDANCE_STORAGE_KEY = 'sibaq_coach_attendance';
+
+    function getStoredCoachAttendance(date) {
+      if (!date) return {};
+      try {
+        const raw = localStorage.getItem(COACH_ATTENDANCE_STORAGE_KEY);
+        if (raw) {
+          const map = JSON.parse(raw);
+          return map[date] || {};
+        }
+      } catch (e) {}
+      return {};
+    }
+
+    function saveStoredCoachAttendance(date, recordsMap) {
+      if (!date) return;
+      try {
+        const raw = localStorage.getItem(COACH_ATTENDANCE_STORAGE_KEY);
+        const map = raw ? JSON.parse(raw) : {};
+        map[date] = recordsMap;
+        localStorage.setItem(COACH_ATTENDANCE_STORAGE_KEY, JSON.stringify(map));
+      } catch (e) {}
+    }
+
+    function getAttendanceCoaches() {
+      const records = getStoredProgramRecords();
+      const coaches = [];
+      records.forEach(prog => {
+        const coachName = (prog.coach || prog.coachName || '').trim();
+        if (coachName && !coaches.some(c => c.name.toLowerCase() === coachName.toLowerCase())) {
+          coaches.push({ name: coachName, program: prog.name || prog.program || 'General Program' });
+        }
+      });
+      return coaches;
+    }
+
+    function renderCoachAttendanceTable() {
+      const tbody = document.getElementById('coachAttendanceTableBody');
+      const dateInput = document.getElementById('coachAttendDate');
+      if (!tbody) return;
+
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const savedDateAttendance = getStoredCoachAttendance(selectedDate);
+      const coaches = getAttendanceCoaches();
+      tbody.innerHTML = '';
+
+      if (coaches.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+              <strong>No Assigned Coaches Found in Database</strong>
+              <div style="font-size: 0.82rem; margin-top: 4px;">Coaches assigned to programs in Program Records will automatically populate here.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      coaches.forEach((c, idx) => {
+        const rowKey = `${c.program}_${c.name}`.toLowerCase();
+        const existing = savedDateAttendance[rowKey] || {};
+        let currentStatus = existing.status || 'Pending';
+        if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Absent' && currentStatus !== 'Late' && currentStatus !== 'Leave') {
+          currentStatus = 'Pending';
+        }
+        const isLocked = existing.status ? true : false;
+        const currentRemarks = existing.remarks || '';
+
+        const statusIcons = {
+          'Pending': '<i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>',
+          'Present': '<i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>',
+          'Absent': '<i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>',
+          'Late': '<i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>',
+          'Leave': '<i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>'
+        };
+
+        const tr = document.createElement('tr');
+        tr.dataset.coach = c.name;
+        tr.dataset.program = c.program;
+        tr.dataset.locked = isLocked ? 'true' : 'false';
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(c.name)}</td>
+          <td>${escapeHtml(c.program)}</td>
+          <td>
+            <div class="status-dropdown-wrap ${isLocked ? 'is-locked' : ''}" data-status="${currentStatus}">
+              <button type="button" class="status-dropdown-btn" onclick="toggleStatusDropdown(this, event)">
+                <span class="selected-val">
+                  ${statusIcons[currentStatus]}
+                  <span class="label-text">${currentStatus}</span>
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity: 0.6;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="status-dropdown-menu">
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Pending')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>
+                  <span>Pending</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Present')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>
+                  <span>Present</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Absent')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>
+                  <span>Absent</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Late')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>
+                  <span>Late</span>
+                </div>
+                <div class="status-option" onclick="selectAttendanceStatus(this, 'Leave')">
+                  <i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>
+                  <span>Leave</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <input type="text" class="form-input coach-notes-input" placeholder="Shift remarks" value="${escapeHtml(currentRemarks)}" style="height: 34px; font-size: 0.84rem;" />
+          </td>
+          <td style="text-align: center;">
+            <button type="button" class="btn-set-attend ${isLocked ? 'is-set' : ''}" onclick="toggleRowSet(this)">
+              ${isLocked ? `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Edit
+              ` : `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Set
+              `}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Coach date change listener
+    document.getElementById('coachAttendDate')?.addEventListener('change', () => {
+      const dateInput = document.getElementById('coachAttendDate');
+      const selectedDate = dateInput ? dateInput.value : '';
+      if (selectedDate && window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
+        window.SibaqFirebase.loadCoachAttendanceFromFirestore(selectedDate).then(remoteList => {
+          if (Array.isArray(remoteList)) {
+            const map = {};
+            remoteList.forEach(item => {
+              const key = `${item.program}_${item.coach}`.toLowerCase();
+              map[key] = item;
+            });
+            saveStoredCoachAttendance(selectedDate, map);
+          }
+          renderCoachAttendanceTable();
+        }).catch(() => {
+          renderCoachAttendanceTable();
+        });
+      } else {
+        renderCoachAttendanceTable();
+      }
+    });
+
+    document.getElementById('btnSaveCoachAttendance')?.addEventListener('click', () => {
+      const dateInput = document.getElementById('coachAttendDate');
+      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      if (!selectedDate) {
+        alert('Please select a shift date.');
+        return;
+      }
+
+      const rows = document.querySelectorAll('#coachAttendanceTableBody tr[data-coach]');
+      const dateRecordsMap = {};
+      const firestoreList = [];
+
+      rows.forEach(row => {
+        const coach = row.dataset.coach;
+        const program = row.dataset.program;
+        const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Pending';
+        const remarks = row.querySelector('.coach-notes-input')?.value.trim() || '';
+
+        const record = { coach, program, status, remarks, date: selectedDate };
+        const key = `${program}_${coach}`.toLowerCase();
+        dateRecordsMap[key] = record;
+        firestoreList.push(record);
+      });
+
+      saveStoredCoachAttendance(selectedDate, dateRecordsMap);
+
+      if (window.SibaqFirebase && typeof window.SibaqFirebase.syncCoachAttendanceToFirestore === 'function') {
+        window.SibaqFirebase.syncCoachAttendanceToFirestore(selectedDate, firestoreList);
+      }
+
+      showToast(`Coach shift log for ${selectedDate} saved successfully!`);
+    });
+
+    // ----------------------------------------------------
+    // 2. TASKS
+    // ----------------------------------------------------
+    const TASKS_STORAGE_KEY = 'sibaq_coordinator_tasks';
+
+    function getStoredTasks() {
+      try {
+        const raw = localStorage.getItem(TASKS_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [
+        {
+          id: 'task_1',
+          title: 'Track Inspection 100m',
+          assignee: 'Coach Tariq',
+          durationMin: 25,
+          remarks: 'Inspect track lanes 1-6 for obstacles',
+          startTime: Date.now() - 5 * 60 * 1000,
+          status: 'Active'
+        }
+      ];
+    }
+
+    function saveStoredTasks(tasks) {
+      localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    let coordinatorTasks = getStoredTasks();
+
+    function renderTasksTable() {
+      const tbody = document.getElementById('tasksTableBody');
+      const badge = document.getElementById('activeTasksBadge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const activeCount = coordinatorTasks.filter(t => t.status === 'Active').length;
+      if (badge) badge.textContent = `${activeCount} Active`;
+
+      if (coordinatorTasks.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 25px;">No tasks created yet. Create a task using the form on the left.</td></tr>`;
+        return;
+      }
+
+      coordinatorTasks.forEach(task => {
+        const tr = document.createElement('tr');
+        const remainingMs = Math.max(0, (task.startTime + task.durationMin * 60 * 1000) - Date.now());
+        const remainingMin = Math.floor(remainingMs / 60000);
+        const remainingSec = Math.floor((remainingMs % 60000) / 1000);
+        const isExpired = remainingMs <= 0;
+
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(task.title)}</td>
+          <td>${escapeHtml(task.assignee)}</td>
+          <td>
+            <span class="coord-timer-display" id="task-timer-${task.id}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              ${isExpired ? 'Expired' : `${remainingMin}m ${remainingSec}s`}
+            </span>
+          </td>
+          <td style="font-size: 0.84rem; color: var(--text-muted); max-width: 200px;">${escapeHtml(task.remarks || '—')}</td>
+          <td>
+            <span class="pill ${task.status === 'Completed' ? 'pill-green' : (isExpired ? 'pill-red' : 'pill-yellow')}">
+              ${task.status === 'Completed' ? 'Completed' : (isExpired ? 'Time Up' : 'Running')}
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <div style="display: inline-flex; gap: 6px;">
+              ${task.status !== 'Completed' ? `
+                <button type="button" class="btn-fest-pill" onclick="completeTask('${task.id}')" style="padding: 4px 10px; font-size: 0.76rem; margin: 0;">Done</button>
+              ` : ''}
+              <button type="button" class="delete-action-btn" onclick="deleteTaskItem('${task.id}')" title="Delete Task">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.completeTask = function(id) {
+      coordinatorTasks = coordinatorTasks.map(t => t.id === id ? { ...t, status: 'Completed' } : t);
+      saveStoredTasks(coordinatorTasks);
+      renderTasksTable();
+      showToast('Task marked as completed!');
+    };
+
+    window.deleteTaskItem = function(id) {
+      coordinatorTasks = coordinatorTasks.filter(t => t.id !== id);
+      saveStoredTasks(coordinatorTasks);
+      renderTasksTable();
+      showToast('Task removed.');
+    };
+
+    // ----------------------------------------------------
+    // 2. TASKS - Program + Category search & select from DB
+    // ----------------------------------------------------
+    let currentSelectedProgramRecord = null;
+
+    function extractProgramCandidates(p) {
+      if (!p) return [];
+      let arr = [];
+      if (Array.isArray(p.candidates)) arr = p.candidates;
+      else if (typeof p.candidates === 'string' && p.candidates.trim()) arr = p.candidates.split(',');
+      else if (p.candidate) arr = [p.candidate];
+      else if (p.student) arr = [p.student];
+
+      return arr.map(c => {
+        if (typeof c === 'string') return c.trim();
+        if (c && typeof c === 'object') return (c.name || c.studentName || c.student || '').trim();
+        return '';
+      }).filter(Boolean);
+    }
+
+    function renderTaskProgramDropdown(searchQuery = '') {
+      const dropdownMenu = document.getElementById('taskProgDropdownMenu');
+      if (!dropdownMenu) return;
+
+      const records = getStoredProgramRecords();
+      const query = (searchQuery || '').toLowerCase().trim();
+
+      const filtered = records.filter(p => {
+        const name = (p.name || p.program || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const cands = extractProgramCandidates(p).join(' ').toLowerCase();
+        return !query || name.includes(query) || cat.includes(query) || cands.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        dropdownMenu.innerHTML = `
+          <div style="padding: 12px 14px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+            No programs found in DB matching "${escapeHtml(searchQuery)}"
+          </div>
+        `;
+        dropdownMenu.style.display = 'block';
+        return;
+      }
+
+      dropdownMenu.innerHTML = filtered.map(p => {
+        const pName = p.name || p.program || 'Unnamed Program';
+        const pCat = p.category || 'General';
+        const cands = extractProgramCandidates(p);
+        const candStr = cands.length > 0 ? cands.join(', ') : '';
+
+        return `
+          <div class="task-prog-dropdown-item" 
+               data-id="${escapeHtml(p.id || '')}" 
+               data-name="${escapeHtml(pName)}" 
+               data-cat="${escapeHtml(pCat)}" 
+               data-candidates="${escapeHtml(JSON.stringify(cands))}">
+            <div class="task-prog-item-info">
+              <span class="task-prog-item-name">${escapeHtml(pName)}</span>
+              <span class="task-prog-item-coach">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                ${candStr ? `Student: <strong>${escapeHtml(candStr)}</strong>` : '<em style="color:#94a3b8;">No student assigned in DB</em>'}
+              </span>
+            </div>
+            <span class="program-cat-badge" style="margin-left: 8px; flex-shrink: 0;">${escapeHtml(pCat)}</span>
+          </div>
+        `;
+      }).join('');
+
+      dropdownMenu.style.display = 'block';
+
+      dropdownMenu.querySelectorAll('.task-prog-dropdown-item').forEach(item => {
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          let cands = [];
+          try {
+            cands = JSON.parse(item.dataset.candidates || '[]');
+          } catch (err) {}
+
+          selectTaskProgram({
+            id: item.dataset.id,
+            name: item.dataset.name,
+            category: item.dataset.cat,
+            candidates: cands
+          });
+        });
+      });
+    }
+
+    function selectTaskProgram(p) {
+      currentSelectedProgramRecord = p;
+      const searchInput = document.getElementById('taskProgSearch');
+      const hiddenSelect = document.getElementById('taskProgramSelect');
+      const assigneeInput = document.getElementById('taskAssignee');
+      const assigneeBadge = document.getElementById('assigneeDbBadge');
+      const clearBtn = document.getElementById('taskProgClearBtn');
+      const dropdownMenu = document.getElementById('taskProgDropdownMenu');
+      const suggestionsList = document.getElementById('taskStudentSuggestions');
+      const titleInput = document.getElementById('taskTitle');
+
+      if (searchInput) searchInput.value = `${p.name} [${p.category}]`;
+      if (hiddenSelect) hiddenSelect.value = p.name;
+      if (clearBtn) clearBtn.style.display = 'block';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+
+      // Auto-fill Assignee with assigned student from DB
+      const cands = p.candidates || [];
+      if (suggestionsList) {
+        suggestionsList.innerHTML = cands.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+
+      if (assigneeInput) {
+        if (cands.length > 0) {
+          assigneeInput.value = cands[0];
+          if (assigneeBadge) {
+            assigneeBadge.style.display = 'inline-block';
+            assigneeBadge.textContent = cands.length > 1 ? `Student (1 of ${cands.length} in DB)` : 'Student (DB)';
+          }
+        } else {
+          assigneeInput.value = '';
+          if (assigneeBadge) assigneeBadge.style.display = 'none';
+        }
+      }
+
+      // Task Title remains manual as requested - focus it for quick user entry!
+      if (titleInput && !titleInput.value.trim()) {
+        titleInput.focus();
+      }
+    }
+
+    function clearTaskProgramSelection() {
+      currentSelectedProgramRecord = null;
+      const searchInput = document.getElementById('taskProgSearch');
+      const hiddenSelect = document.getElementById('taskProgramSelect');
+      const assigneeInput = document.getElementById('taskAssignee');
+      const assigneeBadge = document.getElementById('assigneeDbBadge');
+      const clearBtn = document.getElementById('taskProgClearBtn');
+      const dropdownMenu = document.getElementById('taskProgDropdownMenu');
+      const suggestionsList = document.getElementById('taskStudentSuggestions');
+
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      if (hiddenSelect) hiddenSelect.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (assigneeInput) assigneeInput.value = '';
+      if (assigneeBadge) assigneeBadge.style.display = 'none';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+      if (suggestionsList) suggestionsList.innerHTML = '';
+    }
+
+    // Task Program search input interactions
+    const taskProgSearchInput = document.getElementById('taskProgSearch');
+    const taskProgClearBtn = document.getElementById('taskProgClearBtn');
+    const taskProgDropdownMenu = document.getElementById('taskProgDropdownMenu');
+
+    if (taskProgSearchInput) {
+      taskProgSearchInput.addEventListener('focus', () => {
+        renderTaskProgramDropdown(taskProgSearchInput.value);
+      });
+      taskProgSearchInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (taskProgClearBtn) taskProgClearBtn.style.display = val ? 'block' : 'none';
+        renderTaskProgramDropdown(val);
+      });
+    }
+
+    if (taskProgClearBtn) {
+      taskProgClearBtn.addEventListener('click', clearTaskProgramSelection);
+    }
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#createTaskForm .form-group') && taskProgDropdownMenu) {
+        taskProgDropdownMenu.style.display = 'none';
+      }
+    });
+
+    document.getElementById('createTaskForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const progSelect = document.getElementById('taskProgramSelect');
+      const searchInput = document.getElementById('taskProgSearch');
+      const selectedProg = progSelect && progSelect.value ? progSelect.value : (searchInput ? searchInput.value.trim() : '');
+      const title = document.getElementById('taskTitle').value.trim();
+      const assignee = document.getElementById('taskAssignee').value.trim();
+      const durationMin = parseInt(document.getElementById('taskDurationMin').value) || 30;
+      const remarks = document.getElementById('taskRemarks').value.trim();
+
+      const newTask = {
+        id: 'task_' + Date.now(),
+        title: title,
+        assignee,
+        program: selectedProg,
+        durationMin,
+        remarks,
+        startTime: Date.now(),
+        status: 'Active'
+      };
+
+      coordinatorTasks.unshift(newTask);
+      saveStoredTasks(coordinatorTasks);
+
+      // Cloud Firestore synchronization if available
+      if (window.SibaqFirebase && window.SibaqFirebase.db) {
+        window.SibaqFirebase.db.collection('coordinator_tasks').doc(newTask.id).set(newTask).catch(err => {
+          console.warn('Could not sync task to Firestore:', err.message);
+        });
+      }
+
+      renderTasksTable();
+      document.getElementById('createTaskForm').reset();
+      clearTaskProgramSelection();
+      showToast(`Task created with ${durationMin}m timer!`);
+    });
+
+    // ----------------------------------------------------
+    // 3. EVALUATION
+    // ----------------------------------------------------
+    const EVAL_STORAGE_KEY = 'sibaq_coordinator_evaluations';
+
+    function getStoredEvaluations() {
+      try {
+        const raw = localStorage.getItem(EVAL_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [
+        {
+          id: 'eval_1',
+          candidate: 'Ali Ahmed',
+          program: '100m Dash Championship',
+          score: 96,
+          imageUrl: 'Sibaq Logo.png',
+          remarks: 'Excellent acceleration and clean sprint technique'
+        }
+      ];
+    }
+
+    function saveStoredEvaluations(list) {
+      localStorage.setItem(EVAL_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let coordinatorEvaluations = getStoredEvaluations();
+    let currentUploadedImageUrl = '';
+
+    // Evaluation - Program + Category Search & Select from DB
+    function renderEvalProgramDropdown(searchQuery = '') {
+      const dropdownMenu = document.getElementById('evalProgDropdownMenu');
+      if (!dropdownMenu) return;
+
+      const records = getStoredProgramRecords();
+      const query = (searchQuery || '').toLowerCase().trim();
+
+      const filtered = records.filter(p => {
+        const name = (p.name || p.program || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const cands = extractProgramCandidates(p).join(' ').toLowerCase();
+        return !query || name.includes(query) || cat.includes(query) || cands.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        dropdownMenu.innerHTML = `
+          <div style="padding: 12px 14px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+            No programs found in DB matching "${escapeHtml(searchQuery)}"
+          </div>
+        `;
+        dropdownMenu.style.display = 'block';
+        return;
+      }
+
+      dropdownMenu.innerHTML = filtered.map(p => {
+        const pName = p.name || p.program || 'Unnamed Program';
+        const pCat = p.category || 'General';
+        const cands = extractProgramCandidates(p);
+        const candStr = cands.length > 0 ? cands.join(', ') : '';
+
+        return `
+          <div class="task-prog-dropdown-item" 
+               data-id="${escapeHtml(p.id || '')}" 
+               data-name="${escapeHtml(pName)}" 
+               data-cat="${escapeHtml(pCat)}" 
+               data-candidates="${escapeHtml(JSON.stringify(cands))}">
+            <div class="task-prog-item-info">
+              <span class="task-prog-item-name">${escapeHtml(pName)}</span>
+              <span class="task-prog-item-coach">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+                ${candStr ? `Candidate: <strong>${escapeHtml(candStr)}</strong>` : '<em style="color:#94a3b8;">No candidate assigned in DB</em>'}
+              </span>
+            </div>
+            <span class="program-cat-badge" style="margin-left: 8px; flex-shrink: 0;">${escapeHtml(pCat)}</span>
+          </div>
+        `;
+      }).join('');
+
+      dropdownMenu.style.display = 'block';
+
+      dropdownMenu.querySelectorAll('.task-prog-dropdown-item').forEach(item => {
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          let cands = [];
+          try {
+            cands = JSON.parse(item.dataset.candidates || '[]');
+          } catch (err) {}
+
+          selectEvalProgram({
+            id: item.dataset.id,
+            name: item.dataset.name,
+            category: item.dataset.cat,
+            candidates: cands
+          });
+        });
+      });
+    }
+
+    function selectEvalProgram(p) {
+      const searchInput = document.getElementById('evalProgSearch');
+      const hiddenInput = document.getElementById('evalProgram');
+      const candidateInput = document.getElementById('evalCandidate');
+      const candidateBadge = document.getElementById('evalCandidateDbBadge');
+      const clearBtn = document.getElementById('evalProgClearBtn');
+      const dropdownMenu = document.getElementById('evalProgDropdownMenu');
+      const suggestionsList = document.getElementById('evalCandidateSuggestions');
+      const scoreInput = document.getElementById('evalScore');
+
+      if (searchInput) searchInput.value = `${p.name} [${p.category}]`;
+      if (hiddenInput) hiddenInput.value = p.name;
+      if (clearBtn) clearBtn.style.display = 'block';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+
+      // Auto-fill Candidate Name directly from DB
+      const cands = p.candidates || [];
+      if (suggestionsList) {
+        suggestionsList.innerHTML = cands.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+
+      if (candidateInput) {
+        if (cands.length > 0) {
+          candidateInput.value = cands[0];
+          if (candidateBadge) {
+            candidateBadge.style.display = 'inline-block';
+            candidateBadge.textContent = cands.length > 1 ? `Candidate (1 of ${cands.length} in DB)` : 'Candidate (DB)';
+          }
+        } else {
+          candidateInput.value = '';
+          if (candidateBadge) candidateBadge.style.display = 'none';
+        }
+      }
+
+      // Quick focus to score for rapid evaluation
+      if (scoreInput) {
+        scoreInput.focus();
+      }
+    }
+
+    function clearEvalProgramSelection() {
+      const searchInput = document.getElementById('evalProgSearch');
+      const hiddenInput = document.getElementById('evalProgram');
+      const candidateInput = document.getElementById('evalCandidate');
+      const candidateBadge = document.getElementById('evalCandidateDbBadge');
+      const clearBtn = document.getElementById('evalProgClearBtn');
+      const dropdownMenu = document.getElementById('evalProgDropdownMenu');
+      const suggestionsList = document.getElementById('evalCandidateSuggestions');
+
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      if (hiddenInput) hiddenInput.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (candidateInput) candidateInput.value = '';
+      if (candidateBadge) candidateBadge.style.display = 'none';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+      if (suggestionsList) suggestionsList.innerHTML = '';
+    }
+
+    const evalProgSearchInput = document.getElementById('evalProgSearch');
+    const evalProgClearBtn = document.getElementById('evalProgClearBtn');
+    const evalProgDropdownMenu = document.getElementById('evalProgDropdownMenu');
+
+    if (evalProgSearchInput) {
+      evalProgSearchInput.addEventListener('focus', () => {
+        renderEvalProgramDropdown(evalProgSearchInput.value);
+      });
+      evalProgSearchInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (evalProgClearBtn) evalProgClearBtn.style.display = val ? 'block' : 'none';
+        renderEvalProgramDropdown(val);
+      });
+    }
+
+    if (evalProgClearBtn) {
+      evalProgClearBtn.addEventListener('click', clearEvalProgramSelection);
+    }
+
+    // Hide eval dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#evaluationForm .form-group') && evalProgDropdownMenu) {
+        evalProgDropdownMenu.style.display = 'none';
+      }
+    });
+
+    const evalImageInput = document.getElementById('evalImageInput');
+    const evalImagePreview = document.getElementById('evalImagePreview');
+    const evalImagePreviewContainer = document.getElementById('evalImagePreviewContainer');
+
+    if (evalImageInput) {
+      evalImageInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (re) => {
+            currentUploadedImageUrl = re.target.result;
+            if (evalImagePreview && evalImagePreviewContainer) {
+              evalImagePreview.src = currentUploadedImageUrl;
+              evalImagePreviewContainer.style.display = 'block';
+            }
+          };
+          reader.readAsDataURL(file);
+
+          if (window.SibaqCloudinary && window.SibaqCloudinary.uploadFile) {
+            window.SibaqCloudinary.uploadFile(file).then(res => {
+              if (res && res.secure_url) currentUploadedImageUrl = res.secure_url;
+            }).catch(e => console.warn(e));
+          }
+        }
+      });
+    }
+
+    function renderEvalTable() {
+      const tbody = document.getElementById('evalTableBody');
+      const badge = document.getElementById('evalCountBadge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (badge) badge.textContent = `${coordinatorEvaluations.length} Records`;
+
+      if (coordinatorEvaluations.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">No evaluations recorded yet. Fill the form to add one.</td></tr>`;
+        return;
+      }
+
+      coordinatorEvaluations.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(item.candidate)}</td>
+          <td>${escapeHtml(item.program)}</td>
+          <td>
+            <span style="font-weight: 800; font-size: 1rem; color: ${item.score >= 80 ? '#16a34a' : (item.score >= 50 ? '#d97706' : '#dc2626')};">
+              ${item.score}%
+            </span>
+          </td>
+          <td>
+            ${item.imageUrl ? `<img src="${escapeHtml(item.imageUrl)}" class="eval-img-preview" alt="Proof" onclick="window.open('${escapeHtml(item.imageUrl)}', '_blank')" />` : '<span style="color: var(--text-muted); font-size: 0.8rem;">No file</span>'}
+          </td>
+          <td style="font-size: 0.84rem; color: var(--text-muted); max-width: 180px;">${escapeHtml(item.remarks || '—')}</td>
+          <td style="text-align: right;">
+            <button type="button" class="delete-action-btn" onclick="deleteEvalItem('${item.id}')" title="Delete evaluation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.deleteEvalItem = function(id) {
+      coordinatorEvaluations = coordinatorEvaluations.filter(e => e.id !== id);
+      saveStoredEvaluations(coordinatorEvaluations);
+      renderEvalTable();
+      showToast('Evaluation removed.');
+    };
+
+    document.getElementById('evaluationForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const progInput = document.getElementById('evalProgram');
+      const searchInput = document.getElementById('evalProgSearch');
+      const candidate = document.getElementById('evalCandidate').value.trim();
+      const program = progInput && progInput.value ? progInput.value : (searchInput ? searchInput.value.trim() : '');
+      const score = parseInt(document.getElementById('evalScore').value) || 0;
+      const remarks = document.getElementById('evalRemarks').value.trim();
+
+      const newEval = {
+        id: 'eval_' + Date.now(),
+        candidate,
+        program,
+        score,
+        imageUrl: currentUploadedImageUrl,
+        remarks,
+        timestamp: new Date().toISOString()
+      };
+
+      coordinatorEvaluations.unshift(newEval);
+      saveStoredEvaluations(coordinatorEvaluations);
+
+      // Cloud Firestore synchronization if available
+      if (window.SibaqFirebase && window.SibaqFirebase.db) {
+        window.SibaqFirebase.db.collection('evaluations').doc(newEval.id).set(newEval).catch(err => {
+          console.warn('Could not sync evaluation to Firestore:', err.message);
+        });
+      }
+
+      renderEvalTable();
+      document.getElementById('evaluationForm').reset();
+      clearEvalProgramSelection();
+      currentUploadedImageUrl = '';
+      if (evalImagePreviewContainer) evalImagePreviewContainer.style.display = 'none';
+      showToast(`Evaluation for ${candidate} saved with score ${score}%!`);
+    });
+
+    // ----------------------------------------------------
+    // 4. PUNISHMENT
+    // ----------------------------------------------------
+    const PUNISH_STORAGE_KEY = 'sibaq_coordinator_punishments';
+
+    function getStoredPunishments() {
+      try {
+        const raw = localStorage.getItem(PUNISH_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [
+        {
+          id: 'punish_1',
+          person: 'Faris Karim',
+          reason: 'False start infraction',
+          action: '10 minute bench stand-down',
+          timerMin: 10,
+          startTime: Date.now() - 3 * 60 * 1000
+        }
+      ];
+    }
+
+    function saveStoredPunishments(list) {
+      localStorage.setItem(PUNISH_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let coordinatorPunishments = getStoredPunishments();
+
+    // Punishment - Program + Category Search & Select from DB
+    function renderPunishProgramDropdown(searchQuery = '') {
+      const dropdownMenu = document.getElementById('punishProgDropdownMenu');
+      if (!dropdownMenu) return;
+
+      const records = getStoredProgramRecords();
+      const query = (searchQuery || '').toLowerCase().trim();
+
+      const filtered = records.filter(p => {
+        const name = (p.name || p.program || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const cands = extractProgramCandidates(p).join(' ').toLowerCase();
+        return !query || name.includes(query) || cat.includes(query) || cands.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        dropdownMenu.innerHTML = `
+          <div style="padding: 12px 14px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+            No programs found in DB matching "${escapeHtml(searchQuery)}"
+          </div>
+        `;
+        dropdownMenu.style.display = 'block';
+        return;
+      }
+
+      dropdownMenu.innerHTML = filtered.map(p => {
+        const pName = p.name || p.program || 'Unnamed Program';
+        const pCat = p.category || 'General';
+        const cands = extractProgramCandidates(p);
+        const candStr = cands.length > 0 ? cands.join(', ') : '';
+
+        return `
+          <div class="task-prog-dropdown-item" 
+               data-id="${escapeHtml(p.id || '')}" 
+               data-name="${escapeHtml(pName)}" 
+               data-cat="${escapeHtml(pCat)}" 
+               data-candidates="${escapeHtml(JSON.stringify(cands))}">
+            <div class="task-prog-item-info">
+              <span class="task-prog-item-name">${escapeHtml(pName)}</span>
+              <span class="task-prog-item-coach">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+                ${candStr ? `Candidate: <strong>${escapeHtml(candStr)}</strong>` : '<em style="color:#94a3b8;">No candidate assigned in DB</em>'}
+              </span>
+            </div>
+            <span class="program-cat-badge" style="margin-left: 8px; flex-shrink: 0;">${escapeHtml(pCat)}</span>
+          </div>
+        `;
+      }).join('');
+
+      dropdownMenu.style.display = 'block';
+
+      dropdownMenu.querySelectorAll('.task-prog-dropdown-item').forEach(item => {
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          let cands = [];
+          try {
+            cands = JSON.parse(item.dataset.candidates || '[]');
+          } catch (err) {}
+
+          selectPunishProgram({
+            id: item.dataset.id,
+            name: item.dataset.name,
+            category: item.dataset.cat,
+            candidates: cands
+          });
+        });
+      });
+    }
+
+    function selectPunishProgram(p) {
+      const searchInput = document.getElementById('punishProgSearch');
+      const hiddenInput = document.getElementById('punishProgram');
+      const personInput = document.getElementById('punishPerson');
+      const personBadge = document.getElementById('punishPersonDbBadge');
+      const clearBtn = document.getElementById('punishProgClearBtn');
+      const dropdownMenu = document.getElementById('punishProgDropdownMenu');
+      const suggestionsList = document.getElementById('punishPersonSuggestions');
+      const reasonInput = document.getElementById('punishReason');
+
+      if (searchInput) searchInput.value = `${p.name} [${p.category}]`;
+      if (hiddenInput) hiddenInput.value = p.name;
+      if (clearBtn) clearBtn.style.display = 'block';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+
+      // Auto-fill Person / Candidate directly from DB
+      const cands = p.candidates || [];
+      if (suggestionsList) {
+        suggestionsList.innerHTML = cands.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+
+      if (personInput) {
+        if (cands.length > 0) {
+          personInput.value = cands[0];
+          if (personBadge) {
+            personBadge.style.display = 'inline-block';
+            personBadge.textContent = cands.length > 1 ? `Candidate (1 of ${cands.length} in DB)` : 'Candidate (DB)';
+          }
+        } else {
+          personInput.value = '';
+          if (personBadge) personBadge.style.display = 'none';
+        }
+      }
+
+      // Quick focus to infraction reason
+      if (reasonInput) {
+        reasonInput.focus();
+      }
+    }
+
+    function clearPunishProgramSelection() {
+      const searchInput = document.getElementById('punishProgSearch');
+      const hiddenInput = document.getElementById('punishProgram');
+      const personInput = document.getElementById('punishPerson');
+      const personBadge = document.getElementById('punishPersonDbBadge');
+      const clearBtn = document.getElementById('punishProgClearBtn');
+      const dropdownMenu = document.getElementById('punishProgDropdownMenu');
+      const suggestionsList = document.getElementById('punishPersonSuggestions');
+
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      if (hiddenInput) hiddenInput.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (personInput) personInput.value = '';
+      if (personBadge) personBadge.style.display = 'none';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+      if (suggestionsList) suggestionsList.innerHTML = '';
+    }
+
+    const punishProgSearchInput = document.getElementById('punishProgSearch');
+    const punishProgClearBtn = document.getElementById('punishProgClearBtn');
+    const punishProgDropdownMenu = document.getElementById('punishProgDropdownMenu');
+
+    if (punishProgSearchInput) {
+      punishProgSearchInput.addEventListener('focus', () => {
+        renderPunishProgramDropdown(punishProgSearchInput.value);
+      });
+      punishProgSearchInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (punishProgClearBtn) punishProgClearBtn.style.display = val ? 'block' : 'none';
+        renderPunishProgramDropdown(val);
+      });
+    }
+
+    if (punishProgClearBtn) {
+      punishProgClearBtn.addEventListener('click', clearPunishProgramSelection);
+    }
+
+    // Hide punish dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#punishmentForm .form-group') && punishProgDropdownMenu) {
+        punishProgDropdownMenu.style.display = 'none';
+      }
+    });
+
+    function renderPunishTable() {
+      const tbody = document.getElementById('punishTableBody');
+      const badge = document.getElementById('punishCountBadge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (badge) badge.textContent = `${coordinatorPunishments.length} Records`;
+
+      if (coordinatorPunishments.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 25px;">No disciplinary records. Issue punishment using the form on the left.</td></tr>`;
+        return;
+      }
+
+      coordinatorPunishments.forEach(item => {
+        const tr = document.createElement('tr');
+        const remainingMs = Math.max(0, (item.startTime + item.timerMin * 60 * 1000) - Date.now());
+        const remainingMin = Math.floor(remainingMs / 60000);
+        const remainingSec = Math.floor((remainingMs % 60000) / 1000);
+        const isExpired = remainingMs <= 0;
+
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(item.person)}</td>
+          <td>${escapeHtml(item.reason)}</td>
+          <td>${escapeHtml(item.action)}</td>
+          <td>
+            <span class="pill ${isExpired ? 'pill-green' : 'pill-red'}">
+              ${isExpired ? 'Completed / Served' : 'Serving Penalty'}
+            </span>
+          </td>
+          <td>
+            <span class="coord-timer-display">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              ${isExpired ? '0m 0s' : `${remainingMin}m ${remainingSec}s`}
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <button type="button" class="delete-action-btn" onclick="deletePunishItem('${item.id}')" title="Delete record">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.deletePunishItem = function(id) {
+      coordinatorPunishments = coordinatorPunishments.filter(p => p.id !== id);
+      saveStoredPunishments(coordinatorPunishments);
+      renderPunishTable();
+      showToast('Disciplinary record removed.');
+    };
+
+    document.getElementById('punishmentForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const progInput = document.getElementById('punishProgram');
+      const searchInput = document.getElementById('punishProgSearch');
+      const selectedProg = progInput && progInput.value ? progInput.value : (searchInput ? searchInput.value.trim() : '');
+      const person = document.getElementById('punishPerson').value.trim();
+      const reason = document.getElementById('punishReason').value.trim();
+      const action = document.getElementById('punishAction').value.trim();
+      const timerMin = parseInt(document.getElementById('punishTimerMin').value) || 15;
+
+      const newPunish = {
+        id: 'punish_' + Date.now(),
+        person,
+        program: selectedProg,
+        reason,
+        action,
+        timerMin,
+        startTime: Date.now()
+      };
+
+      coordinatorPunishments.unshift(newPunish);
+      saveStoredPunishments(coordinatorPunishments);
+
+      // Cloud Firestore synchronization if available
+      if (window.SibaqFirebase && window.SibaqFirebase.db) {
+        window.SibaqFirebase.db.collection('punishments').doc(newPunish.id).set(newPunish).catch(err => {
+          console.warn('Could not sync punishment to Firestore:', err.message);
+        });
+      }
+
+      renderPunishTable();
+      document.getElementById('punishmentForm').reset();
+      clearPunishProgramSelection();
+      showToast(`Punishment timer started for ${person} (${timerMin}m)!`);
+    });
+
+    // ----------------------------------------------------
+    // 5. ABSENCE
+    // ----------------------------------------------------
+    const ABSENCE_STORAGE_KEY = 'sibaq_coordinator_absences';
+
+    function getStoredAbsences() {
+      try {
+        const raw = localStorage.getItem(ABSENCE_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [
+        {
+          id: 'abs_1',
+          name: 'Saeed Rayan',
+          date: new Date().toISOString().split('T')[0],
+          type: 'Medical',
+          remarks: 'Submitted medical certificate for sprained ankle'
+        }
+      ];
+    }
+
+    function saveStoredAbsences(list) {
+      localStorage.setItem(ABSENCE_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let coordinatorAbsences = getStoredAbsences();
+
+    // Pull attendance records where status === 'Leave'
+    function getAttendanceLeaveRecords() {
+      const list = [];
+      
+      // 1. Scan Student Attendance records from LocalStorage
+      try {
+        const studentRaw = localStorage.getItem(STUDENT_ATTENDANCE_STORAGE_KEY);
+        if (studentRaw) {
+          const studentDatesMap = JSON.parse(studentRaw);
+          Object.keys(studentDatesMap).forEach(date => {
+            const dateRecords = studentDatesMap[date] || {};
+            Object.keys(dateRecords).forEach(key => {
+              const rec = dateRecords[key];
+              if (rec && String(rec.status).toLowerCase() === 'leave') {
+                list.push({
+                  id: 'leave_student_' + date + '_' + (rec.student || key),
+                  name: rec.student || 'Unknown Student',
+                  program: rec.program ? `${rec.program} [${rec.category || 'Student'}]` : 'Student Candidate',
+                  date: rec.date || date,
+                  type: 'Attendance Leave',
+                  remarks: rec.remarks || 'Marked as Leave in Student Attendance',
+                  source: 'student_attendance',
+                  rawKey: key,
+                  targetDate: date
+                });
+              }
+            });
+          });
+        }
+      } catch (e) {}
+
+      // 2. Scan Coach Attendance records from LocalStorage
+      try {
+        const coachRaw = localStorage.getItem(COACH_ATTENDANCE_STORAGE_KEY);
+        if (coachRaw) {
+          const coachDatesMap = JSON.parse(coachRaw);
+          Object.keys(coachDatesMap).forEach(date => {
+            const dateRecords = coachDatesMap[date] || {};
+            Object.keys(dateRecords).forEach(key => {
+              const rec = dateRecords[key];
+              if (rec && String(rec.status).toLowerCase() === 'leave') {
+                list.push({
+                  id: 'leave_coach_' + date + '_' + (rec.coach || key),
+                  name: rec.coach || 'Unknown Coach',
+                  program: rec.program ? `${rec.program} [Coach]` : 'Coach Shift',
+                  date: rec.date || date,
+                  type: 'Coach Leave',
+                  remarks: rec.remarks || 'Marked as Leave in Coach Shift Attendance',
+                  source: 'coach_attendance',
+                  rawKey: key,
+                  targetDate: date
+                });
+              }
+            });
+          });
+        }
+      } catch (e) {}
+
+      return list;
+    }
+
+    // Absence - Program + Category Search & Select from DB
+    function renderAbsenceProgramDropdown(searchQuery = '') {
+      const dropdownMenu = document.getElementById('absenceProgDropdownMenu');
+      if (!dropdownMenu) return;
+
+      const records = getStoredProgramRecords();
+      const query = (searchQuery || '').toLowerCase().trim();
+
+      const filtered = records.filter(p => {
+        const name = (p.name || p.program || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const cands = extractProgramCandidates(p).join(' ').toLowerCase();
+        return !query || name.includes(query) || cat.includes(query) || cands.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        dropdownMenu.innerHTML = `
+          <div style="padding: 12px 14px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+            No programs found in DB matching "${escapeHtml(searchQuery)}"
+          </div>
+        `;
+        dropdownMenu.style.display = 'block';
+        return;
+      }
+
+      dropdownMenu.innerHTML = filtered.map(p => {
+        const pName = p.name || p.program || 'Unnamed Program';
+        const pCat = p.category || 'General';
+        const cands = extractProgramCandidates(p);
+        const candStr = cands.length > 0 ? cands.join(', ') : '';
+
+        return `
+          <div class="task-prog-dropdown-item" 
+               data-id="${escapeHtml(p.id || '')}" 
+               data-name="${escapeHtml(pName)}" 
+               data-cat="${escapeHtml(pCat)}" 
+               data-candidates="${escapeHtml(JSON.stringify(cands))}">
+            <div class="task-prog-item-info">
+              <span class="task-prog-item-name">${escapeHtml(pName)}</span>
+              <span class="task-prog-item-coach">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+                ${candStr ? `Candidate: <strong>${escapeHtml(candStr)}</strong>` : '<em style="color:#94a3b8;">No candidate assigned in DB</em>'}
+              </span>
+            </div>
+            <span class="program-cat-badge" style="margin-left: 8px; flex-shrink: 0;">${escapeHtml(pCat)}</span>
+          </div>
+        `;
+      }).join('');
+
+      dropdownMenu.style.display = 'block';
+
+      dropdownMenu.querySelectorAll('.task-prog-dropdown-item').forEach(item => {
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          let cands = [];
+          try {
+            cands = JSON.parse(item.dataset.candidates || '[]');
+          } catch (err) {}
+
+          selectAbsenceProgram({
+            id: item.dataset.id,
+            name: item.dataset.name,
+            category: item.dataset.cat,
+            candidates: cands
+          });
+        });
+      });
+    }
+
+    function selectAbsenceProgram(p) {
+      const searchInput = document.getElementById('absenceProgSearch');
+      const hiddenInput = document.getElementById('absenceProgram');
+      const nameInput = document.getElementById('absenceName');
+      const nameBadge = document.getElementById('absencePersonDbBadge');
+      const clearBtn = document.getElementById('absenceProgClearBtn');
+      const dropdownMenu = document.getElementById('absenceProgDropdownMenu');
+      const suggestionsList = document.getElementById('absencePersonSuggestions');
+
+      if (searchInput) searchInput.value = `${p.name} [${p.category}]`;
+      if (hiddenInput) hiddenInput.value = p.name;
+      if (clearBtn) clearBtn.style.display = 'block';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+
+      const cands = p.candidates || [];
+      if (suggestionsList) {
+        suggestionsList.innerHTML = cands.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+
+      if (nameInput) {
+        if (cands.length > 0) {
+          nameInput.value = cands[0];
+          if (nameBadge) {
+            nameBadge.style.display = 'inline-block';
+            nameBadge.textContent = cands.length > 1 ? `Candidate (1 of ${cands.length} in DB)` : 'Candidate (DB)';
+          }
+        } else {
+          nameInput.value = '';
+          if (nameBadge) nameBadge.style.display = 'none';
+        }
+      }
+    }
+
+    function clearAbsenceProgramSelection() {
+      const searchInput = document.getElementById('absenceProgSearch');
+      const hiddenInput = document.getElementById('absenceProgram');
+      const nameInput = document.getElementById('absenceName');
+      const nameBadge = document.getElementById('absencePersonDbBadge');
+      const clearBtn = document.getElementById('absenceProgClearBtn');
+      const dropdownMenu = document.getElementById('absenceProgDropdownMenu');
+      const suggestionsList = document.getElementById('absencePersonSuggestions');
+
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      if (hiddenInput) hiddenInput.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (nameInput) nameInput.value = '';
+      if (nameBadge) nameBadge.style.display = 'none';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+      if (suggestionsList) suggestionsList.innerHTML = '';
+    }
+
+    const absenceProgSearchInput = document.getElementById('absenceProgSearch');
+    const absenceProgClearBtn = document.getElementById('absenceProgClearBtn');
+    const absenceProgDropdownMenu = document.getElementById('absenceProgDropdownMenu');
+
+    if (absenceProgSearchInput) {
+      absenceProgSearchInput.addEventListener('focus', () => {
+        renderAbsenceProgramDropdown(absenceProgSearchInput.value);
+      });
+      absenceProgSearchInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (absenceProgClearBtn) absenceProgClearBtn.style.display = val ? 'block' : 'none';
+        renderAbsenceProgramDropdown(val);
+      });
+    }
+
+    if (absenceProgClearBtn) {
+      absenceProgClearBtn.addEventListener('click', clearAbsenceProgramSelection);
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#absenceForm .form-group') && absenceProgDropdownMenu) {
+        absenceProgDropdownMenu.style.display = 'none';
+      }
+    });
+
+    const absenceDateInput = document.getElementById('absenceDate');
+    if (absenceDateInput) {
+      absenceDateInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    function renderAbsenceTable() {
+      const tbody = document.getElementById('absenceTableBody');
+      const badge = document.getElementById('absenceCountBadge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      // Merge manual absences with live attendance records marked as Leave
+      const attendanceLeaves = getAttendanceLeaveRecords();
+      const combined = [
+        ...coordinatorAbsences.map(a => ({ ...a, source: 'manual' })),
+        ...attendanceLeaves
+      ];
+
+      // Sort by date descending
+      combined.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+      if (badge) badge.textContent = `${combined.length} Records`;
+
+      if (combined.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">No absence or leave records found. Any attendance marked as "Leave" or logged here will appear automatically.</td></tr>`;
+        return;
+      }
+
+      combined.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        const isFromAttendance = item.source === 'student_attendance' || item.source === 'coach_attendance';
+        const pillClass = isFromAttendance ? 'pill-blue' : (item.type === 'Medical' ? 'pill-yellow' : (item.type === 'Official' ? 'pill-green' : 'pill-red'));
+
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(item.name)}</td>
+          <td>${item.program ? `<span style="font-size: 0.84rem; color: var(--text-main); font-weight: 600;">${escapeHtml(item.program)}</span>` : '<span style="color: var(--text-muted);">—</span>'}</td>
+          <td>${escapeHtml(item.date)}</td>
+          <td><span class="pill ${pillClass}">${escapeHtml(item.type || 'Leave')}</span></td>
+          <td style="font-size: 0.84rem; color: var(--text-muted); max-width: 250px;">${escapeHtml(item.remarks || '—')}</td>
+          <td style="text-align: right;">
+            <button type="button" class="delete-action-btn" onclick="deleteAbsenceItem('${escapeHtml(item.id)}', '${escapeHtml(item.source)}', '${escapeHtml(item.targetDate || '')}', '${escapeHtml(item.rawKey || '')}')" title="Delete absence entry">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.deleteAbsenceItem = function(id, source, targetDate, rawKey) {
+      if (source === 'student_attendance' && targetDate && rawKey) {
+        try {
+          const map = getStoredStudentAttendance(targetDate);
+          if (map[rawKey]) {
+            delete map[rawKey];
+            saveStoredStudentAttendance(targetDate, map);
+          }
+        } catch (e) {}
+      } else if (source === 'coach_attendance' && targetDate && rawKey) {
+        try {
+          const map = getStoredCoachAttendance(targetDate);
+          if (map[rawKey]) {
+            delete map[rawKey];
+            saveStoredCoachAttendance(targetDate, map);
+          }
+        } catch (e) {}
+      } else {
+        coordinatorAbsences = coordinatorAbsences.filter(a => a.id !== id);
+        saveStoredAbsences(coordinatorAbsences);
+      }
+
+      renderAbsenceTable();
+      renderStudentAttendanceTable();
+      renderCoachAttendanceTable();
+      showToast('Absence record removed.');
+    };
+
+    document.getElementById('absenceForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const progInput = document.getElementById('absenceProgram');
+      const searchInput = document.getElementById('absenceProgSearch');
+      const selectedProg = progInput && progInput.value ? progInput.value : (searchInput ? searchInput.value.trim() : '');
+      const name = document.getElementById('absenceName').value.trim();
+      const date = document.getElementById('absenceDate').value;
+      const type = document.getElementById('absenceType').value;
+      const remarks = document.getElementById('absenceRemarks').value.trim();
+
+      const newAbsence = {
+        id: 'abs_' + Date.now(),
+        name,
+        program: selectedProg,
+        date,
+        type,
+        remarks
+      };
+
+      coordinatorAbsences.unshift(newAbsence);
+      saveStoredAbsences(coordinatorAbsences);
+
+      // Automatically sync as Leave into Student Attendance for that date!
+      try {
+        const studentAttendanceMap = getStoredStudentAttendance(date);
+        const records = getStoredProgramRecords();
+        let matchedProg = records.find(p => (p.name || p.program) === selectedProg);
+        const cat = matchedProg ? matchedProg.category : 'General';
+        const key = `${selectedProg || 'general'}_${cat}_${name}`.toLowerCase();
+        
+        studentAttendanceMap[key] = {
+          program: selectedProg || 'General',
+          category: cat,
+          student: name,
+          status: 'Leave',
+          remarks: remarks || `Logged in Absence Records (${type})`,
+          date: date
+        };
+        saveStoredStudentAttendance(date, studentAttendanceMap);
+
+        if (window.SibaqFirebase && typeof window.SibaqFirebase.syncStudentAttendanceToFirestore === 'function') {
+          const firestoreList = Object.values(studentAttendanceMap);
+          window.SibaqFirebase.syncStudentAttendanceToFirestore(date, firestoreList);
+        }
+      } catch (err) {}
+
+      renderAbsenceTable();
+      renderStudentAttendanceTable();
+      document.getElementById('absenceForm').reset();
+      clearAbsenceProgramSelection();
+      if (absenceDateInput) absenceDateInput.value = new Date().toISOString().split('T')[0];
+      showToast(`Absence recorded & attendance set to Leave for ${name}!`);
+    });
+
+    // ----------------------------------------------------
+    // 6. SCHEDULE
+    // ----------------------------------------------------
+    const SCHED_STORAGE_KEY = 'sibaq_coordinator_schedule';
+
+    function getStoredSchedule() {
+      try {
+        const raw = localStorage.getItem(SCHED_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return [
+        {
+          id: 'sched_1',
+          timeSetName: 'Morning Session Set',
+          programs: ['100m Dash Championship'],
+          date: new Date().toISOString().split('T')[0],
+          startTime: '08:30',
+          endTime: '11:45',
+          venue: 'Main Track - Lane 1-8',
+          coach: 'Coach Tariq'
+        }
+      ];
+    }
+
+    function saveStoredSchedule(list) {
+      localStorage.setItem(SCHED_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let coordinatorSchedule = getStoredSchedule();
+    let selectedSchedulePrograms = [];
+
+    const schedDateInput = document.getElementById('schedDate');
+    if (schedDateInput) {
+      schedDateInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    function updateScheduleCandidatesFromPrograms() {
+      const candInput = document.getElementById('schedCandidate');
+      const datalist = document.getElementById('schedCandidatesDatalist');
+      const badge = document.getElementById('schedCandidateSourceBadge');
+      if (!candInput) return;
+
+      const programs = getStoredProgramRecords();
+      let allCandidates = [];
+
+      selectedSchedulePrograms.forEach(progName => {
+        const pObj = programs.find(p => (p.name || p.program) === progName);
+        if (pObj) {
+          const list = extractProgramCandidates(pObj);
+          list.forEach(c => {
+            if (!allCandidates.includes(c)) allCandidates.push(c);
+          });
+        }
+      });
+
+      if (datalist) {
+        datalist.innerHTML = allCandidates.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+
+      if (allCandidates.length > 0) {
+        candInput.value = allCandidates.join(', ');
+        if (badge) {
+          badge.style.display = 'inline-block';
+          badge.textContent = `${allCandidates.length} Candidate(s) (DB)`;
+        }
+      } else {
+        if (!candInput.value || candInput.value.includes(',')) {
+          candInput.value = '';
+        }
+        if (badge) badge.style.display = 'none';
+      }
+    }
+
+    function renderSelectedProgChips() {
+      const container = document.getElementById('selectedProgChips');
+      if (!container) return;
+      if (selectedSchedulePrograms.length === 0) {
+        container.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-placeholder);">No programs selected</span>';
+        updateScheduleCandidatesFromPrograms();
+        return;
+      }
+
+      container.innerHTML = selectedSchedulePrograms.map(name => `
+        <span class="selected-prog-chip">
+          ${escapeHtml(name)}
+          <span class="selected-prog-chip-remove" onclick="removeSelectedProg('${escapeHtml(name)}')">&times;</span>
+        </span>
+      `).join('');
+      updateScheduleCandidatesFromPrograms();
+    }
+
+    window.removeSelectedProg = function(progName) {
+      selectedSchedulePrograms = selectedSchedulePrograms.filter(n => n !== progName);
+      renderSelectedProgChips();
+      renderScheduleProgramList(document.getElementById('schedProgSearchInput')?.value || '');
+    };
+
+    function renderScheduleProgramList(query = '') {
+      const container = document.getElementById('schedProgramChecklist');
+      if (!container) return;
+      container.innerHTML = '';
+      const filter = (query || '').toLowerCase().trim();
+
+      const programs = getStoredProgramRecords();
+      let matched = programs.filter(p => !filter || p.name.toLowerCase().includes(filter));
+
+      if (matched.length === 0) {
+        container.innerHTML = '<div style="padding: 10px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">No programs found.</div>';
+        return;
+      }
+
+      matched.forEach(p => {
+        const isChecked = selectedSchedulePrograms.includes(p.name);
+        const item = document.createElement('label');
+        item.className = `program-checkbox-item ${isChecked ? 'checked' : ''}`;
+        item.innerHTML = `
+          <input type="checkbox" value="${escapeHtml(p.name)}" class="sched-prog-check" ${isChecked ? 'checked' : ''} />
+          <span style="font-weight: 600; color: var(--text-main); font-size: 0.86rem;">${escapeHtml(p.name)}</span>
+          <span class="program-cat-badge">${escapeHtml(p.category)}</span>
+        `;
+
+        const cb = item.querySelector('input');
+        cb.addEventListener('change', () => {
+          if (cb.checked) {
+            if (!selectedSchedulePrograms.includes(p.name)) {
+              selectedSchedulePrograms.push(p.name);
+            }
+            item.classList.add('checked');
+          } else {
+            selectedSchedulePrograms = selectedSchedulePrograms.filter(name => name !== p.name);
+            item.classList.remove('checked');
+          }
+          renderSelectedProgChips();
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    const schedProgSearchInput = document.getElementById('schedProgSearchInput');
+    if (schedProgSearchInput) {
+      schedProgSearchInput.addEventListener('input', (e) => {
+        renderScheduleProgramList(e.target.value);
+      });
+    }
+
+    function populateScheduleTimeSetsDropdown() {
+      const select = document.getElementById('schedTimePreset');
+      if (!select) return;
+      const sets = getStoredTimeSets();
+
+      const prevVal = select.value;
+      select.innerHTML = '<option value="" disabled selected>Select from configured time sets</option>';
+
+      sets.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `${s.name} (${s.startTime} - ${s.endTime})`;
+        select.appendChild(opt);
+      });
+
+      if (prevVal) select.value = prevVal;
+    }
+
+    const schedTimePresetSelect = document.getElementById('schedTimePreset');
+    if (schedTimePresetSelect) {
+      schedTimePresetSelect.addEventListener('change', (e) => {
+        const selectedId = e.target.value;
+        const sets = getStoredTimeSets();
+        const found = sets.find(s => s.id === selectedId);
+        const preview = document.getElementById('schedTimeSetPreview');
+        if (found && preview) {
+          document.getElementById('schedPreviewName').textContent = found.name;
+          document.getElementById('schedPreviewRange').textContent = `${found.startTime} - ${found.endTime}`;
+          preview.style.display = 'flex';
+        }
+      });
+    }
+
+    function renderScheduleTable() {
+      const tbody = document.getElementById('scheduleTableBody');
+      const badge = document.getElementById('scheduleCountBadge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (badge) badge.textContent = `${coordinatorSchedule.length} Scheduled`;
+
+      if (coordinatorSchedule.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 25px;">No program slots scheduled yet.</td></tr>`;
+        return;
+      }
+
+      coordinatorSchedule.forEach((slot, idx) => {
+        const tr = document.createElement('tr');
+        const progs = Array.isArray(slot.programs) 
+          ? slot.programs 
+          : (slot.program ? slot.program.split(',').map(s => s.trim()) : []);
+
+        const programPills = progs.map(p => `<span class="program-chip-tag">${escapeHtml(p)}</span>`).join('');
+        const timeSetLabel = slot.timeSetName ? `<div style="font-size: 0.76rem; color: #15803d; font-weight: 700;">${escapeHtml(slot.timeSetName)}</div>` : '';
+
+        // Candidate display: from slot.candidate/slot.candidates or auto-inferred from programs if old data
+        let candDisplay = slot.candidate || slot.candidates || '';
+        if (!candDisplay && progs.length > 0) {
+          const allProgs = getStoredProgramRecords();
+          const foundCands = [];
+          progs.forEach(prName => {
+            const pObj = allProgs.find(p => (p.name || p.program) === prName);
+            if (pObj) {
+              extractProgramCandidates(pObj).forEach(c => {
+                if (!foundCands.includes(c)) foundCands.push(c);
+              });
+            }
+          });
+          if (foundCands.length > 0) candDisplay = foundCands.join(', ');
+        }
+
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main); font-size: 0.88rem;">
+            ${escapeHtml(slot.date || '—')}
+          </td>
+          <td>
+            ${timeSetLabel}
+            <span style="font-weight: 700; color: var(--brand-red); font-family: monospace; font-size: 0.88rem; background: var(--brand-red-soft); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 2px;">
+              ${escapeHtml(slot.startTime)} - ${escapeHtml(slot.endTime)}
+            </span>
+          </td>
+          <td>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 250px;">
+              ${programPills || '—'}
+            </div>
+          </td>
+          <td>
+            <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; max-width: 200px; line-height: 1.35;">
+              ${candDisplay ? escapeHtml(candDisplay) : '<span style="color: var(--text-placeholder);">—</span>'}
+            </div>
+          </td>
+          <td><span class="pill pill-yellow">${escapeHtml(slot.venue || 'Main Stage')}</span></td>
+          <td style="font-weight: 600;">${escapeHtml(slot.coach || '—')}</td>
+          <td style="text-align: right;">
+            <button type="button" class="delete-action-btn" onclick="deleteScheduleSlot('${slot.id}')" title="Delete schedule slot">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.deleteScheduleSlot = function(id) {
+      if (confirm('Are you sure you want to remove this schedule slot?')) {
+        coordinatorSchedule = coordinatorSchedule.filter(s => s.id !== id);
+        saveStoredSchedule(coordinatorSchedule);
+        if (window.SibaqFirebase && window.SibaqFirebase.deleteScheduleFromFirestore) {
+          window.SibaqFirebase.deleteScheduleFromFirestore(id);
+        }
+        renderScheduleTable();
+        showToast('Schedule slot removed.');
+      }
+    };
+
+    document.getElementById('scheduleForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = document.getElementById('schedDate').value;
+      const timeSetSelect = document.getElementById('schedTimePreset');
+      const timeSetId = timeSetSelect.value;
+      const venue = document.getElementById('schedVenue').value.trim() || 'Main Stage';
+      const candidate = document.getElementById('schedCandidate')?.value.trim() || '';
+      const coach = document.getElementById('schedCoach').value.trim() || (currentUser || 'Assigned Coordinator');
+
+      if (!date) {
+        alert('Please select an overall date.');
+        return;
+      }
+
+      if (selectedSchedulePrograms.length === 0) {
+        alert('Please select at least one program.');
+        return;
+      }
+
+      if (!timeSetId) {
+        alert('Please pick a Time Set.');
+        return;
+      }
+
+      const sets = getStoredTimeSets();
+      const selectedSet = sets.find(s => s.id === timeSetId);
+
+      const newSlot = {
+        id: 'sched_' + Date.now(),
+        date,
+        timeSetId,
+        timeSetName: selectedSet ? selectedSet.name : '',
+        startTime: selectedSet ? selectedSet.startTime : '09:00',
+        endTime: selectedSet ? selectedSet.endTime : '12:00',
+        programs: [...selectedSchedulePrograms],
+        candidate,
+        venue,
+        coach,
+        timestamp: new Date().toISOString()
+      };
+
+      coordinatorSchedule.unshift(newSlot);
+      saveStoredSchedule(coordinatorSchedule);
+
+      if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
+        window.SibaqFirebase.syncScheduleToFirestore(newSlot);
+      }
+
+      renderScheduleTable();
+
+      selectedSchedulePrograms = [];
+      renderSelectedProgChips();
+      if (schedProgSearchInput) schedProgSearchInput.value = '';
+      renderScheduleProgramList('');
+      timeSetSelect.selectedIndex = 0;
+      const preview = document.getElementById('schedTimeSetPreview');
+      if (preview) preview.style.display = 'none';
+      document.getElementById('schedVenue').value = '';
+      if (document.getElementById('schedCandidate')) document.getElementById('schedCandidate').value = '';
+      if (document.getElementById('schedCandidateSourceBadge')) document.getElementById('schedCandidateSourceBadge').style.display = 'none';
+      document.getElementById('schedCoach').value = '';
+
+      showToast(`Schedule saved with ${newSlot.programs.length} program(s)!`);
+    });
+
+    // ----------------------------------------------------
+    // Schedule Sub-Tab Switcher
+    // ----------------------------------------------------
+    window.switchScheduleSubTab = function(subTab) {
+      const viewPrograms = document.getElementById('schedViewPrograms');
+      const viewTimeSets = document.getElementById('schedViewTimeSets');
+      const btnPrograms = document.getElementById('btnSubTabPrograms');
+      const btnTimeSets = document.getElementById('btnSubTabTimeSets');
+
+      if (subTab === 'timesets') {
+        if (viewPrograms) viewPrograms.style.display = 'none';
+        if (viewTimeSets) viewTimeSets.style.display = 'grid';
+        if (btnPrograms) btnPrograms.classList.remove('active');
+        if (btnTimeSets) btnTimeSets.classList.add('active');
+        renderTimeSetTable();
+      } else {
+        if (viewPrograms) viewPrograms.style.display = 'grid';
+        if (viewTimeSets) viewTimeSets.style.display = 'none';
+        if (btnPrograms) btnPrograms.classList.add('active');
+        if (btnTimeSets) btnTimeSets.classList.remove('active');
+        populateScheduleTimeSetsDropdown();
+        renderScheduleTable();
+      }
+    };
+
+    function calculateTimeDuration(start, end) {
+      if (!start || !end) return '—';
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      let diffMinutes = (eh * 60 + em) - (sh * 60 + sm);
+      if (diffMinutes < 0) diffMinutes += 24 * 60;
+      const hrs = Math.floor(diffMinutes / 60);
+      const mins = diffMinutes % 60;
+      if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+      if (hrs > 0) return `${hrs} hr${hrs > 1 ? 's' : ''}`;
+      return `${mins} mins`;
+    }
+
+    function renderTimeSetTable() {
+      const tbody = document.getElementById('timeSetTableBody');
+      const badge = document.getElementById('timeSetCountBadge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      const sets = getStoredTimeSets();
+
+      if (badge) badge.textContent = `${sets.length} Sets`;
+
+      if (sets.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">No time sets configured yet. Create one using the form on the left.</td></tr>`;
+        return;
+      }
+
+      sets.forEach((set, idx) => {
+        const tr = document.createElement('tr');
+        const durationText = calculateTimeDuration(set.startTime, set.endTime);
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main); font-size: 0.92rem;">${escapeHtml(set.name)}</td>
+          <td style="font-family: monospace; font-weight: 700; color: #15803d; background: #f0fdf4; border-radius: 6px; padding: 4px 8px;">${escapeHtml(set.startTime)}</td>
+          <td style="font-family: monospace; font-weight: 700; color: #b91c1c; background: #fef2f2; border-radius: 6px; padding: 4px 8px;">${escapeHtml(set.endTime)}</td>
+          <td><span class="pill pill-yellow" style="font-weight: 700;">${durationText}</span></td>
+          <td style="font-size: 0.84rem; color: var(--text-muted); max-width: 220px;">${escapeHtml(set.remarks || '—')}</td>
+          <td style="text-align: right;">
+            <button type="button" class="delete-action-btn" onclick="deleteTimeSetItem('${set.id}')" title="Delete time set">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.deleteTimeSetItem = function(id) {
+      const sets = getStoredTimeSets();
+      const target = sets.find(t => String(t.id) === String(id));
+      const targetName = target ? target.name : 'this time set';
+      if (confirm(`Are you sure you want to delete time set "${targetName}"?`)) {
+        const updated = sets.filter(t => String(t.id) !== String(id));
+        saveStoredTimeSets(updated);
+        if (window.SibaqFirebase && window.SibaqFirebase.deleteTimeSetFromFirestore) {
+          window.SibaqFirebase.deleteTimeSetFromFirestore(id);
+        }
+        renderTimeSetTable();
+        populateScheduleTimeSetsDropdown();
+        showToast(`Removed time set "${targetName}".`);
+      }
+    };
+
+    document.getElementById('timeSetForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('timeSetName').value.trim();
+      const startTime = document.getElementById('timeSetStart').value;
+      const endTime = document.getElementById('timeSetEnd').value;
+      const remarks = document.getElementById('timeSetRemarks').value.trim();
+
+      if (!name || !startTime || !endTime) {
+        alert('Please fill out name, starting time, and ending time.');
+        return;
+      }
+
+      const sets = getStoredTimeSets();
+      const newTimeSet = {
+        id: 'ts_' + Date.now(),
+        name,
+        startTime,
+        endTime,
+        remarks: remarks || '',
+        timestamp: new Date().toISOString()
+      };
+
+      sets.unshift(newTimeSet);
+      saveStoredTimeSets(sets);
+
+      if (window.SibaqFirebase && window.SibaqFirebase.syncTimeSetToFirestore) {
+        window.SibaqFirebase.syncTimeSetToFirestore(newTimeSet);
+      }
+
+      renderTimeSetTable();
+      populateScheduleTimeSetsDropdown();
+      document.getElementById('timeSetForm').reset();
+      showToast(`Time set "${name}" created and saved!`);
+    });
+
+    // Real-time Firestore Listener for Time Sets
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToTimeSets === 'function') {
+      window.SibaqFirebase.listenToTimeSets(firestoreSets => {
+        if (Array.isArray(firestoreSets) && firestoreSets.length > 0) {
+          saveStoredTimeSets(firestoreSets);
+          renderTimeSetTable();
+          populateScheduleTimeSetsDropdown();
+        }
+      });
+    }
+
+    // Real-time Firestore Listener for Schedules
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToSchedules === 'function') {
+      window.SibaqFirebase.listenToSchedules(firestoreSchedules => {
+        if (Array.isArray(firestoreSchedules) && firestoreSchedules.length > 0) {
+          localStorage.setItem(SCHED_STORAGE_KEY, JSON.stringify(firestoreSchedules));
+          coordinatorSchedule = firestoreSchedules;
+          renderScheduleTable();
+        }
+      });
+    }
+
+    // Real-time Firestore Listener for Program Records (syncs candidates & coaches directly)
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToProgramRecords === 'function') {
+      window.SibaqFirebase.listenToProgramRecords(records => {
+        if (Array.isArray(records) && records.length > 0) {
+          localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(records));
+          renderStudentAttendanceTable();
+          renderCoachAttendanceTable();
+        }
+      });
+    }
+
+    // Load initial Program Records from Firestore if available
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadProgramRecordsFromFirestore === 'function') {
+      window.SibaqFirebase.loadProgramRecordsFromFirestore().then(remoteRecords => {
+        if (Array.isArray(remoteRecords) && remoteRecords.length > 0) {
+          localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(remoteRecords));
+          renderStudentAttendanceTable();
+          renderCoachAttendanceTable();
+        }
+      }).catch(() => {});
+    }
+
+    // Real-time Firestore Listener for Student Attendance on load
+    const todayDateStr = new Date().toISOString().split('T')[0];
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
+      window.SibaqFirebase.loadStudentAttendanceFromFirestore(todayDateStr).then(remoteList => {
+        if (Array.isArray(remoteList)) {
+          const map = {};
+          remoteList.forEach(item => {
+            const key = `${item.program}_${item.category}_${item.student}`.toLowerCase();
+            map[key] = item;
+          });
+          saveStoredStudentAttendance(todayDateStr, map);
+          renderStudentAttendanceTable();
+        }
+      }).catch(() => {});
+    }
+
+    // Real-time Firestore Listener for Coach Attendance on load
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
+      window.SibaqFirebase.loadCoachAttendanceFromFirestore(todayDateStr).then(remoteList => {
+        if (Array.isArray(remoteList)) {
+          const map = {};
+          remoteList.forEach(item => {
+            const key = `${item.program}_${item.coach}`.toLowerCase();
+            map[key] = item;
+          });
+          saveStoredCoachAttendance(todayDateStr, map);
+          renderCoachAttendanceTable();
+        }
+      }).catch(() => {});
+    }
+
+    // Live 1-second interval for countdown tickers
+    setInterval(() => {
+      const activeTab = document.querySelector('.tab-page.active-page');
+      if (activeTab && activeTab.id === 'page-tasks') {
+        renderTasksTable();
+      } else if (activeTab && activeTab.id === 'page-punishment') {
+        renderPunishTable();
+      }
+    }, 1000);
+
+    // Mobile drawer toggle handler
+    (function initMobileDrawer() {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('mobile-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openSidebar);
+      if (mobileSidebarClose) mobileSidebarClose.addEventListener('click', closeSidebar);
+      if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          if (window.innerWidth <= 992) {
+            closeSidebar();
+          }
+        });
+      });
+    })();
+
+    // Initial render
+    switchToTab('attendance');
+  </script>
+  <script src="pwa-install.js"></script>
+</body>
+</html>

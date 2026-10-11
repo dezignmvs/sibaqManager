@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Sibaq</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea3a18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* Palette inspired by Sibaq Logo */
+      --brand-red: #ea3a18;
+      --brand-red-hover: #d23111;
+      --brand-yellow: #eeb400;
+      --brand-yellow-hover: #dca500;
+      --brand-yellow-soft: #fef8e7;
+      --brand-red-soft: #fdf1ee;
+
+      --bg-page: #faf8f5;
+      --surface-white: #ffffff;
+      --border-subtle: #eae5de;
+      --border-focus: #ea3a18;
+
+      --text-main: #1f1b18;
+      --text-muted: #79716b;
+      --text-placeholder: #a8a199;
+
+      --danger-bg: #fff1ef;
+      --danger-border: #fecbc2;
+      --danger-text: #c92a08;
+
+      --success-bg: #f3faf2;
+      --success-border: #c9ebc5;
+      --success-text: #2b7824;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* Outer wrapper with clean layout & zero heavy shadows */
+    .login-wrapper {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo-img {
+      width: 72px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    .brand-logo-img:hover {
+      transform: scale(1.03);
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Card styling: Crisp borders, no heavy shadow */
+    .login-card {
+      width: 100%;
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 32px 28px;
+    }
+
+    /* Top colored accent line honoring both logo colors */
+    .card-top-accent {
+      display: flex;
+      height: 4px;
+      width: 100%;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .card-top-accent .stripe-yellow {
+      width: 50%;
+      background: var(--brand-yellow);
+    }
+
+    .card-top-accent .stripe-red {
+      width: 50%;
+      background: var(--brand-red);
+    }
+
+    /* Alerts */
+    .alert-box {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .alert-box.error {
+      display: flex;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: var(--danger-text);
+    }
+
+    .alert-box.success {
+      display: flex;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 7px;
+    }
+
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 46px;
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 0.94rem;
+      font-family: inherit;
+      padding: 0 42px 0 42px;
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .form-control::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    .form-control:focus {
+      border-color: var(--brand-red);
+      background-color: #ffffff;
+    }
+
+    .input-container:focus-within .input-icon {
+      color: var(--brand-red);
+    }
+
+    .toggle-pwd {
+      position: absolute;
+      right: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+    }
+
+    .toggle-pwd:hover {
+      color: var(--text-main);
+    }
+
+    .form-group:last-of-type {
+      margin-bottom: 24px;
+    }
+
+    /* Submit Button using Brand Colors */
+    .btn-submit {
+      width: 100%;
+      height: 48px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-submit:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Simple Footer */
+    .footer-note {
+      margin-top: 22px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Responsive Mobile Adjustments */
+    @media (max-width: 480px) {
+      body {
+        padding: 16px 12px;
+      }
+      .login-card {
+        padding: 24px 18px;
+        border-radius: 14px;
+      }
+      .brand-title {
+        font-size: 1.4rem;
+      }
+      .brand-logo-img {
+        width: 60px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-wrapper">
+    <!-- Header with Brand Logo -->
+    <header class="brand-section">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="brand-logo-img">
+      <h1 class="brand-title">Welcome to Sibaq</h1>
+      <p class="brand-subtitle">Enter your credentials to continue</p>
+      <div style="margin-top: 12px;">
+        <button type="button" class="pwa-trigger-btn pwa-download-btn" title="Download or Install Sibaq App">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download App (.exe / Mobile)
+        </button>
+      </div>
+    </header>
+
+    <!-- Card -->
+    <main class="login-card">
+      <div class="card-top-accent">
+        <div class="stripe-yellow"></div>
+        <div class="stripe-red"></div>
+      </div>
+
+      <!-- Alert Message -->
+      <div id="alertBox" class="alert-box" role="alert">
+        <svg id="alertIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+        <span id="alertMsg"></span>
+      </div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group">
+          <label for="username" class="form-label">Username or Email</label>
+          <div class="input-container">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input type="text" id="username" name="username" class="form-control"
+              placeholder="e.g. admin or name@sibaq.com" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-container">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required />
+            <button type="button" id="togglePasswordBtn" class="toggle-pwd" title="Toggle password view"
+              aria-label="Toggle password view">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit">
+          <span class="btn-label">Sign In</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+      </form>
+    </main>
+
+    <p class="footer-note">© Sibaq. All rights reserved.</p>
+  </div>
+
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const alertBox = document.getElementById('alertBox');
+    const alertMsg = document.getElementById('alertMsg');
+    const alertIcon = document.getElementById('alertIcon');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnLabel = submitBtn.querySelector('.btn-label');
+    const spinner = document.getElementById('spinner');
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+
+    // Default mail accounts seed with explicit roles
+    const defaultAccounts = [
+      { id: '1', name: 'Tariq Mansoor', email: 'tariq@sibaq.com', pwd: 'Sibaq#8391', status: 'active', initials: 'TM', role: 'Chief Coordinator' },
+      { id: '2', name: 'Layla Al-Hassan', email: 'layla@sibaq.com', pwd: 'Sibaq#4028', status: 'active', initials: 'LA', role: 'Category Coordinator' },
+      { id: '3', name: 'Sami Al-Mansoor', email: 'sami@sibaq.com', pwd: 'Sibaq#6192', status: 'invited', initials: 'SA', role: 'Unassigned' }
+    ];
+
+    function getLocalMailAccounts() {
+      try {
+        const stored = localStorage.getItem('sibaq_mail_accounts');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) { }
+      return defaultAccounts;
+    }
+
+    // Toggle password visibility
+    togglePasswordBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+
+      togglePasswordBtn.innerHTML = isPassword
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></line>
+             <line x1="1" y1="1" x2="23" y2="23"></line>
+           </svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+             <circle cx="12" cy="12" r="3"></circle>
+           </svg>`;
+    });
+
+    function showAlert(type, text) {
+      alertBox.className = `alert-box ${type}`;
+      alertMsg.textContent = text;
+
+      if (type === 'error') {
+        alertIcon.innerHTML = `<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>`;
+      } else {
+        alertIcon.innerHTML = `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>`;
+      }
+    }
+
+    // Verify credentials against local storage & Firebase Firestore
+    async function verifyCredentials(userInput, password) {
+      const cleanUser = userInput.trim().toLowerCase();
+
+      // 1. Check Master Admin Credentials
+      if (cleanUser === 'admin' && password === '340') {
+        return {
+          name: 'admin',
+          email: 'admin@sibaq.com',
+          role: 'Administrator'
+        };
+      }
+
+      // 2. Check Local Accounts
+      const localAccounts = getLocalMailAccounts();
+      const localMatch = localAccounts.find(acc => {
+        const accEmail = (acc.email || '').toLowerCase();
+        const accPrefix = accEmail.replace('@sibaq.com', '');
+        const accName = (acc.name || '').toLowerCase();
+        const matchesIdentity = (accEmail === cleanUser || accPrefix === cleanUser || accName === cleanUser);
+        const matchesPwd = (acc.pwd === password || acc.password === password);
+        return matchesIdentity && matchesPwd;
+      });
+
+      // Helper to check assigned role from users_access
+      async function determineUserRole(email, defaultRole = 'Member') {
+        const cleanEmail = (email || '').toLowerCase();
+
+        // Check local users_access
+        try {
+          const accessUsers = JSON.parse(localStorage.getItem('sibaq_users_access_list') || '[]');
+          const userAccess = accessUsers.find(u => (u.email || '').toLowerCase() === cleanEmail);
+          if (userAccess) {
+            const items = [...(Array.isArray(userAccess.assignments) ? userAccess.assignments : []), userAccess.role || ''];
+            if (items.some(r => String(r).toLowerCase().includes('chief'))) {
+              return 'Chief Coordinator';
+            }
+            if (items.some(r => String(r).toLowerCase().includes('category coordinator') || String(r).toLowerCase().includes('coordinator'))) {
+              return 'Category Coordinator';
+            }
+            if (items.some(r => String(r).toLowerCase().includes('teacher'))) {
+              return 'Teacher';
+            }
+            if (items.some(r => String(r).toLowerCase().includes('admin'))) {
+              return 'Administrator';
+            }
+          }
+        } catch (e) { }
+
+        // Check Firestore users_access
+        if (window.SibaqFirebase && window.SibaqFirebase.db) {
+          try {
+            const snap = await window.SibaqFirebase.db.collection('users_access').get();
+            let foundRole = null;
+            snap.forEach(doc => {
+              const u = doc.data();
+              if ((u.email || '').toLowerCase() === cleanEmail) {
+                const items = [...(Array.isArray(u.assignments) ? u.assignments : []), u.role || ''];
+                if (items.some(r => String(r).toLowerCase().includes('chief'))) {
+                  foundRole = 'Chief Coordinator';
+                } else if (items.some(r => String(r).toLowerCase().includes('category coordinator') || String(r).toLowerCase().includes('coordinator'))) {
+                  foundRole = 'Category Coordinator';
+                } else if (items.some(r => String(r).toLowerCase().includes('teacher'))) {
+                  foundRole = 'Teacher';
+                } else if (items.some(r => String(r).toLowerCase().includes('admin'))) {
+                  foundRole = 'Administrator';
+                }
+              }
+            });
+            if (foundRole) return foundRole;
+          } catch (e) { }
+        }
+
+        // Check fallback defaultRole
+        const defLower = String(defaultRole).toLowerCase();
+        if (defLower.includes('chief')) return 'Chief Coordinator';
+        if (defLower.includes('category coordinator') || defLower.includes('coordinator')) return 'Category Coordinator';
+        if (defLower.includes('teacher')) return 'Teacher';
+        if (defLower.includes('admin')) return 'Administrator';
+
+        return 'Unassigned';
+      }
+
+      if (localMatch) {
+        const userRole = await determineUserRole(localMatch.email, localMatch.role || 'Member');
+        return {
+          name: localMatch.name || localMatch.email,
+          email: localMatch.email,
+          role: userRole
+        };
+      }
+
+      // 3. Check Firebase Firestore in real-time
+      if (window.SibaqFirebase && window.SibaqFirebase.db) {
+        try {
+          const col = window.SibaqFirebase.db.collection('mail_accounts');
+          const snapshot = await col.get();
+          if (!snapshot.empty) {
+            let firestoreMatch = null;
+            snapshot.forEach(doc => {
+              const acc = doc.data();
+              const accEmail = (acc.email || '').toLowerCase();
+              const accPrefix = accEmail.replace('@sibaq.com', '');
+              const accName = (acc.name || '').toLowerCase();
+              const matchesIdentity = (accEmail === cleanUser || accPrefix === cleanUser || accName === cleanUser);
+              const matchesPwd = (acc.pwd === password || acc.password === password);
+              if (matchesIdentity && matchesPwd) {
+                firestoreMatch = acc;
+              }
+            });
+
+            if (firestoreMatch) {
+              const userRole = await determineUserRole(firestoreMatch.email, firestoreMatch.role || 'Member');
+              return {
+                name: firestoreMatch.name || firestoreMatch.email,
+                email: firestoreMatch.email,
+                role: userRole
+              };
+            }
+          }
+        } catch (err) {
+          console.warn("Firestore auth check warning:", err.message);
+        }
+      }
+
+      return null;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const userInput = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      submitBtn.disabled = true;
+      btnLabel.style.display = 'none';
+      spinner.style.display = 'inline-block';
+
+      try {
+        const authenticatedUser = await verifyCredentials(userInput, password);
+
+        if (authenticatedUser) {
+          showAlert('success', `Credentials verified. Welcome, ${authenticatedUser.name}! Redirecting...`);
+
+          sessionStorage.setItem('isAuthenticated', 'true');
+          sessionStorage.setItem('currentUser', authenticatedUser.name);
+          sessionStorage.setItem('currentUserEmail', authenticatedUser.email || '');
+          sessionStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
+          sessionStorage.setItem('loginTime', new Date().toLocaleTimeString());
+
+          // Route to separated dashboards based on user role
+          const roleLower = (authenticatedUser.role || '').toLowerCase();
+          let targetDashboard = 'nonData.html'; // Default if not promoted
+
+          if (roleLower.includes('category coordinator')) {
+            targetDashboard = 'cateDashboard.html';
+          } else if (roleLower.includes('chief')) {
+            targetDashboard = 'chiefDashboard.html';
+          } else if (roleLower.includes('teacher')) {
+            targetDashboard = 'teahDashboard.html';
+          } else if (roleLower.includes('admin')) {
+            targetDashboard = 'dashboard.html';
+          } else {
+            // Registered account with no promoted role assigned
+            targetDashboard = 'nonData.html';
+          }
+
+          setTimeout(() => {
+            window.location.href = targetDashboard;
+          }, 600);
+        } else {
+          submitBtn.disabled = false;
+          btnLabel.style.display = 'inline-block';
+          spinner.style.display = 'none';
+
+          showAlert('error', 'Invalid email/username or password.');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        btnLabel.style.display = 'inline-block';
+        spinner.style.display = 'none';
+
+        showAlert('error', 'An error occurred during verification. Please try again.');
+      }
+    });
+
+    // Check URL parameters for sign-in required notice
+    const urlParams = new URLSearchParams(window.location.search);
+    const portalParam = urlParams.get('portal');
+    const msgParam = urlParams.get('msg');
+
+    if (portalParam === 'category') {
+      showAlert('error', 'Authentication Required: Please sign in with Category Coordinator credentials.');
+    } else if (portalParam === 'chief') {
+      showAlert('error', 'Authentication Required: Please sign in with Chief Coordinator credentials.');
+    } else if (portalParam === 'teacher') {
+      showAlert('error', 'Authentication Required: Please sign in with Teacher credentials.');
+    } else if (portalParam === 'admin') {
+      showAlert('error', 'Authentication Required: Please sign in with Administrator credentials.');
+    } else if (msgParam === 'signin_required') {
+      showAlert('error', 'Sign in required: Please enter your credentials to continue.');
+    }
+  </script>
+  <script src="pwa-install.js"></script>
+</body>
+
+</html>

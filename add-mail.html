@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Mail Account | Sibaq</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea3a18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-red: #ea3a18;
+      --brand-red-hover: #d23111;
+      --brand-red-soft: #fdf1ee;
+      --brand-red-border: #fecbc2;
+      
+      --brand-yellow: #eeb400;
+      --brand-yellow-hover: #dca500;
+      --brand-yellow-soft: #fef9e8;
+      --brand-yellow-border: #fae69e;
+      
+      --bg-page: #faf8f5;
+      --surface: #ffffff;
+      --border-subtle: #eae5de;
+      
+      --text-main: #1f1b18;
+      --text-muted: #79716b;
+      --text-placeholder: #a8a199;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* Brand Header */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      margin-bottom: 12px;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .brand-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Main Form Card */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-badge svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.2;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .form-group-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .form-group-item label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .form-input {
+      height: 42px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3px rgba(234, 58, 24, 0.12);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    /* Email suffix input group */
+    .email-suffix-group {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      background: #ffffff;
+      overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .email-suffix-group:focus-within {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3px rgba(234, 58, 24, 0.12);
+    }
+
+    .email-prefix-input {
+      flex: 1;
+      height: 42px;
+      border: none;
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+      background: transparent;
+    }
+
+    .email-suffix-badge {
+      background: #f7f4ee;
+      padding: 0 14px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-left: 1px solid var(--border-subtle);
+      user-select: none;
+    }
+
+    .input-action-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .btn-secondary-action {
+      background: var(--brand-yellow-soft);
+      border: 1px solid var(--brand-yellow-border);
+      color: #926600;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary-action:hover {
+      background: #fdf2cc;
+      color: #785200;
+    }
+
+    .btn-secondary-action svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.2;
+    }
+
+    /* Submit Button */
+    .btn-submit-main {
+      width: 100%;
+      height: 44px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .btn-submit-main:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .btn-submit-main:active {
+      transform: scale(0.99);
+    }
+
+    .btn-submit-main svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+    }
+
+    /* Success State View */
+    .success-view {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .success-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #e8f7ee;
+      color: #1f9448;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .success-icon-wrap svg {
+      width: 28px;
+      height: 28px;
+      stroke-width: 2.5;
+    }
+
+    .success-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .success-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .credentials-card {
+      background: #fcfbfa;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      margin-bottom: 22px;
+    }
+
+    .cred-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid #f4f0ea;
+    }
+
+    .cred-row:last-child {
+      border-bottom: none;
+    }
+
+    .cred-label {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .cred-val {
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+
+    .btn-copy-cred {
+      width: 100%;
+      height: 40px;
+      background: var(--brand-yellow);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      transition: background 0.15s;
+    }
+
+    .btn-copy-cred:hover {
+      background: var(--brand-yellow-hover);
+    }
+
+    .btn-another {
+      width: 100%;
+      height: 40px;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-another:hover {
+      background: #f7f4ee;
+    }
+
+    /* Toast */
+    .copy-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f1b18;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+      z-index: 1000;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-note a {
+      color: var(--brand-red);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-wrapper">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="brand-logo-img" />
+      <h1 class="brand-title">Sibaq Mail</h1>
+      <p class="brand-subtitle">Submit your details to register a new account</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <div id="formSection">
+        <div class="card-title-row">
+          <div class="icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <h2 class="card-title">Add Mail Account</h2>
+        </div>
+
+        <form id="publicMailForm" autocomplete="off">
+          <!-- Name Field -->
+          <div class="form-group-item">
+            <label for="inputName">Full Name</label>
+            <input
+              type="text"
+              id="inputName"
+              class="form-input"
+              placeholder="e.g. Zayd Haris"
+              required
+              autofocus
+            />
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group-item">
+            <label for="inputPrefix">Email Address</label>
+            <div class="email-suffix-group" id="inputSuffixGroup">
+              <input
+                type="text"
+                id="inputPrefix"
+                class="email-prefix-input"
+                placeholder="zayd.haris"
+                required
+              />
+              <span class="email-suffix-badge">@sibaq.com</span>
+            </div>
+            <div style="font-size: 0.78rem; margin-top: 5px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Preview: <strong id="previewEmail" style="color: var(--text-main);">@sibaq.com</strong></span>
+              <span id="publicEmailStatusBadge"></span>
+            </div>
+          </div>
+
+          <!-- Password Setting Field -->
+          <div class="form-group-item">
+            <label for="inputPassword">Password Setting</label>
+            <input
+              type="text"
+              id="inputPassword"
+              class="form-input"
+              placeholder="Enter or generate password"
+              required
+            />
+            <div class="input-action-row">
+              <button type="button" class="btn-secondary-action" id="btnGenPassword">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M21 2l-2 2m-6 6l7-7m-7 7l-7 7m7-7l2 2m-2-2l-2-2m-3 7l-4 4m0 0l-2-2m2 2l2 2"></path>
+                </svg>
+                Generate Password
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-submit-main" id="btnSubmit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Submit Mail Account
+          </button>
+        </form>
+      </div>
+
+      <!-- Success State View -->
+      <div id="successSection" class="success-view">
+        <div class="success-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h3 class="success-title">Account Submitted!</h3>
+        <p class="success-desc">Your mail account details have been successfully saved.</p>
+
+        <div class="credentials-card">
+          <div class="cred-row">
+            <span class="cred-label">Name</span>
+            <span class="cred-val" id="resName">-</span>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Mail</span>
+            <span class="cred-val" id="resEmail">-</span>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Password</span>
+            <span class="cred-val" id="resPassword">-</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-copy-cred" id="btnCopyResult">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copy Credentials
+        </button>
+
+        <button type="button" class="btn-another" id="btnSubmitAnother">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Submit Another Account
+        </button>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      Sibaq Management Portal &bull; <a href="dashboard.html">Go to Dashboard</a>
+    </p>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="copy-toast" role="status">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toastText">Credentials copied!</span>
+  </div>
+
+  <!-- Firebase & Cloudinary SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="cloudinary-config.js"></script>
+
+  <script>
+    const formSection = document.getElementById('formSection');
+    const successSection = document.getElementById('successSection');
+    const publicMailForm = document.getElementById('publicMailForm');
+    const inputName = document.getElementById('inputName');
+    const inputPrefix = document.getElementById('inputPrefix');
+    const previewEmail = document.getElementById('previewEmail');
+    const inputPassword = document.getElementById('inputPassword');
+    const btnGenPassword = document.getElementById('btnGenPassword');
+    const resName = document.getElementById('resName');
+    const resEmail = document.getElementById('resEmail');
+    const resPassword = document.getElementById('resPassword');
+    const btnCopyResult = document.getElementById('btnCopyResult');
+    const btnSubmitAnother = document.getElementById('btnSubmitAnother');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+
+    let latestAccount = null;
+
+    function showToast(msg) {
+      if (!toast) return;
+      toastText.textContent = msg;
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2400);
+    }
+
+    function checkPublicEmailAvailability(prefix) {
+      const badge = document.getElementById('publicEmailStatusBadge');
+      const group = document.getElementById('inputSuffixGroup');
+      const btn = document.getElementById('btnSubmit');
+      if (!badge) return true;
+
+      const trimmed = prefix.trim().toLowerCase();
+      if (!trimmed) {
+        badge.innerHTML = '';
+        if (group) group.style.borderColor = '';
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '';
+          btn.style.cursor = '';
+        }
+        return false;
+      }
+
+      const fullEmail = `${trimmed}@sibaq.com`;
+      let accounts = [];
+      try {
+        const stored = localStorage.getItem('sibaq_mail_accounts');
+        if (stored) accounts = JSON.parse(stored);
+      } catch (e) {}
+
+      const isTaken = accounts.some(a => (a.email || '').toLowerCase() === fullEmail);
+
+      if (isTaken) {
+        badge.innerHTML = '<span style="color: #dc2626; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">✕ Already taken</span>';
+        if (group) group.style.borderColor = '#dc2626';
+        if (btn) {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.style.cursor = 'not-allowed';
+        }
+        return false;
+      } else {
+        badge.innerHTML = '<span style="color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">✓ Usable</span>';
+        if (group) group.style.borderColor = '#16a34a';
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '';
+          btn.style.cursor = '';
+        }
+        return true;
+      }
+    }
+
+    inputPrefix.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase().replace(/[^a-z0-9.]/g, '');
+      e.target.value = val;
+      previewEmail.textContent = (val || 'username') + '@sibaq.com';
+      checkPublicEmailAvailability(val);
+    });
+
+    btnGenPassword.addEventListener('click', () => {
+      const num = Math.floor(1000 + Math.random() * 9000);
+      const generated = `Sibaq#${num}`;
+      inputPassword.value = generated;
+      showToast('Generated password: ' + generated);
+    });
+
+    // Handle Form Submit
+    publicMailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = inputName.value.trim();
+      const prefix = inputPrefix.value.trim();
+      const pwd = inputPassword.value.trim();
+
+      if (!name || !prefix || !pwd) {
+        alert('Please fill out all required fields.');
+        return;
+      }
+
+      if (!checkPublicEmailAvailability(prefix)) {
+        alert('Email already taken! Please enter another email.');
+        return;
+      }
+
+      const email = `${prefix}@sibaq.com`;
+      const initials = name
+        .split(' ')
+        .map(w => w[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase() || 'SB';
+
+      // Load existing accounts or seed
+      let accounts = [];
+      try {
+        const stored = localStorage.getItem('sibaq_mail_accounts');
+        if (stored) accounts = JSON.parse(stored);
+      } catch (err) {
+        accounts = [];
+      }
+
+      const newAccount = {
+        id: Date.now().toString(),
+        name,
+        email,
+        pwd,
+        status: 'active',
+        initials,
+        colorBg: '#fdf1ee',
+        colorFg: '#ea3a18',
+        timestamp: new Date().toISOString()
+      };
+
+      accounts.unshift(newAccount);
+      localStorage.setItem('sibaq_mail_accounts', JSON.stringify(accounts));
+      if (window.SibaqFirebase && window.SibaqFirebase.syncMailAccountToFirestore) {
+        window.SibaqFirebase.syncMailAccountToFirestore(newAccount);
+      }
+
+      latestAccount = newAccount;
+
+      // Display Success Section
+      resName.textContent = name;
+      resEmail.textContent = email;
+      resPassword.textContent = pwd;
+
+      formSection.style.display = 'none';
+      successSection.style.display = 'block';
+
+      showToast('Mail account created successfully!');
+    });
+
+    // Copy Results
+    btnCopyResult.addEventListener('click', () => {
+      if (!latestAccount) return;
+      const text = `Name: ${latestAccount.name}\nEmail: ${latestAccount.email}\nPassword: ${latestAccount.pwd}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Credentials copied to clipboard!');
+        }).catch(() => {
+          prompt('Copy credentials:', text);
+        });
+      } else {
+        prompt('Copy credentials:', text);
+      }
+    });
+
+    // Submit Another
+    btnSubmitAnother.addEventListener('click', () => {
+      publicMailForm.reset();
+      previewEmail.textContent = '@sibaq.com';
+      const badge = document.getElementById('publicEmailStatusBadge');
+      const group = document.getElementById('inputSuffixGroup');
+      const btn = document.getElementById('btnSubmit');
+      if (badge) badge.innerHTML = '';
+      if (group) group.style.borderColor = '';
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = '';
+        btn.style.cursor = '';
+      }
+      successSection.style.display = 'none';
+      formSection.style.display = 'block';
+      inputName.focus();
+    });
+  </script>
+  <script src="pwa-install.js"></script>
+</body>
+</html>

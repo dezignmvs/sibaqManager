@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chief Coordinator Monitoring | Sibaq</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea3a18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-red: #ea3a18;
+      --brand-red-hover: #d23111;
+      --brand-red-soft: #fdf1ee;
+      --brand-red-border: #fecbc2;
+      
+      --brand-yellow: #eeb400;
+      --brand-yellow-hover: #dca500;
+      --brand-yellow-soft: #fef9e8;
+      --brand-yellow-border: #fae69e;
+      
+      --bg-page: #f8fafc;
+      --surface: #ffffff;
+      --border-subtle: #e2e8f0;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-placeholder: #94a3b8;
+      
+      --danger: #ef4444;
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      
+      --warning: #f59e0b;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      
+      --success: #10b981;
+      --success-soft: #ecfdf5;
+      --success-border: #a7f3d0;
+      
+      --info: #3b82f6;
+      --info-soft: #eff6ff;
+      --info-border: #bfdbfe;
+      
+      --sidebar-width: 260px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      margin-bottom: 20px;
+    }
+
+    .brand-logo-img {
+      width: 38px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .chief-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fdf1ee;
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-left: 8px;
+      margin-bottom: 20px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      transition: background-color 0.15s, color 0.15s;
+      cursor: pointer;
+    }
+
+    .nav-item.active .nav-link {
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      border-color: var(--brand-red-border);
+    }
+
+    .nav-link:hover:not(.active) {
+      color: var(--text-main);
+      background: #f1f5f9;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    .badge-count {
+      margin-left: auto;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .badge-alert {
+      background: #ef4444;
+      color: #ffffff;
+      animation: pulseAlert 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseAlert {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.65; }
+    }
+
+    /* Sidebar User Profile */
+    .sidebar-user {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .user-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .user-role {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .logout-btn {
+      background: var(--brand-red-soft);
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .logout-btn:hover {
+      background: var(--brand-red);
+      color: #ffffff;
+    }
+
+    /* Main Area */
+    .main-content {
+      flex: 1;
+      padding: 30px 36px;
+      overflow-y: auto;
+    }
+
+    /* Top Live Monitoring Bar */
+    .monitor-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .live-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: livePulse 1.8s infinite;
+    }
+
+    @keyframes livePulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .live-clock {
+      font-family: monospace;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: 10px;
+    }
+
+    /* Metric Tiles Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      border-color: #cbd5e1;
+    }
+
+    .metric-card:active {
+      transform: translateY(-1px);
+    }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .metric-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .metric-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .metric-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .metric-sub {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Alert Banner Container */
+    .broadcast-banner {
+      background: linear-gradient(135deg, #ea3a18, #c92a08);
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 14px rgba(234, 58, 24, 0.2);
+    }
+
+    .broadcast-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .broadcast-tag {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Tab Page Containers */
+    .tab-page {
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .tab-page.active-page {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Panel Card */
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 22px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    /* Filter Pills */
+    .filter-pills-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #f1f5f9;
+      border: 1px solid transparent;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn svg {
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .filter-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    /* Alert Stream Cards */
+    .alert-stream-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .alert-card-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: #ffffff;
+      transition: transform 0.15s ease;
+    }
+
+    .alert-card-item:hover {
+      transform: translateX(4px);
+    }
+
+    .alert-card-item.sev-critical {
+      border-left: 4px solid var(--danger);
+      background: #fffafa;
+    }
+
+    .alert-card-item.sev-warning {
+      border-left: 4px solid var(--warning);
+      background: #fffdf7;
+    }
+
+    .alert-card-item.sev-info {
+      border-left: 4px solid var(--info);
+      background: #f8fbff;
+    }
+
+    .alert-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .alert-content-box {
+      flex: 1;
+    }
+
+    .alert-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .alert-title-text {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+
+    .alert-time {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .alert-desc-text {
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    .alert-action-btn {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .alert-action-btn:hover {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    th {
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: #f8fafc;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .pill-red {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .pill-yellow {
+      background: var(--warning-soft);
+      color: #b45309;
+      border: 1px solid var(--warning-border);
+    }
+
+    .pill-green {
+      background: var(--success-soft);
+      color: #047857;
+      border: 1px solid var(--success-border);
+    }
+
+    .pill-blue {
+      background: var(--info-soft);
+      color: #1d4ed8;
+      border: 1px solid var(--info-border);
+    }
+
+    /* Live Timer Countdown Badge */
+    .live-timer-badge {
+      font-family: monospace;
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Input & Search */
+    .search-input-box {
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+      width: 260px;
+      transition: border-color 0.15s;
+    }
+
+    .search-input-box:focus {
+      border-color: var(--brand-red);
+    }
+
+    .btn-action-primary {
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action-primary:hover {
+      background: var(--brand-red-hover);
+    }
+
+    /* Toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Mobile Drawer & Responsive Styles */
+    .mobile-topbar {
+      display: none;
+    }
+    .mobile-sidebar-close {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .sidebar-backdrop {
+      display: none;
+    }
+
+    @media (max-width: 992px) {
+      body {
+        flex-direction: column;
+      }
+      .mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 990;
+      }
+      .mobile-menu-btn {
+        background: none;
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+      .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mobile-brand-img {
+        width: 28px;
+        height: auto;
+      }
+      .mobile-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+      }
+      .mobile-status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        display: inline-block;
+      }
+
+      .mobile-sidebar-close {
+        display: block;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        box-shadow: none;
+        overflow-y: auto;
+      }
+      .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0,0,0,0.25);
+      }
+      .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      .sidebar-backdrop.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .main-content {
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      .monitor-top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .monitor-top-bar h1 {
+        font-size: 1.25rem !important;
+      }
+      .live-status-pill {
+        font-size: 0.72rem;
+        padding: 4px 10px;
+      }
+      .metric-value {
+        font-size: 1.45rem;
+      }
+      .search-input-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Mobile Sticky Topbar -->
+  <header class="mobile-topbar" id="mobileTopbar">
+    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-brand">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="mobile-brand-img">
+      <span class="mobile-brand-text">Sibaq Chief</span>
+    </div>
+    <div class="mobile-topbar-right">
+      <span class="mobile-status-dot" title="Active"></span>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="brand-logo-img">
+      <span class="brand-title">Sibaq</span>
+      <button type="button" class="mobile-sidebar-close" id="mobileSidebarClose" aria-label="Close Sidebar">✕</button>
+    </div>
+
+    <ul class="nav-list" id="sidebarNav">
+      <li class="nav-item active" data-tab="alerts">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          Alert Center
+          <span class="badge-count badge-alert" id="sidebarAlertBadge">0</span>
+        </a>
+      </li>
+      <li class="nav-item" data-tab="staging">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Staging & Schedule
+        </a>
+      </li>
+      <li class="nav-item" data-tab="coordinators">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Coordinators Log
+        </a>
+      </li>
+      <li class="nav-item" data-tab="data-inspect">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          Data Inspector
+        </a>
+      </li>
+    </ul>
+
+    <!-- Sidebar User Profile -->
+    <div class="sidebar-user">
+      <div class="user-meta">
+        <div class="user-avatar" id="avatarLetter">C</div>
+        <div>
+          <div class="user-name" id="userDisplayName">Chief Coordinator</div>
+          <div class="user-role">Monitoring Authority</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn" title="Sign Out" aria-label="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Live Monitoring Status Bar -->
+    <div class="monitor-top-bar">
+      <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+          <h1 style="font-size: 1.55rem; font-weight: 800; letter-spacing: -0.02em;">Live Operations & Alerts Monitor</h1>
+          <div class="live-status-pill">
+            <span class="live-dot"></span>
+            <span>SYSTEM MONITOR ACTIVE</span>
+          </div>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Real-time observation of categories, schedules, evaluations & incidents</p>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div class="live-clock" id="liveClockDisplay">00:00:00</div>
+        <button type="button" class="pwa-trigger-btn pwa-download-btn" title="Download or Install Sibaq App">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download App
+        </button>
+        <button type="button" class="btn-action-primary" id="btnRefreshMonitor" title="Refresh Live Feeds">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          Sync
+        </button>
+      </div>
+    </div>
+
+    <!-- Executive Metric Tickers -->
+    <section class="metrics-grid">
+      <div class="metric-card" data-target-tab="alerts" style="border-top: 3px solid #ef4444;" title="Click to view Alert Stream">
+        <div class="metric-head">
+          <span class="metric-title">Critical & Alerts</span>
+          <div class="metric-icon" style="background: var(--danger-soft); color: var(--danger);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+        </div>
+        <div class="metric-value" id="metricTotalAlerts" style="color: #ef4444;">0</div>
+        <div class="metric-sub" id="metricAlertsSub" style="color: var(--danger);">Requires attention</div>
+      </div>
+
+      <div class="metric-card" data-target-tab="staging" style="border-top: 3px solid #eeb400;" title="Click to view Staged Program Schedule">
+        <div class="metric-head">
+          <span class="metric-title">Scheduled Programs</span>
+          <div class="metric-icon" style="background: var(--brand-yellow-soft); color: #b45309;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+        </div>
+        <div class="metric-value" id="metricScheduledCount">0</div>
+        <div class="metric-sub" id="metricNextSlot" style="color: var(--text-muted);">0 upcoming slots</div>
+      </div>
+
+      <div class="metric-card" data-target-tab="coordinators" data-target-sub="tasks" style="border-top: 3px solid #3b82f6;" title="Click to view Tasks Live Status">
+        <div class="metric-head">
+          <span class="metric-title">Active Tasks</span>
+          <div class="metric-icon" style="background: var(--info-soft); color: var(--info);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          </div>
+        </div>
+        <div class="metric-value" id="metricActiveTasks">0</div>
+        <div class="metric-sub" id="metricExpiredTasks" style="color: #64748b;">0 Expired / Due</div>
+      </div>
+
+      <div class="metric-card" data-target-tab="coordinators" data-target-sub="evaluations" style="border-top: 3px solid #10b981;" title="Click to view Evaluations & Scores">
+        <div class="metric-head">
+          <span class="metric-title">Evaluations</span>
+          <div class="metric-icon" style="background: var(--success-soft); color: var(--success);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+        </div>
+        <div class="metric-value" id="metricEvaluationsCount">0</div>
+        <div class="metric-sub" id="metricAvgScore" style="color: #10b981;">Avg Score: —</div>
+      </div>
+
+      <div class="metric-card" data-target-tab="coordinators" data-target-sub="punishments" style="border-top: 3px solid #dc2626;" title="Click to view Disciplinary Penalties">
+        <div class="metric-head">
+          <span class="metric-title">Disciplinary Penalties</span>
+          <div class="metric-icon" style="background: #fee2e2; color: #dc2626;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+        </div>
+        <div class="metric-value" id="metricPunishmentsCount">0</div>
+        <div class="metric-sub" id="metricActivePenalties" style="color: #dc2626;">0 Serving penalty</div>
+      </div>
+    </section>
+
+    <!-- Operational Notice Banner -->
+    <div class="broadcast-banner" id="broadcastBanner" style="display: none;">
+      <div class="broadcast-content">
+        <span class="broadcast-tag">Announcement</span>
+        <span id="broadcastBannerText" style="font-weight: 600; font-size: 0.92rem;">All stage coordinators report to Main Track for briefing.</span>
+      </div>
+      <button type="button" onclick="document.getElementById('broadcastBanner').style.display = 'none'" style="background: transparent; border: none; color: #ffffff; cursor: pointer; font-size: 1.1rem; line-height: 1;">&times;</button>
+    </div>
+
+    <!-- ==================== TAB 1: LIVE ALERT CENTER ==================== -->
+    <div class="tab-page active-page" id="page-alerts">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+              <span>Real-Time Incident & Alert Stream</span>
+              <span class="pill pill-red" id="alertsPillTotal">0 Total</span>
+            </h3>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 2px;">
+              Automated notifications regarding task expirations, attendance discrepancies, penalties, and schedule alerts
+            </p>
+          </div>
+
+          <!-- Alert Filtering Options -->
+          <div class="filter-pills-bar">
+            <button class="filter-btn active" data-alert-filter="all">All Alerts</button>
+            <button class="filter-btn" data-alert-filter="critical">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ef4444" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              Critical (<span id="countCrit">0</span>)
+            </button>
+            <button class="filter-btn" data-alert-filter="warning">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#f59e0b" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              Warning (<span id="countWarn">0</span>)
+            </button>
+            <button class="filter-btn" data-alert-filter="discipline">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ea3a18" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path><path d="M16 16l4 4"></path></svg>
+              Discipline (<span id="countDisc">0</span>)
+            </button>
+            <button class="filter-btn" data-alert-filter="schedule">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              Schedule (<span id="countSched">0</span>)
+            </button>
+          </div>
+        </div>
+
+        <!-- Alert Feed Container -->
+        <div class="alert-stream-list" id="alertStreamContainer">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: STAGING & SCHEDULE MONITOR ==================== -->
+    <div class="tab-page" id="page-staging">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800;">Program Master Staging & Timeline</h3>
+            <p style="font-size: 0.84rem; color: var(--text-muted);">Live timeline tracking of staged sessions, stages, and program execution</p>
+          </div>
+          <span class="pill pill-green" id="stagingStatusBadge">● On Track</span>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>Scheduled Date</th>
+                <th>Time Window</th>
+                <th>Program(s)</th>
+                <th>Candidate(s)</th>
+                <th>Assigned Venue</th>
+                <th>Stage Lead</th>
+                <th>Monitoring Status</th>
+              </tr>
+            </thead>
+            <tbody id="stagingMonitorTableBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: COORDINATORS ACTIVITY AUDIT ==================== -->
+    <div class="tab-page" id="page-coordinators">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Active Tasks Monitor -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Coordinators Tasks Live Status</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">Watch countdown timers and completion status</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task Title</th>
+                  <th>Assignee</th>
+                  <th>Timer</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="coordTasksAuditBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Disciplinary Actions Monitor -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 800;">Disciplinary Penalty Timers</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">Active candidate suspensions & penalties</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Candidate</th>
+                  <th>Penalty Action</th>
+                  <th>Remaining</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="coordPunishAuditBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Evaluations Stream -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800;">Submitted Evaluations & Scores</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Live scores reported by jury and coordinators</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>Candidate</th>
+                <th>Program</th>
+                <th>Score</th>
+                <th>Proof Sheet</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="coordEvalAuditBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: DATA INSPECTOR ==================== -->
+    <div class="tab-page" id="page-data-inspect">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800;">Program Data & Candidates Inspector</h3>
+            <p style="font-size: 0.84rem; color: var(--text-muted);">Read-only inspection and verification of registered entries</p>
+          </div>
+          <input type="text" id="inspectorSearchInput" class="search-input-box" placeholder="Search candidate or program..." />
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>Program Name</th>
+                <th>Category</th>
+                <th>Candidates</th>
+                <th>Venue</th>
+                <th>Coach</th>
+              </tr>
+            </thead>
+            <tbody id="dataInspectorTableBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toastMsg" class="toast-msg"></div>
+
+  <!-- Firebase Scripts & Configurations -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    // ----------------------------------------------------
+    // Session Guard
+    // ----------------------------------------------------
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+    const currentUser = sessionStorage.getItem('currentUser');
+    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+
+    // Strict Access: Requires sign-in as Chief Coordinator
+    if (!isAuthenticated || !currentUserRole.includes('chief')) {
+      sessionStorage.clear();
+      window.location.replace('index.html?portal=chief&msg=signin_required');
+    }
+
+    const userDisplayName = document.getElementById('userDisplayName');
+    if (userDisplayName) userDisplayName.textContent = currentUser;
+    const avatarLetter = document.getElementById('avatarLetter');
+    if (avatarLetter) avatarLetter.textContent = currentUser.charAt(0).toUpperCase();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('isAuthenticated');
+      sessionStorage.removeItem('currentUser');
+      sessionStorage.removeItem('loginTime');
+      window.location.href = 'index.html';
+    });
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      const str = now.toLocaleTimeString();
+      document.getElementById('liveClockDisplay').textContent = str;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Toast helper
+    const toastEl = document.getElementById('toastMsg');
+    let toastTimeout = null;
+    function showToast(msg) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 3000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ----------------------------------------------------
+    // Data Sources
+    // ----------------------------------------------------
+    const STORAGE_PROGRAMS = 'sibaq_program_records';
+    const STORAGE_TIMESETS = 'sibaq_timesets';
+    const STORAGE_SCHEDULE = 'sibaq_coordinator_schedule';
+    const STORAGE_TASKS = 'sibaq_coordinator_tasks';
+    const STORAGE_EVAL = 'sibaq_coordinator_evaluations';
+    const STORAGE_PUNISH = 'sibaq_coordinator_punishments';
+    const STORAGE_ABSENCE = 'sibaq_coordinator_absences';
+
+    function getLocalData(key, fallback = []) {
+      try {
+        const d = localStorage.getItem(key);
+        if (d) return JSON.parse(d);
+      } catch (e) {}
+      return fallback;
+    }
+
+    // ----------------------------------------------------
+    // Tab Navigation
+    // ----------------------------------------------------
+    const navItems = document.querySelectorAll('#sidebarNav .nav-item');
+    const tabPages = {
+      alerts: document.getElementById('page-alerts'),
+      staging: document.getElementById('page-staging'),
+      coordinators: document.getElementById('page-coordinators'),
+      'data-inspect': document.getElementById('page-data-inspect')
+    };
+
+    function switchToTab(tabName, subTarget = null) {
+      navItems.forEach(item => {
+        if (item.getAttribute('data-tab') === tabName) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      Object.keys(tabPages).forEach(key => {
+        if (key === tabName && tabPages[key]) {
+          tabPages[key].classList.add('active-page');
+        } else if (tabPages[key]) {
+          tabPages[key].classList.remove('active-page');
+        }
+      });
+
+      // Scroll smoothly to target element if specified
+      if (subTarget) {
+        setTimeout(() => {
+          let targetEl = null;
+          if (subTarget === 'tasks') targetEl = document.getElementById('coordTasksAuditBody')?.closest('.panel-card');
+          else if (subTarget === 'punishments') targetEl = document.getElementById('coordPunishAuditBody')?.closest('.panel-card');
+          else if (subTarget === 'evaluations') targetEl = document.getElementById('coordEvalAuditBody')?.closest('.panel-card');
+
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.style.boxShadow = '0 0 0 3px rgba(234, 58, 24, 0.35)';
+            setTimeout(() => { targetEl.style.boxShadow = ''; }, 1800);
+          }
+        }, 80);
+      }
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const tab = item.getAttribute('data-tab');
+        if (tab) switchToTab(tab);
+      });
+    });
+
+    // Metric Cards Direct Click Navigation:
+    document.querySelectorAll('.metric-card[data-target-tab]').forEach(card => {
+      card.addEventListener('click', () => {
+        const targetTab = card.getAttribute('data-target-tab');
+        const targetSub = card.getAttribute('data-target-sub');
+        if (targetTab) {
+          switchToTab(targetTab, targetSub);
+        }
+      });
+    });
+
+    // ----------------------------------------------------
+    // Alerts System (Dynamic Live Incident Engine)
+    // ----------------------------------------------------
+    let currentAlertFilter = 'all';
+
+    function generateLiveAlerts() {
+      const alerts = [];
+      const now = Date.now();
+
+      // 1. Task Overdue / Expired alerts
+      const tasks = getLocalData(STORAGE_TASKS);
+      tasks.forEach(task => {
+        if (task.status === 'Active') {
+          const remainingMs = (task.startTime + (task.durationMin || 30) * 60 * 1000) - now;
+          if (remainingMs <= 0) {
+            alerts.push({
+              id: 'alt_task_' + task.id,
+              type: 'critical',
+              category: 'Tasks',
+              title: `Task Timer Expired: ${task.title}`,
+              desc: `Assigned to ${task.assignee}. Target time of ${task.durationMin}m has passed without completion mark.`,
+              timeAgo: 'Just now',
+              actionable: true
+            });
+          } else if (remainingMs < 5 * 60 * 1000) {
+            alerts.push({
+              id: 'alt_task_warn_' + task.id,
+              type: 'warning',
+              category: 'Tasks',
+              title: `Task Time Critical: ${task.title}`,
+              desc: `Only ${Math.ceil(remainingMs / 60000)} minutes remaining for assignee ${task.assignee}.`,
+              timeAgo: 'Active',
+              actionable: false
+            });
+          }
+        }
+      });
+
+      // 2. Active Disciplinary Penalties
+      const punishments = getLocalData(STORAGE_PUNISH);
+      punishments.forEach(p => {
+        const remainingMs = (p.startTime + (p.timerMin || 15) * 60 * 1000) - now;
+        if (remainingMs > 0) {
+          const minLeft = Math.ceil(remainingMs / 60000);
+          alerts.push({
+            id: 'alt_pun_' + p.id,
+            type: 'discipline',
+            category: 'Discipline',
+            title: `Active Penalty: ${p.person}`,
+            desc: `Serving: "${p.action}". Reason: ${p.reason}. ${minLeft} minutes remaining on stand-down.`,
+            timeAgo: 'In progress',
+            actionable: true
+          });
+        }
+      });
+
+      // 3. Unexcused Absences
+      const absences = getLocalData(STORAGE_ABSENCE);
+      absences.forEach(a => {
+        if (a.type === 'Unexcused') {
+          alerts.push({
+            id: 'alt_abs_' + a.id,
+            type: 'critical',
+            category: 'Attendance',
+            title: `Unexcused Absence Logged: ${a.name}`,
+            desc: `Date: ${a.date}. Remarks: "${a.remarks || 'No documentation'}"`,
+            timeAgo: a.date,
+            actionable: true
+          });
+        }
+      });
+
+      // 4. Low Evaluation Score (< 50%)
+      const evals = getLocalData(STORAGE_EVAL);
+      evals.forEach(e => {
+        if (typeof e.score === 'number' && e.score < 50) {
+          alerts.push({
+            id: 'alt_eval_' + e.id,
+            type: 'warning',
+            category: 'Evaluation',
+            title: `Low Evaluation Mark: ${e.candidate} (${e.score}%)`,
+            desc: `Program: ${e.program}. Review evaluation comments: "${e.remarks || 'None'}".`,
+            timeAgo: 'Submitted',
+            actionable: false
+          });
+        }
+      });
+
+      // 5. Schedule Alerts
+      const schedules = getLocalData(STORAGE_SCHEDULE);
+      if (schedules.length === 0) {
+        alerts.push({
+          id: 'alt_sched_empty',
+          type: 'warning',
+          category: 'Schedule',
+          title: 'Schedule Board Unpopulated',
+          desc: 'No program stages have been scheduled yet for upcoming sessions.',
+          timeAgo: 'Active',
+          actionable: false
+        });
+      }
+
+      return alerts;
+    }
+
+    function renderAlertsList() {
+      const container = document.getElementById('alertStreamContainer');
+      if (!container) return;
+      const allAlerts = generateLiveAlerts();
+
+      // Counts
+      const critCount = allAlerts.filter(a => a.type === 'critical').length;
+      const warnCount = allAlerts.filter(a => a.type === 'warning').length;
+      const discCount = allAlerts.filter(a => a.type === 'discipline').length;
+      const schedCount = allAlerts.filter(a => a.category === 'Schedule').length;
+
+      document.getElementById('countCrit').textContent = critCount;
+      document.getElementById('countWarn').textContent = warnCount;
+      document.getElementById('countDisc').textContent = discCount;
+      document.getElementById('countSched').textContent = schedCount;
+      document.getElementById('alertsPillTotal').textContent = `${allAlerts.length} Total`;
+
+      const badge = document.getElementById('sidebarAlertBadge');
+      if (badge) badge.textContent = allAlerts.length;
+
+      const metricTotal = document.getElementById('metricTotalAlerts');
+      if (metricTotal) metricTotal.textContent = critCount + warnCount + discCount;
+
+      let filtered = allAlerts;
+      if (currentAlertFilter === 'critical') filtered = allAlerts.filter(a => a.type === 'critical');
+      else if (currentAlertFilter === 'warning') filtered = allAlerts.filter(a => a.type === 'warning');
+      else if (currentAlertFilter === 'discipline') filtered = allAlerts.filter(a => a.type === 'discipline');
+      else if (currentAlertFilter === 'schedule') filtered = allAlerts.filter(a => a.category === 'Schedule');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 45px 20px; color: var(--text-muted);">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: #ecfdf5; color: #10b981; margin-bottom: 12px;">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div>
+              <strong style="color: var(--text-main); font-size: 1.02rem;">No Active Incidents in this category</strong>
+              <p style="font-size: 0.85rem; margin-top: 5px; color: var(--text-muted);">All programs, tasks, and coordinator activities operating normally.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(alt => {
+        let sevClass = 'sev-info';
+        let iconBg = '#eff6ff';
+        let iconColor = '#3b82f6';
+        let iconSvg = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>';
+
+        if (alt.type === 'critical') {
+          sevClass = 'sev-critical';
+          iconBg = '#fef2f2';
+          iconColor = '#ef4444';
+          iconSvg = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+        } else if (alt.type === 'warning') {
+          sevClass = 'sev-warning';
+          iconBg = '#fffbeb';
+          iconColor = '#f59e0b';
+          iconSvg = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>';
+        } else if (alt.type === 'discipline') {
+          sevClass = 'sev-critical';
+          iconBg = '#fdf1ee';
+          iconColor = '#ea3a18';
+          iconSvg = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>';
+        }
+
+        return `
+          <div class="alert-card-item ${sevClass}">
+            <div class="alert-icon-box" style="background: ${iconBg}; color: ${iconColor};">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${iconSvg}</svg>
+            </div>
+            <div class="alert-content-box">
+              <div class="alert-title-row">
+                <span class="pill ${alt.type === 'critical' ? 'pill-red' : (alt.type === 'warning' ? 'pill-yellow' : 'pill-blue')}">${escapeHtml(alt.category)}</span>
+                <span class="alert-title-text">${escapeHtml(alt.title)}</span>
+                <span class="alert-time">${escapeHtml(alt.timeAgo)}</span>
+              </div>
+              <p class="alert-desc-text">${escapeHtml(alt.desc)}</p>
+            </div>
+            <button type="button" class="alert-action-btn" onclick="acknowledgeAlert('${alt.id}')">
+              Reviewed
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.acknowledgeAlert = function(id) {
+      showToast('Incident acknowledged by Chief Coordinator.');
+    };
+
+    // Filter Buttons Listener
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentAlertFilter = btn.getAttribute('data-alert-filter');
+        renderAlertsList();
+      });
+    });
+
+    // ----------------------------------------------------
+    // Staging Table Monitor
+    // ----------------------------------------------------
+    function renderStagingMonitor() {
+      const tbody = document.getElementById('stagingMonitorTableBody');
+      if (!tbody) return;
+      const schedules = getLocalData(STORAGE_SCHEDULE);
+
+      document.getElementById('metricScheduledCount').textContent = schedules.length;
+      document.getElementById('metricNextSlot').textContent = `${schedules.length} program session(s)`;
+
+      if (schedules.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">No programs currently scheduled on the staging board.</td></tr>`;
+        return;
+      }
+
+      const allPrograms = getLocalData(STORAGE_PROGRAMS);
+
+      tbody.innerHTML = schedules.map((slot, idx) => {
+        const progs = Array.isArray(slot.programs) 
+          ? slot.programs 
+          : (slot.program ? slot.program.split(',').map(s => s.trim()) : []);
+
+        const progTags = progs.map(p => `<span style="background: #f1f5f9; padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 0.76rem; margin-right: 4px;">${escapeHtml(p)}</span>`).join('');
+
+        // Candidate display: stored or inferred
+        let candDisplay = slot.candidate || slot.candidates || '';
+        if (!candDisplay && progs.length > 0) {
+          const foundCands = [];
+          progs.forEach(prName => {
+            const pObj = allPrograms.find(p => (p.name || p.program) === prName);
+            if (pObj) {
+              const students = Array.isArray(pObj.students) ? pObj.students : (pObj.student ? [pObj.student] : (pObj.candidates ? (Array.isArray(pObj.candidates) ? pObj.candidates : [pObj.candidates]) : []));
+              students.forEach(s => {
+                const sName = typeof s === 'string' ? s : (s.name || s.student || '');
+                if (sName && !foundCands.includes(sName)) foundCands.push(sName);
+              });
+            }
+          });
+          if (foundCands.length > 0) candDisplay = foundCands.join(', ');
+        }
+
+        return `
+          <tr>
+            <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+            <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(slot.date || '—')}</td>
+            <td>
+              <span style="font-family: monospace; font-weight: 700; color: var(--brand-red); background: var(--brand-red-soft); padding: 3px 8px; border-radius: 6px;">
+                ${escapeHtml(slot.startTime)} - ${escapeHtml(slot.endTime)}
+              </span>
+            </td>
+            <td><div style="max-width: 250px; display: flex; flex-wrap: wrap; gap: 4px;">${progTags}</div></td>
+            <td>
+              <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; max-width: 200px; line-height: 1.35;">
+                ${candDisplay ? escapeHtml(candDisplay) : '<span style="color: var(--text-placeholder);">—</span>'}
+              </div>
+            </td>
+            <td><span class="pill pill-yellow">${escapeHtml(slot.venue || 'Main Stage')}</span></td>
+            <td style="font-weight: 600;">${escapeHtml(slot.coach || 'Stage Coordinator')}</td>
+            <td><span class="pill pill-green">Active Staged</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ----------------------------------------------------
+    // Coordinators Activity Audit
+    // ----------------------------------------------------
+    function renderCoordinatorsAudit() {
+      const now = Date.now();
+
+      // Tasks
+      const tasks = getLocalData(STORAGE_TASKS);
+      const tasksBody = document.getElementById('coordTasksAuditBody');
+      const activeTasks = tasks.filter(t => t.status === 'Active');
+      const expiredCount = activeTasks.filter(t => (t.startTime + (t.durationMin || 30) * 60 * 1000) <= now).length;
+
+      document.getElementById('metricActiveTasks').textContent = activeTasks.length;
+      document.getElementById('metricExpiredTasks').textContent = `${expiredCount} Overdue / Due`;
+
+      if (tasksBody) {
+        if (tasks.length === 0) {
+          tasksBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No coordinator tasks found.</td></tr>`;
+        } else {
+          tasksBody.innerHTML = tasks.slice(0, 10).map(t => {
+            const remainingMs = Math.max(0, (t.startTime + (t.durationMin || 30) * 60 * 1000) - now);
+            const min = Math.floor(remainingMs / 60000);
+            const sec = Math.floor((remainingMs % 60000) / 1000);
+            const isExpired = remainingMs <= 0 && t.status === 'Active';
+
+            return `
+              <tr>
+                <td style="font-weight: 700;">${escapeHtml(t.title)}</td>
+                <td>${escapeHtml(t.assignee)}</td>
+                <td>
+                  <span class="live-timer-badge" style="font-size: 0.82rem; padding: 2px 8px;">
+                    ${isExpired ? 'Time Up' : `${min}m ${sec}s`}
+                  </span>
+                </td>
+                <td>
+                  <span class="pill ${t.status === 'Completed' ? 'pill-green' : (isExpired ? 'pill-red' : 'pill-yellow')}">
+                    ${t.status === 'Completed' ? 'Completed' : (isExpired ? 'Overdue' : 'Active')}
+                  </span>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      // Punishments
+      const punishments = getLocalData(STORAGE_PUNISH);
+      const punishBody = document.getElementById('coordPunishAuditBody');
+      const activePenalties = punishments.filter(p => (p.startTime + (p.timerMin || 15) * 60 * 1000) > now).length;
+
+      document.getElementById('metricPunishmentsCount').textContent = punishments.length;
+      document.getElementById('metricActivePenalties').textContent = `${activePenalties} currently active`;
+
+      if (punishBody) {
+        if (punishments.length === 0) {
+          punishBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No disciplinary penalties active.</td></tr>`;
+        } else {
+          punishBody.innerHTML = punishments.slice(0, 10).map(p => {
+            const remainingMs = Math.max(0, (p.startTime + (p.timerMin || 15) * 60 * 1000) - now);
+            const min = Math.floor(remainingMs / 60000);
+            const sec = Math.floor((remainingMs % 60000) / 1000);
+            const isExpired = remainingMs <= 0;
+
+            return `
+              <tr>
+                <td style="font-weight: 700;">${escapeHtml(p.person)}</td>
+                <td>${escapeHtml(p.action)}</td>
+                <td>
+                  <span class="live-timer-badge" style="font-size: 0.82rem; padding: 2px 8px;">
+                    ${isExpired ? 'Served' : `${min}m ${sec}s`}
+                  </span>
+                </td>
+                <td><span class="pill ${isExpired ? 'pill-green' : 'pill-red'}">${isExpired ? 'Served' : 'Active'}</span></td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      // Evaluations
+      const evals = getLocalData(STORAGE_EVAL);
+      const evalBody = document.getElementById('coordEvalAuditBody');
+
+      document.getElementById('metricEvaluationsCount').textContent = evals.length;
+      if (evals.length > 0) {
+        const sum = evals.reduce((acc, cur) => acc + (parseInt(cur.score) || 0), 0);
+        const avg = Math.round(sum / evals.length);
+        document.getElementById('metricAvgScore').textContent = `Avg Score: ${avg}%`;
+      }
+
+      if (evalBody) {
+        if (evals.length === 0) {
+          evalBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 25px;">No evaluations submitted yet.</td></tr>`;
+        } else {
+          evalBody.innerHTML = evals.slice(0, 15).map((e, idx) => `
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+              <td style="font-weight: 700;">${escapeHtml(e.candidate)}</td>
+              <td>${escapeHtml(e.program)}</td>
+              <td>
+                <span style="font-weight: 800; font-size: 0.95rem; color: ${e.score >= 80 ? '#10b981' : (e.score >= 50 ? '#f59e0b' : '#ef4444')};">
+                  ${e.score}%
+                </span>
+              </td>
+              <td>
+                ${e.imageUrl ? `<a href="${escapeHtml(e.imageUrl)}" target="_blank" style="font-weight: 700; color: var(--brand-red); font-size: 0.82rem;">View Sheet ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">No file</span>'}
+              </td>
+              <td style="font-size: 0.84rem; color: var(--text-muted);">${escapeHtml(e.remarks || '—')}</td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    // Robust candidate extractor supporting all DB schema variants:
+    function extractCandidatesFromRecord(p) {
+      if (!p) return [];
+      let raw = p.candidates ?? p.candidate ?? p.students ?? p.student ?? p.participants ?? p.participant;
+      if (!raw) {
+        // Fallback: check if candidates were assigned to this program in the schedule or evaluations
+        try {
+          const scheds = getLocalData(STORAGE_SCHEDULE, []);
+          const matchSched = scheds.find(s => {
+            const pList = Array.isArray(s.programs) ? s.programs : (s.program ? s.program.split(',').map(x => x.trim()) : []);
+            return pList.includes(p.name || p.program);
+          });
+          if (matchSched && (matchSched.candidate || matchSched.candidates)) {
+            raw = matchSched.candidate || matchSched.candidates;
+          }
+        } catch (e) {}
+      }
+
+      if (!raw) return [];
+
+      let list = [];
+      if (typeof raw === 'string') {
+        list = raw.split(/[,;\n]/).map(s => s.trim()).filter(Boolean);
+      } else if (Array.isArray(raw)) {
+        list = raw.map(item => {
+          if (typeof item === 'string') return item.trim();
+          if (item && typeof item === 'object') {
+            return (item.name || item.studentName || item.student || item.candidate || item.candidateName || '').trim();
+          }
+          return '';
+        }).filter(Boolean);
+      } else if (typeof raw === 'object') {
+        const val = (raw.name || raw.studentName || raw.student || raw.candidate || '').trim();
+        if (val) list.push(val);
+      }
+
+      return list;
+    }
+
+    // ----------------------------------------------------
+    // Data Inspector (Read-Only)
+    // ----------------------------------------------------
+    function renderDataInspector(filterText = '') {
+      const tbody = document.getElementById('dataInspectorTableBody');
+      if (!tbody) return;
+      let programs = getLocalData(STORAGE_PROGRAMS);
+
+      // If STORAGE_PROGRAMS is empty, fallback to programs found in schedules or defaults
+      if (!Array.isArray(programs) || programs.length === 0) {
+        const scheds = getLocalData(STORAGE_SCHEDULE, []);
+        if (scheds.length > 0) {
+          const map = new Map();
+          scheds.forEach(s => {
+            const pList = Array.isArray(s.programs) ? s.programs : (s.program ? s.program.split(',').map(x => x.trim()) : []);
+            pList.forEach(name => {
+              if (name && !map.has(name)) {
+                map.set(name, {
+                  name: name,
+                  category: s.category || 'General',
+                  candidates: s.candidate || s.candidates || '',
+                  venue: s.venue || 'Main Stage',
+                  coach: s.coach || 'Unassigned'
+                });
+              }
+            });
+          });
+          programs = Array.from(map.values());
+        }
+      }
+
+      const cleanFilter = (filterText || '').toLowerCase().trim();
+
+      const matched = (programs || []).filter(p => {
+        if (!cleanFilter) return true;
+        const nameMatch = (p.name || p.program || '').toLowerCase().includes(cleanFilter);
+        const catMatch = (p.category || '').toLowerCase().includes(cleanFilter);
+        const candList = extractCandidatesFromRecord(p);
+        const candMatch = candList.some(c => c.toLowerCase().includes(cleanFilter));
+        return nameMatch || catMatch || candMatch;
+      });
+
+      if (matched.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No matching program records found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = matched.slice(0, 50).map((p, idx) => {
+        const candList = extractCandidatesFromRecord(p);
+        const candsDisplay = candList.length > 0 
+          ? candList.map(c => `<span style="display: inline-block; background: #f1f5f9; padding: 2px 7px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; margin: 2px 3px 2px 0;">${escapeHtml(c)}</span>`).join('') 
+          : '<span style="color: var(--text-muted); font-size: 0.82rem;">—</span>';
+
+        return `
+          <tr>
+            <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+            <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(p.name || p.program || '—')}</td>
+            <td><span class="pill pill-yellow">${escapeHtml(p.category || 'General')}</span></td>
+            <td style="max-width: 280px; line-height: 1.4;">${candsDisplay}</td>
+            <td><span class="pill pill-blue">${escapeHtml(p.venue || 'Main Stage')}</span></td>
+            <td style="font-weight: 600;">${escapeHtml(p.coach || p.lead || 'Unassigned')}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    const inspectorInput = document.getElementById('inspectorSearchInput');
+    if (inspectorInput) {
+      inspectorInput.addEventListener('input', (e) => {
+        renderDataInspector(e.target.value);
+      });
+    }
+
+    // Sync Button
+    document.getElementById('btnRefreshMonitor')?.addEventListener('click', () => {
+      renderAlertsList();
+      renderStagingMonitor();
+      renderCoordinatorsAudit();
+      renderDataInspector(inspectorInput?.value || '');
+      showToast('Live feeds synchronized!');
+    });
+
+    // Firestore Live Real-time Listeners
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToSchedules === 'function') {
+      window.SibaqFirebase.listenToSchedules(schedules => {
+        if (Array.isArray(schedules) && schedules.length > 0) {
+          localStorage.setItem(STORAGE_SCHEDULE, JSON.stringify(schedules));
+          renderStagingMonitor();
+          renderAlertsList();
+        }
+      });
+    }
+
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToProgramRecords === 'function') {
+      window.SibaqFirebase.listenToProgramRecords(progs => {
+        if (Array.isArray(progs) && progs.length > 0) {
+          localStorage.setItem(STORAGE_PROGRAMS, JSON.stringify(progs));
+          renderDataInspector(inspectorInput?.value || '');
+        }
+      });
+    }
+
+    // Initial fetch from Firestore if local data empty
+    if (window.SibaqFirebase) {
+      if (typeof window.SibaqFirebase.loadProgramRecordsFromFirestore === 'function') {
+        window.SibaqFirebase.loadProgramRecordsFromFirestore().then(progs => {
+          if (Array.isArray(progs) && progs.length > 0) {
+            localStorage.setItem(STORAGE_PROGRAMS, JSON.stringify(progs));
+            renderDataInspector(inspectorInput?.value || '');
+          }
+        }).catch(() => {});
+      }
+      if (typeof window.SibaqFirebase.loadSchedulesFromFirestore === 'function') {
+        window.SibaqFirebase.loadSchedulesFromFirestore().then(scheds => {
+          if (Array.isArray(scheds) && scheds.length > 0) {
+            localStorage.setItem(STORAGE_SCHEDULE, JSON.stringify(scheds));
+            renderStagingMonitor();
+            renderAlertsList();
+            renderDataInspector(inspectorInput?.value || '');
+          }
+        }).catch(() => {});
+      }
+    }
+
+    // Mobile drawer toggle handler
+    (function initMobileDrawer() {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('mobile-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openSidebar);
+      if (mobileSidebarClose) mobileSidebarClose.addEventListener('click', closeSidebar);
+      if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          if (window.innerWidth <= 992) {
+            closeSidebar();
+          }
+        });
+      });
+    })();
+
+    // Initial render
+    renderAlertsList();
+    renderStagingMonitor();
+    renderCoordinatorsAudit();
+    renderDataInspector('');
+  </script>
+  <script src="pwa-install.js"></script>
+</body>
+</html>

@@ -1,0 +1,4919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Sibaq</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea3a18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Sibaq Brand Color Palette */
+      --brand-red: #ea3a18;
+      --brand-red-hover: #d23111;
+      --brand-red-soft: #fdf1ee;
+      --brand-red-border: #fecbc2;
+      
+      --brand-yellow: #eeb400;
+      --brand-yellow-hover: #dca500;
+      --brand-yellow-soft: #fef9e8;
+      --brand-yellow-border: #fae69e;
+      
+      --bg-page: #faf8f5;
+      --surface: #ffffff;
+      --border-subtle: #eae5de;
+      
+      --text-main: #1f1b18;
+      --text-muted: #79716b;
+      --text-placeholder: #a8a199;
+      
+      --sidebar-width: 250px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      margin-bottom: 32px;
+    }
+
+    .brand-logo-img {
+      width: 38px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 1.28rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .nav-item.active .nav-link {
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      border-color: var(--brand-red-border);
+    }
+
+    .nav-link:hover:not(.active) {
+      color: var(--text-main);
+      background: #f5f2ed;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    /* Submenu styling */
+    .has-submenu {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-chevron {
+      margin-left: auto;
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5;
+      transition: transform 0.2s ease;
+    }
+
+    .has-submenu.open .nav-chevron {
+      transform: rotate(90deg);
+    }
+
+    .submenu {
+      list-style: none;
+      padding-left: 20px;
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .submenu-item .submenu-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .submenu-item.active .submenu-link {
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      border-color: var(--brand-red-border);
+    }
+
+    .submenu-item .submenu-link:hover:not(.active) {
+      color: var(--text-main);
+      background: #f5f2ed;
+    }
+
+    .submenu-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    /* Sidebar User Profile */
+    .sidebar-user {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--brand-yellow);
+      color: #ffffff;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .user-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .logout-btn {
+      background: var(--brand-red-soft);
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .logout-btn:hover {
+      background: var(--brand-red);
+      color: #ffffff;
+    }
+
+    /* Main Area */
+    .main-content {
+      flex: 1;
+      padding: 32px 40px;
+      overflow-y: auto;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .page-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .session-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--brand-yellow-soft);
+      border: 1px solid var(--brand-yellow-border);
+      color: #7d5900;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .session-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-yellow);
+    }
+
+    /* Tab Page Containers */
+    .tab-page {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-page.active-page {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .stat-card.card-accent-red {
+      border-top: 3px solid var(--brand-red);
+    }
+
+    .stat-card.card-accent-yellow {
+      border-top: 3px solid var(--brand-yellow);
+    }
+
+    .stat-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-red {
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+    }
+
+    .icon-yellow {
+      background: var(--brand-yellow-soft);
+      color: var(--brand-yellow);
+    }
+
+    .stat-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .stat-trend {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brand-red);
+    }
+
+    /* Two Columns Section (Home) */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Clean Flat Table */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    th {
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: #faf8f5;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f4f0eb;
+      vertical-align: middle;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .pill-red {
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+    }
+
+    .pill-yellow {
+      background: var(--brand-yellow-soft);
+      color: #926a00;
+    }
+
+    /* Actions List */
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .action-item {
+      width: 100%;
+      padding: 12px 14px;
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .action-item:hover {
+      background: #ffffff;
+      border-color: var(--brand-red);
+      color: var(--brand-red);
+    }
+
+    .action-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--brand-yellow);
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    .action-item:hover svg {
+      stroke: var(--brand-red);
+    }
+
+    /* ====================================================
+       DATA PAGE LAYOUT: Form on Left, Table on Right
+       ==================================================== */
+    .data-page-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .data-page-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-panel {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      border-top: 3px solid var(--brand-red);
+    }
+
+    .table-panel {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      border-top: 3px solid var(--brand-yellow);
+    }
+
+    .panel-header-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .btn-delete-selected {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: 1px solid var(--brand-red);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(234, 58, 24, 0.25);
+      transition: all 0.15s ease;
+    }
+
+    .btn-delete-selected:hover {
+      background: var(--brand-red-hover);
+      transform: translateY(-1px);
+    }
+
+    .selected-row {
+      background-color: #fdf1ee !important;
+    }
+
+    .form-group-item {
+      margin-bottom: 16px;
+    }
+
+    .form-group-item label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      outline: none;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--brand-red);
+      background: #ffffff;
+    }
+
+    select.form-input {
+      cursor: pointer;
+    }
+
+    .btn-submit-data {
+      width: 100%;
+      height: 46px;
+      margin-top: 8px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-submit-data:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .btn-submit-data svg {
+      width: 18px;
+      height: 18px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #9e9790;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .delete-btn:hover {
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+    }
+
+    /* User Profile Page Tab */
+    .user-profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 32px;
+      max-width: 560px;
+      border-top: 3px solid var(--brand-yellow);
+    }
+
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--brand-yellow), var(--brand-red));
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .profile-info h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .profile-info span {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #f4f0eb;
+      font-size: 0.9rem;
+    }
+
+    .detail-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .detail-val {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* ====================================================
+       USERS / MAIL MANAGEMENT VIEW (MATCHING USER SCREENSHOT)
+       ==================================================== */
+    .users-table-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .users-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .users-title-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .users-icon-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #fdf1ee;
+      color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .users-icon-badge svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .users-title-text {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .users-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-refresh-users {
+      height: 38px;
+      padding: 0 16px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .btn-refresh-users:hover {
+      background: #faf8f5;
+      border-color: #d8d2c8;
+    }
+
+    .btn-refresh-users svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    .btn-copy-header {
+      height: 38px;
+      padding: 0 16px;
+      background: var(--brand-yellow);
+      border: 1px solid #dca500;
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .btn-copy-header:hover {
+      background: var(--brand-yellow-hover);
+    }
+
+    .btn-copy-header svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    .btn-add-user-modal {
+      height: 38px;
+      padding: 0 18px;
+      background: var(--brand-red);
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .btn-add-user-modal:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .btn-add-user-modal svg {
+      width: 17px;
+      height: 17px;
+      stroke-width: 2.2;
+    }
+
+    /* Toolbar: Tool icons (Search only) */
+    .users-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .tool-icons-list {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-btn-icon {
+      width: 36px;
+      height: 36px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tool-btn-icon:hover {
+      color: var(--brand-red);
+      border-color: var(--brand-red-border);
+    }
+
+    .tool-btn-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    /* Users Data Table */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .users-table th {
+      padding: 12px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      background: transparent;
+    }
+
+    .users-table td {
+      padding: 16px 14px;
+      border-bottom: 1px solid #f4f0eb;
+      vertical-align: middle;
+    }
+
+    .custom-check {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--brand-red);
+      cursor: pointer;
+    }
+
+    .user-cell-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-initials-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #feebe8;
+      color: var(--brand-red);
+      font-size: 0.84rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .user-name-text {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .user-email-text {
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .assignment-tags-wrap {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .status-badge-active {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: #ecfdf5;
+      border-radius: 20px;
+      color: #16a34a;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .status-dot-active {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+
+    /* Modal styles for Add Mail */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeInOverlay 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeInOverlay {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+      animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUpModal {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f4f0eb;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.15s;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--brand-red);
+    }
+
+    /* Email suffix input group */
+    .email-suffix-group {
+      display: flex;
+      align-items: center;
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      overflow: hidden;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .email-suffix-group:focus-within {
+      border-color: var(--brand-red);
+      background: #ffffff;
+    }
+
+    .email-prefix-input {
+      flex: 1;
+      height: 44px;
+      padding: 0 14px;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .email-suffix-badge {
+      padding: 0 14px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      background: #f4efe6;
+      color: #79716b;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-left: 1px solid var(--border-subtle);
+      user-select: none;
+    }
+
+    .input-action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-secondary-action {
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-secondary-action:hover {
+      background: #ffffff;
+      border-color: var(--brand-red);
+      color: var(--brand-red);
+    }
+
+    .btn-secondary-action svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.2;
+    }
+
+    .modal-footer-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-modal-copy {
+      flex: 1;
+      height: 44px;
+      background: var(--brand-yellow-soft);
+      border: 1px solid var(--brand-yellow-border);
+      border-radius: 9px;
+      color: #7d5900;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-modal-copy:hover {
+      background: #faeec7;
+    }
+
+    .btn-modal-submit {
+      flex: 1.2;
+      height: 44px;
+      background: var(--brand-red);
+      border: none;
+      border-radius: 9px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-modal-submit:hover {
+      background: var(--brand-red-hover);
+    }
+
+    .copy-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1f1b18;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 2000;
+      animation: fadeInToast 0.2s ease;
+    }
+
+    @keyframes fadeInToast {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Row Copy Button */
+    .row-copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .row-copy-btn:hover {
+      background: var(--brand-red-soft);
+      border-color: var(--brand-red-border);
+      color: var(--brand-red);
+    }
+
+    .row-copy-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.2;
+    }
+
+    /* Search Bar in Toolbar */
+    .search-input-wrap {
+      display: none;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0 10px;
+      height: 36px;
+      transition: border-color 0.15s;
+    }
+
+    .search-input-wrap.active {
+      display: flex;
+    }
+
+    .search-input-wrap input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      width: 160px;
+    }
+
+    /* Password View & Edit Cell */
+    .pwd-cell-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #faf8f5;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 4px 10px;
+    }
+
+    .pwd-text-display {
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      min-width: 75px;
+      color: var(--text-main);
+      user-select: all;
+    }
+
+    .icon-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      border-radius: 4px;
+      transition: color 0.15s, background-color 0.15s;
+    }
+
+    .icon-action-btn:hover {
+      color: var(--brand-red);
+      background: rgba(234, 58, 24, 0.08);
+    }
+
+    .icon-action-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 2.2;
+    }
+
+    /* Delete Action Button (Icon Only) */
+    .delete-action-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: #fff1ef;
+      border: 1px solid var(--brand-red-border);
+      border-radius: 8px;
+      color: var(--brand-red);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .delete-action-btn:hover {
+      background: var(--brand-red);
+      border-color: var(--brand-red);
+      color: #ffffff;
+    }
+
+    .delete-action-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 2.2;
+    }
+
+    /* Add User to Subfests Modal Styles */
+    .modal-card-wide {
+      max-width: 620px;
+    }
+
+    .modal-field {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .modal-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .modal-input {
+      display: block;
+      width: 100%;
+      height: 44px;
+      padding: 0 16px;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 10px;
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .modal-input:focus {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3px rgba(234, 58, 24, 0.12);
+    }
+
+    .autocomplete-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #fed7d2;
+      color: var(--brand-red);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.74rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .autocomplete-select-badge {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--brand-red);
+      background: #fdf1ee;
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--brand-red-border);
+    }
+
+    .btn-fest-pill {
+      background: #fecbc2;
+      color: var(--brand-red);
+      border: none;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+
+    .btn-fest-pill:hover {
+      background: #fdb5a8;
+    }
+
+    .fest-search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 0 14px;
+      height: 38px;
+      margin-bottom: 14px;
+      color: var(--text-muted);
+      transition: border-color 0.15s;
+    }
+
+    .fest-search-input-wrap:focus-within {
+      border-color: var(--brand-red);
+    }
+
+    .fest-search-input-wrap input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.86rem;
+      color: var(--text-main);
+      width: 100%;
+    }
+
+    .fest-roles-table-wrap {
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: #ffffff;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .fest-roles-header {
+      display: flex;
+      padding: 10px 16px;
+      background: #faf8f5;
+      border-bottom: 1px solid var(--border-subtle);
+      border-top-left-radius: 9px;
+      border-top-right-radius: 9px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .fest-roles-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f4f0eb;
+    }
+
+    .fest-name-col {
+      flex: 1.2;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .roles-selection-col {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .btn-add-role-dashed {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: #faf8f5;
+      border: 1.5px dashed #d1cbc2;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-add-role-dashed:hover {
+      border-color: var(--brand-red);
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+    }
+
+    .role-popover-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 210px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      padding: 6px;
+      z-index: 1200;
+    }
+
+    .role-popover-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .role-popover-item:hover {
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+    }
+
+    .role-popover-check {
+      width: 14px;
+      font-weight: 800;
+      color: var(--brand-red);
+      opacity: 0;
+    }
+
+    .role-popover-item.selected .role-popover-check {
+      opacity: 1;
+    }
+
+    .selected-roles-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .role-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fdf1ee;
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .role-pill-remove {
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--brand-red);
+    }
+
+    .role-pill-remove:hover {
+      opacity: 0.75;
+    }
+
+    .mail-autocomplete-dropdown {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 1300;
+    }
+
+    .mail-autocomplete-item {
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f8f6f2;
+    }
+
+    .mail-autocomplete-item:hover {
+      background: #fdf1ee;
+      color: var(--brand-red);
+    }
+
+    .btn-cancel-modal {
+      height: 38px;
+      padding: 0 18px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn-cancel-modal:hover {
+      background: #faf8f5;
+      color: var(--text-main);
+    }
+
+    /* Users Page Filter Tabs & Badges (Matching Screenshot) */
+    .user-filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-filter-pill {
+      border: 1px solid var(--border-subtle);
+      background: #ffffff;
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .user-filter-pill:hover {
+      background: #faf8f5;
+      color: var(--text-main);
+    }
+
+    .user-filter-pill.active {
+      background: var(--brand-red);
+      color: #ffffff;
+      border-color: var(--brand-red);
+      box-shadow: 0 2px 6px rgba(234, 58, 24, 0.25);
+    }
+
+    .user-avatar-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #fed7d2;
+      color: var(--brand-red);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.76rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .user-cell-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 0.88rem;
+    }
+
+    .assignment-pill-tag {
+      display: inline-flex;
+      align-items: center;
+      background: #f4f2ee;
+      border: 1px solid #e3ddd5;
+      color: #4a4540;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-right: 5px;
+    }
+
+    .status-badge-active {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #eafaf1;
+      border: 1px solid #b7ebd0;
+      color: #1e8349;
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge-active::before {
+      content: "•";
+      font-size: 1rem;
+      line-height: 0.8;
+      color: #22c55e;
+    }
+
+    /* Bulk Upload & Template Styling */
+    .data-mode-switcher {
+      display: flex;
+      background: #faf8f5;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 18px;
+      gap: 4px;
+    }
+
+    .data-mode-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .data-mode-btn.active {
+      background: #ffffff;
+      color: var(--brand-red);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .btn-download-template {
+      width: 100%;
+      height: 42px;
+      background: var(--brand-yellow-soft);
+      border: 1px solid var(--brand-yellow-border);
+      border-radius: 9px;
+      color: #8f6400;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-download-template:hover {
+      background: #faeec7;
+      border-color: #e5bd3b;
+    }
+
+    .bulk-dropzone {
+      border: 2px dashed #d9d2c7;
+      border-radius: 12px;
+      padding: 24px 16px;
+      text-align: center;
+      background: #faf8f5;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bulk-dropzone:hover, .bulk-dropzone.dragover {
+      border-color: var(--brand-red);
+      background: #fdf1ee;
+    }
+
+    .bulk-dropzone-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-red);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* Live Editable Preview Modal */
+    .preview-modal-card {
+      width: 100%;
+      max-width: 860px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .preview-table-wrap {
+      max-height: 340px;
+      overflow-y: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      margin: 16px 0;
+    }
+
+    .preview-edit-input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .preview-edit-input:hover {
+      background: #fbf9f6;
+      border-color: var(--border-subtle);
+    }
+
+    .preview-edit-input:focus {
+      background: #ffffff;
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 2px rgba(234, 58, 24, 0.1);
+    }
+
+    /* Coordinator Page Layout & Cards */
+    .coord-page-container {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .coord-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .coord-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .coord-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .coord-icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coord-icon-badge svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.2;
+    }
+
+    .coord-timer-display {
+      font-family: monospace;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--brand-red);
+      background: var(--brand-red-soft);
+      padding: 6px 14px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .eval-img-preview {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+    }
+
+    /* Multi-select Program Pill List */
+    .program-multiselect-list {
+      max-height: 160px;
+      overflow-y: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 8px;
+      background: #faf8f5;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .program-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .program-checkbox-item:hover {
+      border-color: var(--brand-red);
+      background: #fdf1ee;
+    }
+
+    .program-checkbox-item input[type="checkbox"] {
+      accent-color: var(--brand-red);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .program-checkbox-item.checked {
+      background: #fdf1ee;
+      border-color: var(--brand-red);
+      font-weight: 700;
+    }
+
+    .program-chip-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: #fef8e7;
+      color: #926600;
+      border: 1px solid #fae69e;
+      margin: 2px 4px 2px 0;
+    }
+
+    /* Selected Program Pills Container */
+    .selected-progs-pill-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      min-height: 34px;
+      padding: 6px 10px;
+      background: #faf8f5;
+      border: 1px dashed var(--border-subtle);
+      border-radius: 9px;
+      align-items: center;
+    }
+
+    .selected-prog-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fdf1ee;
+      border: 1px solid var(--brand-red-border);
+      color: var(--brand-red);
+      padding: 3px 10px;
+      border-radius: 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      animation: fadeInOverlay 0.15s ease;
+    }
+
+    .selected-prog-chip-remove {
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--brand-red);
+      opacity: 0.75;
+      margin-left: 2px;
+    }
+
+    .selected-prog-chip-remove:hover {
+      opacity: 1;
+    }
+
+    .sched-search-input-wrap {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .sched-search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .sched-search-input-wrap input {
+      padding-left: 36px !important;
+      height: 40px !important;
+      font-size: 0.88rem !important;
+    }
+
+    .timeset-preview-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 9px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeInOverlay 0.2s ease;
+    }
+
+    .program-cat-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: #f4efe6;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    /* Mobile Drawer & Responsive Styles */
+    .mobile-topbar {
+      display: none;
+    }
+    .mobile-sidebar-close {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .sidebar-backdrop {
+      display: none;
+    }
+
+    @media (max-width: 992px) {
+      body {
+        flex-direction: column;
+      }
+      .mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 990;
+      }
+      .mobile-menu-btn {
+        background: none;
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+      .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mobile-brand-img {
+        width: 28px;
+        height: auto;
+      }
+      .mobile-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+      }
+      .mobile-status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        display: inline-block;
+      }
+
+      .mobile-sidebar-close {
+        display: block;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        box-shadow: none;
+        overflow-y: auto;
+      }
+      .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0,0,0,0.25);
+      }
+      .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      .sidebar-backdrop.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .main-content {
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+        gap: 12px;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .page-title {
+        font-size: 1.3rem !important;
+      }
+      .modal-card {
+        padding: 16px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Mobile Sticky Topbar -->
+  <header class="mobile-topbar" id="mobileTopbar">
+    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-brand">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="mobile-brand-img">
+      <span class="mobile-brand-text">Sibaq Admin</span>
+    </div>
+    <div class="mobile-topbar-right">
+      <span class="mobile-status-dot" title="Online"></span>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="Sibaq Logo.png" alt="Sibaq Logo" class="brand-logo-img">
+      <span class="brand-title">Sibaq</span>
+      <button type="button" class="mobile-sidebar-close" id="mobileSidebarClose" aria-label="Close Sidebar">✕</button>
+    </div>
+
+    <ul class="nav-list" id="sidebarNav">
+      <!-- Admin / General Tabs -->
+      <li class="nav-item admin-only-tab active" data-tab="home">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Home
+        </a>
+      </li>
+      <li class="nav-item admin-only-tab" data-tab="data">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          Data
+        </a>
+      </li>
+      <li class="nav-item has-submenu open admin-only-tab" data-tab="user">
+        <a class="nav-link" id="userMenuHeader">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          User
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+        <ul class="submenu">
+          <li class="submenu-item" data-tab="mail">
+            <a class="submenu-link">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              Mail
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Dedicated Portal Links for Administrators -->
+      <li style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-subtle);">
+        <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 10px;">Sub-Portals</span>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="cateDashboard.html" title="Open Category Coordinator Dashboard">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+          Category Portal ↗
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="chiefDashboard.html" title="Open Chief Coordinator Monitoring">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Chief Monitor ↗
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-user">
+      <div class="user-meta">
+        <div class="user-avatar" id="avatarLetter">A</div>
+        <div>
+          <div class="user-name" id="userDisplayName">admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn" title="Sign Out" aria-label="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="top-bar">
+      <div>
+        <h2 class="page-title" id="pageTitleText">Management Dashboard</h2>
+        <p class="page-desc" id="pageDescText">Signed in as <strong id="greetingUsername">admin</strong></p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="pwa-trigger-btn pwa-download-btn" title="Download or Install Sibaq App">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download App
+        </button>
+        <button id="roleSwitchBtn" style="background: #faf8f5; border: 1.5px solid var(--border-subtle); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span id="roleSwitchBtnText">Switch Role</span>
+        </button>
+        <div class="session-badge">
+          <span class="session-dot"></span>
+          <span>Active Session</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <div class="tab-page active-page" id="page-home">
+      <!-- Stats -->
+      <section class="stats-grid">
+        <div class="stat-card card-accent-red">
+          <div class="stat-head">
+            <span class="stat-label">Total Entries</span>
+            <div class="stat-icon icon-red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="statTotalCount">2,845</div>
+          <div class="stat-trend">+12.4% this month</div>
+        </div>
+
+        <div class="stat-card card-accent-yellow">
+          <div class="stat-head">
+            <span class="stat-label">Active Categories</span>
+            <div class="stat-icon icon-yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+          </div>
+          <div class="stat-value">5</div>
+          <div class="stat-trend" style="color: #926a00;">Bidāya, Ūla, Thāniya, Thānawiyya, Āliya</div>
+        </div>
+
+        <div class="stat-card card-accent-red">
+          <div class="stat-head">
+            <span class="stat-label">Programs Registered</span>
+            <div class="stat-icon icon-red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="statProgramCount">142</div>
+          <div class="stat-trend">100% verified</div>
+        </div>
+
+        <div class="stat-card card-accent-yellow">
+          <div class="stat-head">
+            <span class="stat-label">System Status</span>
+            <div class="stat-icon icon-yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            </div>
+          </div>
+          <div class="stat-value">Online</div>
+          <div class="stat-trend" style="color: #926a00;">All services operational</div>
+        </div>
+      </section>
+
+      <!-- Rows -->
+      <div class="dashboard-layout">
+        <section class="panel">
+          <div class="panel-title">
+            <span>Recent System Activity</span>
+            <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: normal;">Live log</span>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Admin Authentication</td>
+                  <td>System</td>
+                  <td><span class="pill pill-yellow">Success</span></td>
+                  <td id="sessionTimeCell">Just now</td>
+                </tr>
+                <tr>
+                  <td>Sprint 200m Added</td>
+                  <td>Senior</td>
+                  <td><span class="pill pill-red">Finished</span></td>
+                  <td>10m ago</td>
+                </tr>
+                <tr>
+                  <td>Candidate Enrollment</td>
+                  <td>Youth</td>
+                  <td><span class="pill pill-yellow">Confirmed</span></td>
+                  <td>25m ago</td>
+                </tr>
+                <tr>
+                  <td>Results Times Uploaded</td>
+                  <td>Junior</td>
+                  <td><span class="pill pill-red">Verified</span></td>
+                  <td>1h ago</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <span>Quick Actions</span>
+          </div>
+          <div class="action-stack">
+            <button class="action-item" onclick="switchToTab('data')">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add New Program Data
+            </button>
+            <button class="action-item" onclick="alert('Exporting data as CSV...')">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export Records
+            </button>
+            <button class="action-item" onclick="switchToTab('user')">
+              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              Manage Users & Access
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ==================== DATA PAGE (FORM ON LEFT, TABLE ON RIGHT) ==================== -->
+    <div class="tab-page" id="page-data">
+      <div class="data-page-grid">
+        <!-- Left Side: Form -->
+        <section class="form-panel">
+          <div class="panel-header-badge">
+            <h3 style="font-size: 1.15rem; font-weight: 800;">Add Program</h3>
+            <span class="pill pill-red">Data</span>
+          </div>
+
+          <!-- Mode Switcher: Single vs Bulk Upload -->
+          <div class="data-mode-switcher">
+            <button type="button" class="data-mode-btn active" id="btnModeSingle">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              Single Entry
+            </button>
+            <button type="button" class="data-mode-btn" id="btnModeBulk">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+              Bulk Upload (.xlsx)
+            </button>
+          </div>
+
+          <!-- Mode 1: Single Form -->
+          <div id="singleFormWrapper">
+            <form id="programDataForm" autocomplete="off">
+              <div class="form-group-item">
+                <label for="progName">Program Name</label>
+                <input
+                  type="text"
+                  id="progName"
+                  class="form-input"
+                  placeholder="e.g. 100m Sprint"
+                  required
+                />
+              </div>
+
+              <div class="form-group-item">
+                <label for="progCategory">Category</label>
+                <select id="progCategory" class="form-input" required>
+                  <option value="" disabled selected>Select category</option>
+                  <option value="Bidāya">Bidāya</option>
+                  <option value="Ūla">Ūla</option>
+                  <option value="Thāniya">Thāniya</option>
+                  <option value="Thānawiyya">Thānawiyya</option>
+                  <option value="Āliya">Āliya</option>
+                </select>
+              </div>
+
+              <div class="form-group-item">
+                <label for="progCandidates">Candidate/s</label>
+                <input
+                  type="text"
+                  id="progCandidates"
+                  class="form-input"
+                  placeholder="e.g. Ahmed, Zaid, Omar"
+                  required
+                />
+              </div>
+
+              <div class="form-group-item">
+                <label for="progCoach">Coach</label>
+                <input
+                  type="text"
+                  id="progCoach"
+                  class="form-input"
+                  placeholder="e.g. Coach Tariq"
+                  required
+                />
+              </div>
+
+              <button type="submit" class="btn-submit-data">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Submit Program
+              </button>
+            </form>
+          </div>
+
+          <!-- Mode 2: Bulk Upload -->
+          <div id="bulkUploadWrapper" style="display: none;">
+            <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4;">
+              1. Download the official Excel template.<br>
+              2. Fill in your program entries.<br>
+              3. Upload it below to edit live and publish.
+            </p>
+
+            <button type="button" class="btn-download-template" id="btnDownloadTemplate" title="Download Excel template">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download XLSX Template
+            </button>
+
+            <div class="bulk-dropzone" id="bulkDropzone">
+              <div class="bulk-dropzone-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <polyline points="16 13 12 9 8 13"></polyline>
+                  <line x1="12" y1="9" x2="12" y2="17"></line>
+                </svg>
+              </div>
+              <strong style="font-size: 0.88rem; color: var(--text-main);">Click or Drag & Drop .xlsx File</strong>
+              <span style="font-size: 0.76rem; color: var(--text-muted);">Supports .xlsx, .xls, and .csv</span>
+              <input type="file" id="bulkFileInput" accept=".xlsx, .xls, .csv" style="display: none;" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Side: Table -->
+        <section class="table-panel">
+          <div class="panel-header-badge">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800;">Program Records</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
+                Total: <span id="recordCountBadge" style="font-weight: 700; color: var(--brand-red);">3</span> entries
+              </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button type="button" id="btnDeleteSelectedPrograms" class="btn-delete-selected" style="display: none;" title="Delete all selected programs">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete Selected (<span id="selectedProgCount">0</span>)
+              </button>
+              <span class="pill pill-yellow">Live Table</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table id="programTable">
+              <thead>
+                <tr>
+                  <th style="width: 36px; text-align: center;">
+                    <input type="checkbox" id="selectAllPrograms" class="custom-check" title="Select All Programs" />
+                  </th>
+                  <th style="width: 40px;">#</th>
+                  <th>Program Name</th>
+                  <th>Category</th>
+                  <th>Candidate/s</th>
+                  <th>Coach</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="programTableBody">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ==================== USER ACCESS PAGE (MATCHING SCREENSHOT 1) ==================== -->
+    <div class="tab-page" id="page-user">
+      <div class="users-table-card">
+        <!-- Top Header Row -->
+        <div class="users-header-row">
+          <div class="users-title-badge">
+            <div class="users-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h2 class="users-title-text">Users</h2>
+          </div>
+
+          <div class="users-actions-group">
+            <button class="btn-refresh-users" id="btnRefreshAccessUsers" title="Refresh users">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Refresh
+            </button>
+
+            <button class="btn-add-user-modal" id="btnOpenAddAccessModal" title="Add User to Subfests">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+              </svg>
+              Add User
+            </button>
+          </div>
+        </div>
+
+        <!-- Toolbar with Filter Pills & Tool Icons -->
+        <div class="users-toolbar">
+          <div class="user-filter-pills" id="userFilterPills">
+            <button class="user-filter-pill active" data-filter="ALL">ALL</button>
+            <button class="user-filter-pill" data-filter="ACTIVE">ACTIVE</button>
+            <button class="user-filter-pill" data-filter="INVITED">INVITED</button>
+            <button class="user-filter-pill" data-filter="REQUESTS">REQUESTS</button>
+          </div>
+
+          <div class="tool-icons-list" style="margin-left: auto;">
+            <div class="search-input-wrap" id="accessSearchInputWrap">
+              <input type="text" id="accessSearchInput" placeholder="Search user or email..." />
+            </div>
+            <button class="tool-btn-icon" id="toggleAccessSearchBtn" title="Search users">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+            <button class="tool-btn-icon" title="More options">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="19" cy="12" r="1"></circle>
+                <circle cx="5" cy="12" r="1"></circle>
+              </svg>
+            </button>
+            <button class="tool-btn-icon" title="Filter settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+              </svg>
+            </button>
+            <button class="tool-btn-icon" title="Sort order">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="7 15 12 20 17 15"></polyline>
+                <polyline points="7 9 12 4 17 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-responsive">
+          <table class="users-table" id="accessUsersTable">
+            <thead>
+              <tr>
+                <th style="width: 44px;">
+                  <input type="checkbox" class="custom-check" id="selectAllAccessUsers" title="Select all" />
+                </th>
+                <th>USER</th>
+                <th>EMAIL</th>
+                <th>ASSIGNMENTS</th>
+                <th>STATUS</th>
+                <th style="text-align: right; width: 80px;">DELETE</th>
+              </tr>
+            </thead>
+            <tbody id="accessUsersTableBody">
+              <!-- Dynamically rendered rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== USERS / MAIL PAGE (MATCHING USER SCREENSHOT) ==================== -->
+    <div class="tab-page" id="page-mail">
+      <div class="users-table-card">
+        <!-- Top Header Row -->
+        <div class="users-header-row">
+          <div class="users-title-badge">
+            <div class="users-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <h2 class="users-title-text">Mail</h2>
+          </div>
+
+          <div class="users-actions-group">
+            <button class="btn-copy-header" id="btnCopySelectedUsers" title="Copy link to Add Mail form">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy
+            </button>
+
+            <button class="btn-refresh-users" id="btnRefreshUsers" title="Refresh mail records">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Refresh
+            </button>
+
+            <button class="btn-add-user-modal" id="btnAddMailModal" title="Add new mail account">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              Add Mail
+            </button>
+          </div>
+        </div>
+
+        <!-- Toolbar with Search Button -->
+        <div class="users-toolbar">
+          <div class="tool-icons-list" style="margin-left: auto;">
+            <div class="search-input-wrap" id="searchInputWrap">
+              <input type="text" id="userSearchInput" placeholder="Search mail/user..." />
+            </div>
+            <button class="tool-btn-icon" id="toggleSearchBtn" title="Search users">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-responsive">
+          <table class="users-table" id="usersTable">
+            <thead>
+              <tr>
+                <th style="width: 44px;">
+                  <input type="checkbox" class="custom-check" id="selectAllUsers" title="Select all" />
+                </th>
+                <th>Name</th>
+                <th>Mail</th>
+                <th>Password</th>
+                <th style="text-align: right; width: 80px;">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr data-status="active">
+                <td>
+                  <input type="checkbox" class="custom-check user-row-check" />
+                </td>
+                <td>
+                  <div class="user-cell-wrap">
+                    <div class="user-initials-badge">MD</div>
+                    <span class="user-name-text">Mvs Designs</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="user-email-text">dest@sibaq.com</span>
+                </td>
+                <td>
+                  <div class="pwd-cell-wrap">
+                    <span class="pwd-text-display" data-pwd="Sibaq#7421">••••••••</span>
+                    <button type="button" class="icon-action-btn toggle-view-pwd" onclick="togglePasswordVisibility(this)" title="View/Hide password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                    <button type="button" class="icon-action-btn edit-pwd-btn" onclick="editRowPassword(this)" title="Edit password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+                <td style="text-align: right;">
+                  <button class="delete-action-btn" onclick="deleteUserRow(this)" title="Delete user">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr data-status="active">
+                <td>
+                  <input type="checkbox" class="custom-check user-row-check" />
+                </td>
+                <td>
+                  <div class="user-cell-wrap">
+                    <div class="user-initials-badge" style="background: #fef9e8; color: #a17000;">CT</div>
+                    <span class="user-name-text">Coach Tariq</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="user-email-text">tariq@sibaq.com</span>
+                </td>
+                <td>
+                  <div class="pwd-cell-wrap">
+                    <span class="pwd-text-display" data-pwd="Sibaq#8320">••••••••</span>
+                    <button type="button" class="icon-action-btn toggle-view-pwd" onclick="togglePasswordVisibility(this)" title="View/Hide password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                    <button type="button" class="icon-action-btn edit-pwd-btn" onclick="editRowPassword(this)" title="Edit password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+                <td style="text-align: right;">
+                  <button class="delete-action-btn" onclick="deleteUserRow(this)" title="Delete user">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr data-status="invited">
+                <td>
+                  <input type="checkbox" class="custom-check user-row-check" />
+                </td>
+                <td>
+                  <div class="user-cell-wrap">
+                    <div class="user-initials-badge" style="background: #f1f5f9; color: #475569;">SA</div>
+                    <span class="user-name-text">Sami Al-Mansoor</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="user-email-text">sami@sibaq.com</span>
+                </td>
+                <td>
+                  <div class="pwd-cell-wrap">
+                    <span class="pwd-text-display" data-pwd="Sibaq#6192">••••••••</span>
+                    <button type="button" class="icon-action-btn toggle-view-pwd" onclick="togglePasswordVisibility(this)" title="View/Hide password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                    <button type="button" class="icon-action-btn edit-pwd-btn" onclick="editRowPassword(this)" title="Edit password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+                <td style="text-align: right;">
+                  <button class="delete-action-btn" onclick="deleteUserRow(this)" title="Delete user">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ==================== ADD MAIL MODAL ==================== -->
+    <div class="modal-overlay" id="addMailModalOverlay" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand-red)" stroke-width="2.2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            Add Mail Account
+          </h3>
+          <button class="modal-close-btn" id="btnCloseMailModal" aria-label="Close dialog">&times;</button>
+        </div>
+
+        <form id="addMailForm" autocomplete="off">
+          <!-- Name Field -->
+          <div class="form-group-item">
+            <label for="newMailName">Name</label>
+            <input
+              type="text"
+              id="newMailName"
+              class="form-input"
+              placeholder="e.g. Zayd Haris"
+              required
+            />
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group-item">
+            <label for="newMailPrefix">Email Address</label>
+            <div class="email-suffix-group" id="emailSuffixGroup">
+              <input
+                type="text"
+                id="newMailPrefix"
+                class="email-prefix-input"
+                placeholder="zayd.haris"
+                required
+              />
+              <span class="email-suffix-badge">@sibaq.com</span>
+            </div>
+            <div style="font-size: 0.78rem; margin-top: 5px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Preview: <strong id="previewFullEmail" style="color: var(--text-main);">@sibaq.com</strong></span>
+              <span id="emailStatusBadge"></span>
+            </div>
+          </div>
+
+          <!-- Password Setting Field -->
+          <div class="form-group-item">
+            <label for="newMailPassword">Password Setting</label>
+            <div class="input-container">
+              <input
+                type="text"
+                id="newMailPassword"
+                class="form-input"
+                placeholder="Enter or generate password"
+                required
+              />
+            </div>
+            <div class="input-action-row">
+              <button type="button" class="btn-secondary-action" id="btnGeneratePassword">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M21 2l-2 2m-6 6l7-7m-7 7l-7 7m7-7l2 2m-2-2l-2-2m-3 7l-4 4m0 0l-2-2m2 2l2 2"></path>
+                </svg>
+                Generate Password
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px;">
+            <button type="submit" class="btn-modal-submit" id="btnSubmitMailAccount" style="width: 100%;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Add Mail
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== ADD USER TO SUBFESTS MODAL (MATCHING SCREENSHOT 2) ==================== -->
+    <div class="modal-overlay" id="addUserAccessModalOverlay" role="dialog" aria-modal="true" aria-labelledby="accessModalTitle">
+      <div class="modal-card modal-card-wide">
+        <div class="modal-header">
+          <h3 class="modal-title" id="accessModalTitle">Add User to Subfests</h3>
+          <button class="modal-close-btn" id="btnCloseAccessModal" type="button" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form id="addUserAccessForm" autocomplete="off">
+          <!-- Email field with live autocomplete of registered emails -->
+          <div class="modal-field" style="position: relative;">
+            <label class="modal-label" for="accessEmailInput">
+              Email <span style="color: var(--brand-red);">*</span>
+            </label>
+            <input
+              type="text"
+              id="accessEmailInput"
+              class="modal-input"
+              placeholder="name@example.com"
+              required
+              autocomplete="off"
+            />
+            <div class="mail-autocomplete-dropdown" id="accessMailAutocomplete" style="display: none;"></div>
+          </div>
+
+          <!-- + Add Fest Action -->
+          <div style="margin-bottom: 14px;">
+            <button type="button" class="btn-fest-pill" id="btnAddFestBtn">
+              + Add Fest
+            </button>
+          </div>
+
+          <!-- Search fest or role -->
+          <div class="fest-search-input-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="festRoleSearchInput" placeholder="Search fest or role" />
+          </div>
+
+          <!-- Fest & Roles Table -->
+          <div class="fest-roles-table-wrap">
+            <div class="fest-roles-header">
+              <div class="fest-name-col">FEST</div>
+              <div style="flex: 2;">ROLES</div>
+            </div>
+
+            <div class="fest-roles-row">
+              <div class="fest-name-col">Main Event</div>
+              <div class="roles-selection-col" id="mainEventRolesCol">
+                <!-- Selected Role Pills -->
+                <div class="selected-roles-container" id="selectedRolesContainer"></div>
+
+                <!-- + Add role Dashed Button -->
+                <button type="button" class="btn-add-role-dashed" id="btnAddRolePopoverBtn">
+                  + Add role
+                </button>
+
+                <!-- 4 Options Popover (Admin, Chief Coordinator, Category Coordinator, Teacher) -->
+                <div class="role-popover-menu" id="rolePopoverMenu" style="display: none;">
+                  <div class="role-popover-item" data-role="Admin">
+                    <span class="role-popover-check">✓</span>
+                    <span>Admin</span>
+                  </div>
+                  <div class="role-popover-item" data-role="Chief Coordinator">
+                    <span class="role-popover-check">✓</span>
+                    <span>Chief Coordinator</span>
+                  </div>
+                  <div class="role-popover-item" data-role="Category Coordinator">
+                    <span class="role-popover-check">✓</span>
+                    <span>Category Coordinator</span>
+                  </div>
+                  <div class="role-popover-item" data-role="Teacher">
+                    <span class="role-popover-check">✓</span>
+                    <span>Teacher</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer: Cancel and Add Access -->
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 24px;">
+            <button type="button" class="btn-cancel-modal" id="btnCancelAccessModal">Cancel</button>
+            <button type="submit" class="btn-modal-submit" id="btnSubmitAddAccess">Add Access</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== BULK UPLOAD PREVIEW & LIVE EDIT MODAL ==================== -->
+    <div class="modal-overlay" id="bulkPreviewModalOverlay" role="dialog" aria-modal="true" aria-labelledby="bulkPreviewTitle">
+      <div class="modal-card preview-modal-card">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title" id="bulkPreviewTitle" style="display: flex; align-items: center; gap: 8px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand-red)" stroke-width="2.2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <polyline points="16 13 12 9 8 13"></polyline>
+                <line x1="12" y1="9" x2="12" y2="17"></line>
+              </svg>
+              Review & Live Edit Programs
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+              Verify and edit row values live before saving to Firebase Firestore.
+            </p>
+          </div>
+          <button class="modal-close-btn" id="btnCloseBulkPreviewModal" type="button" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+          <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">
+            Detected <span id="previewRowCountBadge" style="color: var(--brand-red);">0</span> programs
+          </span>
+          <button type="button" class="btn-fest-pill" id="btnAddPreviewRowBtn" style="margin: 0; padding: 5px 12px; font-size: 0.8rem;">
+            + Add Row
+          </button>
+        </div>
+
+        <div class="preview-table-wrap">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #faf8f5; border-bottom: 1px solid var(--border-subtle); text-align: left;">
+                <th style="padding: 10px 8px; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); width: 36px; text-align: center;">#</th>
+                <th style="padding: 10px 8px; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); min-width: 180px;">PROGRAM NAME</th>
+                <th style="padding: 10px 8px; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); width: 140px;">CATEGORY</th>
+                <th style="padding: 10px 8px; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); min-width: 180px;">CANDIDATE/S</th>
+                <th style="padding: 10px 8px; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); min-width: 130px;">COACH</th>
+                <th style="padding: 10px 8px; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); width: 44px; text-align: center;">DEL</th>
+              </tr>
+            </thead>
+            <tbody id="bulkPreviewTableBody">
+              <!-- Dynamically rendered editable rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+          <span style="font-size: 0.78rem; color: var(--text-muted);">
+            Tip: You can edit any cell directly. Invalid or empty rows will be ignored.
+          </span>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn-cancel-modal" id="btnCancelBulkPreview">Cancel</button>
+            <button type="button" class="btn-modal-submit" id="btnConfirmBulkUpload" style="padding: 10px 20px; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Upload Programs to Firebase
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast for Copy -->
+    <div id="copyToast" class="copy-toast" role="status">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="toastMsg">Credentials copied to clipboard!</span>
+    </div>
+  </main>
+
+  <!-- Firebase & Cloudinary & SheetJS SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="cloudinary-config.js"></script>
+
+  <script>
+    // ----------------------------------------------------
+    // Session Guard
+    // ----------------------------------------------------
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+    const currentUser = sessionStorage.getItem('currentUser') || 'admin';
+    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const loginTime = sessionStorage.getItem('loginTime');
+
+    // Strict Access Control: Requires sign-in as Administrator
+    if (!isAuthenticated || !currentUserRole.includes('admin')) {
+      sessionStorage.clear();
+      window.location.replace('index.html?portal=admin&msg=signin_required');
+    } else {
+      const greetingUsername = document.getElementById('greetingUsername');
+      if (greetingUsername) greetingUsername.textContent = currentUser;
+
+      const userDisplayName = document.getElementById('userDisplayName');
+      if (userDisplayName) userDisplayName.textContent = currentUser;
+
+      const avatarLetter = document.getElementById('avatarLetter');
+      if (avatarLetter) avatarLetter.textContent = currentUser.charAt(0).toUpperCase();
+
+      const profileLetter = document.getElementById('profileLetter');
+      if (profileLetter) profileLetter.textContent = currentUser.charAt(0).toUpperCase();
+
+      const profileUsername = document.getElementById('profileUsername');
+      if (profileUsername) profileUsername.textContent = currentUser;
+
+      const profileUserVal = document.getElementById('profileUserVal');
+      if (profileUserVal) profileUserVal.textContent = currentUser;
+
+      if (loginTime) {
+        const sessionTimeCell = document.getElementById('sessionTimeCell');
+        if (sessionTimeCell) sessionTimeCell.textContent = loginTime;
+
+        const profileLoginTime = document.getElementById('profileLoginTime');
+        if (profileLoginTime) profileLoginTime.textContent = loginTime;
+      }
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    });
+
+    const userRoleDisplay = document.querySelector('.user-role');
+    if (userRoleDisplay) userRoleDisplay.textContent = 'Administrator';
+
+    // ----------------------------------------------------
+    // Tab Navigation: Home, Data, User, Mail, and Coordinator Modules
+    // ----------------------------------------------------
+    const navItems = document.querySelectorAll('#sidebarNav .nav-item');
+    const submenuItems = document.querySelectorAll('#sidebarNav .submenu-item');
+    const userMenuParent = document.querySelector('.has-submenu[data-tab="user"]');
+    const attendMenuParent = document.querySelector('.has-submenu[data-tab="attendance"]');
+
+    const tabPages = {
+      home: document.getElementById('page-home'),
+      data: document.getElementById('page-data'),
+      user: document.getElementById('page-user'),
+      mail: document.getElementById('page-mail')
+    };
+
+    const pageTitleText = document.getElementById('pageTitleText');
+    const pageDescText = document.getElementById('pageDescText');
+
+    function switchToTab(tabName) {
+      // Clear all active states first
+      navItems.forEach(item => item.classList.remove('active'));
+      submenuItems.forEach(sub => sub.classList.remove('active'));
+
+      if (tabName === 'mail') {
+        if (userMenuParent) userMenuParent.classList.add('active', 'open');
+        const mailSub = document.querySelector('.submenu-item[data-tab="mail"]');
+        if (mailSub) mailSub.classList.add('active');
+        pageTitleText.textContent = 'Mail & Communications';
+        pageDescText.textContent = 'Official messages, notifications, and inquiries';
+      } else {
+        navItems.forEach(item => {
+          if (item.getAttribute('data-tab') === tabName) {
+            item.classList.add('active');
+          }
+        });
+
+        if (tabName === 'home') {
+          pageTitleText.textContent = 'Management Dashboard';
+          pageDescText.innerHTML = `Signed in as <strong id="greetingUsername">${currentUser}</strong>`;
+        } else if (tabName === 'data') {
+          pageTitleText.textContent = 'Program & Candidate Data';
+          pageDescText.textContent = 'Register programs and manage participants';
+        } else if (tabName === 'user') {
+          if (userMenuParent) userMenuParent.classList.add('open');
+          pageTitleText.textContent = 'Users Management';
+          pageDescText.textContent = 'Manage users, assignments, and roles across subfests';
+          if (typeof renderAccessUsersTable === 'function') renderAccessUsersTable();
+        }
+      }
+
+      // Show the selected page view
+      Object.keys(tabPages).forEach(key => {
+        if (key === tabName && tabPages[key]) {
+          tabPages[key].classList.add('active-page');
+        } else if (tabPages[key]) {
+          tabPages[key].classList.remove('active-page');
+        }
+      });
+    }
+
+    // Default tab for Admin
+    switchToTab('home');
+
+    // Attach click listeners to main nav items
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        // If clicking on submenu item, handled by submenu listener
+        if (e.target.closest('.submenu')) return;
+
+        // If clicking specifically on chevron, toggle submenu
+        if (e.target.closest('.nav-chevron') && item.classList.contains('has-submenu')) {
+          e.stopPropagation();
+          item.classList.toggle('open');
+          return;
+        }
+
+        const tab = item.getAttribute('data-tab');
+        if (tab) {
+          switchToTab(tab);
+        }
+      });
+    });
+
+    // Attach click listeners to submenu items (like Mail)
+    submenuItems.forEach(sub => {
+      sub.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tab = sub.getAttribute('data-tab');
+        if (tab) {
+          switchToTab(tab);
+        }
+      });
+    });
+
+    // ----------------------------------------------------
+    // Data Form & Table Management
+    // ----------------------------------------------------
+    // Data Form & Program Records Management (Local + Firebase)
+    // ----------------------------------------------------
+    const PROGRAM_STORAGE_KEY = 'sibaq_program_records';
+    const validProgramCategories = ["Bidāya", "Ūla", "Thāniya", "Thānawiyya", "Āliya"];
+
+    function getStoredProgramRecords() {
+      const data = localStorage.getItem(PROGRAM_STORAGE_KEY);
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      return [
+        { id: 'prog_1', name: '100m Dash Championship', category: 'Ūla', candidates: 'Ali, Ziyad, Bilal', coach: 'Coach Tariq' },
+        { id: 'prog_2', name: 'Relay 4x100m', category: 'Bidāya', candidates: 'Saeed, Rayan, Hamza, Noor', coach: 'Coach Salman' },
+        { id: 'prog_3', name: 'Long Jump Challenge', category: 'Thānawiyya', candidates: 'Faris, Karim', coach: 'Coach Rashid' }
+      ];
+    }
+
+    function saveStoredProgramRecords(list) {
+      localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let programRecords = getStoredProgramRecords();
+
+    const programTableBody = document.getElementById('programTableBody');
+    const recordCountBadge = document.getElementById('recordCountBadge');
+    const programDataForm = document.getElementById('programDataForm');
+
+    let selectedProgramIds = new Set();
+
+    function updateDeleteSelectedButton() {
+      const btn = document.getElementById('btnDeleteSelectedPrograms');
+      const countSpan = document.getElementById('selectedProgCount');
+      const selectAll = document.getElementById('selectAllPrograms');
+      const count = selectedProgramIds.size;
+
+      if (countSpan) countSpan.textContent = count;
+      if (btn) {
+        btn.style.display = count > 0 ? 'inline-flex' : 'none';
+      }
+      if (selectAll) {
+        selectAll.checked = programRecords.length > 0 && programRecords.every(r => selectedProgramIds.has(String(r.id)));
+      }
+    }
+
+    function renderProgramTable() {
+      if (!programTableBody) return;
+      programTableBody.innerHTML = '';
+
+      if (programRecords.length === 0) {
+        programTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+              No records submitted yet. Fill the form on the left or upload an Excel file to add programs.
+            </td>
+          </tr>
+        `;
+        if (recordCountBadge) recordCountBadge.textContent = '0';
+        selectedProgramIds.clear();
+        updateDeleteSelectedButton();
+        return;
+      }
+
+      if (recordCountBadge) recordCountBadge.textContent = programRecords.length;
+
+      programRecords.forEach((item, index) => {
+        const row = document.createElement('tr');
+        const pillClass = index % 2 === 0 ? 'pill-red' : 'pill-yellow';
+        const isChecked = selectedProgramIds.has(String(item.id));
+        if (isChecked) row.classList.add('selected-row');
+
+        row.innerHTML = `
+          <td style="text-align: center;">
+            <input type="checkbox" class="custom-check prog-row-check" data-id="${item.id}" ${isChecked ? 'checked' : ''} />
+          </td>
+          <td style="font-weight: 700; color: var(--text-muted);">${index + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(item.name)}</td>
+          <td><span class="pill ${pillClass}">${escapeHtml(item.category || 'Ūla')}</span></td>
+          <td>${escapeHtml(item.candidates || '—')}</td>
+          <td style="font-weight: 600;">${escapeHtml(item.coach || '—')}</td>
+          <td style="text-align: right;">
+            <button class="delete-btn" onclick="deleteRecord('${item.id}')" title="Remove item" aria-label="Delete record">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+
+        const cb = row.querySelector('.prog-row-check');
+        cb.addEventListener('change', (e) => {
+          const id = String(item.id);
+          if (e.target.checked) {
+            selectedProgramIds.add(id);
+            row.classList.add('selected-row');
+          } else {
+            selectedProgramIds.delete(id);
+            row.classList.remove('selected-row');
+          }
+          updateDeleteSelectedButton();
+        });
+
+        programTableBody.appendChild(row);
+      });
+
+      updateDeleteSelectedButton();
+    }
+
+    // Select All Checkbox Listener
+    const selectAllPrograms = document.getElementById('selectAllPrograms');
+    if (selectAllPrograms) {
+      selectAllPrograms.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          programRecords.forEach(r => selectedProgramIds.add(String(r.id)));
+        } else {
+          selectedProgramIds.clear();
+        }
+        renderProgramTable();
+      });
+    }
+
+    // Delete Selected Programs Button Listener
+    document.getElementById('btnDeleteSelectedPrograms')?.addEventListener('click', () => {
+      const count = selectedProgramIds.size;
+      if (count === 0) return;
+
+      if (confirm(`Are you sure you want to delete ${count} selected program record(s)? This action cannot be undone.`)) {
+        const idsToDelete = Array.from(selectedProgramIds);
+        programRecords = programRecords.filter(r => !selectedProgramIds.has(String(r.id)));
+        saveStoredProgramRecords(programRecords);
+        selectedProgramIds.clear();
+        renderProgramTable();
+
+        if (window.SibaqFirebase && window.SibaqFirebase.deleteProgramRecordFromFirestore) {
+          idsToDelete.forEach(id => {
+            window.SibaqFirebase.deleteProgramRecordFromFirestore(String(id));
+          });
+        }
+
+        showToast(`Successfully deleted ${count} selected program(s).`);
+      }
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    window.deleteRecord = function(id) {
+      const target = programRecords.find(r => String(r.id) === String(id));
+      const progName = target ? target.name : 'this program';
+      if (confirm(`Are you sure you want to delete "${progName}"?`)) {
+        programRecords = programRecords.filter(r => String(r.id) !== String(id));
+        selectedProgramIds.delete(String(id));
+        saveStoredProgramRecords(programRecords);
+        renderProgramTable();
+        if (window.SibaqFirebase && window.SibaqFirebase.deleteProgramRecordFromFirestore) {
+          window.SibaqFirebase.deleteProgramRecordFromFirestore(String(id));
+        }
+        showToast(`Removed "${progName}".`);
+      }
+    };
+
+    // Single Program Form Submission
+    if (programDataForm) {
+      programDataForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('progName').value.trim();
+        const category = document.getElementById('progCategory').value;
+        const candidates = document.getElementById('progCandidates').value.trim();
+        const coach = document.getElementById('progCoach').value.trim();
+
+        if (!name || !category || !candidates || !coach) {
+          alert('Please fill out all fields.');
+          return;
+        }
+
+        const newRecord = {
+          id: 'prog_' + Date.now(),
+          name,
+          category,
+          candidates,
+          coach,
+          timestamp: new Date().toISOString()
+        };
+
+        programRecords.unshift(newRecord);
+        saveStoredProgramRecords(programRecords);
+        renderProgramTable();
+
+        if (window.SibaqFirebase && window.SibaqFirebase.syncProgramRecordToFirestore) {
+          window.SibaqFirebase.syncProgramRecordToFirestore(newRecord);
+        }
+
+        programDataForm.reset();
+        showToast(`Program "${name}" added and synced!`);
+        document.getElementById('progName').focus();
+      });
+    }
+
+    // ----------------------------------------------------
+    // Data Page Mode Switcher: Single vs Bulk Upload
+    // ----------------------------------------------------
+    const btnModeSingle = document.getElementById('btnModeSingle');
+    const btnModeBulk = document.getElementById('btnModeBulk');
+    const singleFormWrapper = document.getElementById('singleFormWrapper');
+    const bulkUploadWrapper = document.getElementById('bulkUploadWrapper');
+
+    if (btnModeSingle && btnModeBulk && singleFormWrapper && bulkUploadWrapper) {
+      btnModeSingle.addEventListener('click', () => {
+        btnModeSingle.classList.add('active');
+        btnModeBulk.classList.remove('active');
+        singleFormWrapper.style.display = 'block';
+        bulkUploadWrapper.style.display = 'none';
+      });
+
+      btnModeBulk.addEventListener('click', () => {
+        btnModeBulk.classList.add('active');
+        btnModeSingle.classList.remove('active');
+        singleFormWrapper.style.display = 'none';
+        bulkUploadWrapper.style.display = 'block';
+      });
+    }
+
+    // ----------------------------------------------------
+    // Bulk Upload: Download Official Excel (.xlsx) Template
+    // ----------------------------------------------------
+    const btnDownloadTemplate = document.getElementById('btnDownloadTemplate');
+    if (btnDownloadTemplate) {
+      btnDownloadTemplate.addEventListener('click', () => {
+        if (typeof XLSX === 'undefined') {
+          alert('Excel generator is initializing. Please try again in a moment.');
+          return;
+        }
+
+        const sampleTemplateData = [
+          {
+            "Program Name": "100m Sprint Championship",
+            "Category": "Ūla",
+            "Candidates": "Ali, Ziyad, Bilal",
+            "Coach": "Coach Tariq"
+          },
+          {
+            "Program Name": "English Elocution",
+            "Category": "Bidāya",
+            "Candidates": "Saeed, Rayan",
+            "Coach": "Coach Salman"
+          },
+          {
+            "Program Name": "Qur'an Recitation",
+            "Category": "Thānawiyya",
+            "Candidates": "Faris, Karim",
+            "Coach": "Coach Rashid"
+          },
+          {
+            "Program Name": "Pencil Drawing",
+            "Category": "Āliya",
+            "Candidates": "Ammar, Hamza",
+            "Coach": "Coach Khalid"
+          }
+        ];
+
+        const worksheet = XLSX.utils.json_to_sheet(sampleTemplateData);
+        worksheet['!cols'] = [
+          { wch: 30 },
+          { wch: 18 },
+          { wch: 32 },
+          { wch: 20 }
+        ];
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Programs");
+        XLSX.writeFile(workbook, "sibaq_programs_template.xlsx");
+        showToast("Downloaded sibaq_programs_template.xlsx! Fill and upload it.");
+      });
+    }
+
+    // ----------------------------------------------------
+    // Bulk Upload: Drag & Drop + File Reading
+    // ----------------------------------------------------
+    const bulkDropzone = document.getElementById('bulkDropzone');
+    const bulkFileInput = document.getElementById('bulkFileInput');
+    let pendingBulkRows = [];
+
+    if (bulkDropzone && bulkFileInput) {
+      bulkDropzone.addEventListener('click', () => bulkFileInput.click());
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        bulkDropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          bulkDropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        bulkDropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          bulkDropzone.classList.remove('dragover');
+        });
+      });
+
+      bulkDropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+          handleBulkExcelFile(files[0]);
+        }
+      });
+
+      bulkFileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+          handleBulkExcelFile(files[0]);
+        }
+      });
+    }
+
+    function handleBulkExcelFile(file) {
+      if (!file) return;
+      if (typeof XLSX === 'undefined') {
+        alert('Excel library (SheetJS) is loading. Please try again.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheetName];
+          const rawRows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+          if (!rawRows || rawRows.length === 0) {
+            alert('The Excel file appears empty. Please check your rows and try again.');
+            return;
+          }
+
+          pendingBulkRows = rawRows.map(row => {
+            let name = '';
+            let category = 'Ūla';
+            let candidates = '';
+            let coach = '';
+
+            for (const [key, val] of Object.entries(row)) {
+              const cleanKey = key.trim().toLowerCase();
+              const cleanVal = String(val).trim();
+              if (cleanKey.includes('name') || cleanKey.includes('program') || cleanKey.includes('event')) {
+                name = cleanVal;
+              } else if (cleanKey.includes('cat')) {
+                const match = validProgramCategories.find(c => c.toLowerCase() === cleanVal.toLowerCase());
+                category = match || cleanVal || 'Ūla';
+              } else if (cleanKey.includes('cand') || cleanKey.includes('student') || cleanKey.includes('participant')) {
+                candidates = cleanVal;
+              } else if (cleanKey.includes('coach') || cleanKey.includes('teacher') || cleanKey.includes('trainer')) {
+                coach = cleanVal;
+              }
+            }
+
+            return {
+              id: 'bulk_' + Math.random().toString(36).substring(2, 9),
+              name: name || '',
+              category: category || 'Ūla',
+              candidates: candidates || '',
+              coach: coach || ''
+            };
+          });
+
+          renderBulkPreviewModal();
+          openBulkPreviewModal();
+        } catch (err) {
+          console.error(err);
+          alert('Could not parse Excel file. Please ensure it is a valid .xlsx or .xls file.');
+        } finally {
+          if (bulkFileInput) bulkFileInput.value = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // ----------------------------------------------------
+    // Bulk Preview Modal Logic & Live Editing
+    // ----------------------------------------------------
+    const bulkPreviewModalOverlay = document.getElementById('bulkPreviewModalOverlay');
+    const bulkPreviewTableBody = document.getElementById('bulkPreviewTableBody');
+    const previewRowCountBadge = document.getElementById('previewRowCountBadge');
+    const btnCloseBulkPreviewModal = document.getElementById('btnCloseBulkPreviewModal');
+    const btnCancelBulkPreview = document.getElementById('btnCancelBulkPreview');
+    const btnAddPreviewRowBtn = document.getElementById('btnAddPreviewRowBtn');
+    const btnConfirmBulkUpload = document.getElementById('btnConfirmBulkUpload');
+
+    function openBulkPreviewModal() {
+      if (bulkPreviewModalOverlay) {
+        bulkPreviewModalOverlay.classList.add('active');
+      }
+    }
+
+    function closeBulkPreviewModal() {
+      if (bulkPreviewModalOverlay) {
+        bulkPreviewModalOverlay.classList.remove('active');
+      }
+    }
+
+    if (btnCloseBulkPreviewModal) btnCloseBulkPreviewModal.addEventListener('click', closeBulkPreviewModal);
+    if (btnCancelBulkPreview) btnCancelBulkPreview.addEventListener('click', closeBulkPreviewModal);
+    if (bulkPreviewModalOverlay) {
+      bulkPreviewModalOverlay.addEventListener('click', (e) => {
+        if (e.target === bulkPreviewModalOverlay) closeBulkPreviewModal();
+      });
+    }
+
+    function renderBulkPreviewModal() {
+      if (!bulkPreviewTableBody) return;
+      bulkPreviewTableBody.innerHTML = '';
+      if (previewRowCountBadge) previewRowCountBadge.textContent = pendingBulkRows.length;
+
+      if (pendingBulkRows.length === 0) {
+        bulkPreviewTableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              No rows in preview. Click "+ Add Row" above to add a program manually.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      pendingBulkRows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--border-subtle)';
+        tr.dataset.id = row.id;
+
+        const categoryOptions = validProgramCategories.map(cat => 
+          `<option value="${escapeHtml(cat)}" ${row.category === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`
+        ).join('');
+
+        tr.innerHTML = `
+          <td style="padding: 6px 8px; font-weight: 700; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+            ${idx + 1}
+          </td>
+          <td style="padding: 6px 8px;">
+            <input type="text" class="preview-edit-input row-field-name" value="${escapeHtml(row.name)}" placeholder="Program Name" />
+          </td>
+          <td style="padding: 6px 8px;">
+            <select class="preview-edit-input row-field-category" style="cursor: pointer;">
+              ${categoryOptions}
+            </select>
+          </td>
+          <td style="padding: 6px 8px;">
+            <input type="text" class="preview-edit-input row-field-candidates" value="${escapeHtml(row.candidates)}" placeholder="Candidate/s" />
+          </td>
+          <td style="padding: 6px 8px;">
+            <input type="text" class="preview-edit-input row-field-coach" value="${escapeHtml(row.coach)}" placeholder="Coach Name" />
+          </td>
+          <td style="padding: 6px 8px; text-align: center;">
+            <button type="button" class="delete-action-btn" onclick="removeBulkPreviewRow('${row.id}')" title="Remove row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+        bulkPreviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.removeBulkPreviewRow = function(rowId) {
+      pendingBulkRows = pendingBulkRows.filter(r => r.id !== rowId);
+      renderBulkPreviewModal();
+    };
+
+    if (btnAddPreviewRowBtn) {
+      btnAddPreviewRowBtn.addEventListener('click', () => {
+        pendingBulkRows.push({
+          id: 'bulk_' + Math.random().toString(36).substring(2, 9),
+          name: '',
+          category: 'Ūla',
+          candidates: '',
+          coach: ''
+        });
+        renderBulkPreviewModal();
+      });
+    }
+
+    // Confirm Bulk Upload: Read live values from inputs and commit to Firestore
+    if (btnConfirmBulkUpload) {
+      btnConfirmBulkUpload.addEventListener('click', async () => {
+        const rows = bulkPreviewTableBody.querySelectorAll('tr');
+        const validUploads = [];
+
+        rows.forEach(tr => {
+          const nameInput = tr.querySelector('.row-field-name');
+          const catInput = tr.querySelector('.row-field-category');
+          const candInput = tr.querySelector('.row-field-candidates');
+          const coachInput = tr.querySelector('.row-field-coach');
+
+          if (nameInput) {
+            const nameVal = nameInput.value.trim();
+            const catVal = catInput ? catInput.value : 'Ūla';
+            const candVal = candInput ? candInput.value.trim() : '';
+            const coachVal = coachInput ? coachInput.value.trim() : '';
+
+            if (nameVal) {
+              validUploads.push({
+                id: 'prog_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                name: nameVal,
+                category: catVal,
+                candidates: candVal || '—',
+                coach: coachVal || '—',
+                timestamp: new Date().toISOString()
+              });
+            }
+          }
+        });
+
+        if (validUploads.length === 0) {
+          alert('No valid programs found to upload. Please fill in program names.');
+          return;
+        }
+
+        btnConfirmBulkUpload.disabled = true;
+        btnConfirmBulkUpload.innerHTML = 'Uploading to Firebase...';
+
+        // Add to local state & persist
+        programRecords = [...validUploads, ...programRecords];
+        saveStoredProgramRecords(programRecords);
+        renderProgramTable();
+
+        // Sync batch to Firestore
+        if (window.SibaqFirebase && window.SibaqFirebase.syncProgramRecordToFirestore) {
+          for (const rec of validUploads) {
+            await window.SibaqFirebase.syncProgramRecordToFirestore(rec);
+          }
+        }
+
+        btnConfirmBulkUpload.disabled = false;
+        btnConfirmBulkUpload.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Upload Programs to Firebase
+        `;
+
+        closeBulkPreviewModal();
+        showToast(`Successfully uploaded ${validUploads.length} programs to Firebase!`);
+      });
+    }
+
+    // Initial Program Table Render
+    renderProgramTable();
+
+    // ----------------------------------------------------
+    // Users / Mail Table Interactivity
+    // ----------------------------------------------------
+    const selectAllUsers = document.getElementById('selectAllUsers');
+    if (selectAllUsers) {
+      selectAllUsers.addEventListener('change', () => {
+        document.querySelectorAll('.user-row-check').forEach(cb => {
+          cb.checked = selectAllUsers.checked;
+        });
+      });
+    }
+
+    // Refresh animation
+    document.getElementById('btnRefreshUsers')?.addEventListener('click', () => {
+      const icon = document.querySelector('#btnRefreshUsers svg');
+      if (icon) {
+        icon.style.transition = 'transform 0.5s ease';
+        icon.style.transform = 'rotate(360deg)';
+        setTimeout(() => { icon.style.transform = ''; }, 500);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Add Mail Modal & Copy Form Interactivity
+    // ----------------------------------------------------
+    const addMailModalOverlay = document.getElementById('addMailModalOverlay');
+    const btnAddMailModal = document.getElementById('btnAddMailModal');
+    const btnCloseMailModal = document.getElementById('btnCloseMailModal');
+    const addMailForm = document.getElementById('addMailForm');
+    const newMailName = document.getElementById('newMailName');
+    const newMailPrefix = document.getElementById('newMailPrefix');
+    const previewFullEmail = document.getElementById('previewFullEmail');
+    const newMailPassword = document.getElementById('newMailPassword');
+    const btnGeneratePassword = document.getElementById('btnGeneratePassword');
+    const copyToast = document.getElementById('copyToast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    function showToast(msg) {
+      if (!copyToast) return;
+      toastMsg.textContent = msg;
+      copyToast.style.display = 'flex';
+      setTimeout(() => {
+        copyToast.style.display = 'none';
+      }, 2400);
+    }
+
+    function openMailModal() {
+      if (addMailModalOverlay) {
+        addMailModalOverlay.classList.add('active');
+        newMailName.focus();
+      }
+    }
+
+    function closeMailModal() {
+      if (addMailModalOverlay) {
+        addMailModalOverlay.classList.remove('active');
+        addMailForm.reset();
+        previewFullEmail.textContent = '@sibaq.com';
+        const emailStatusBadge = document.getElementById('emailStatusBadge');
+        const emailSuffixGroup = document.getElementById('emailSuffixGroup');
+        const btnSubmit = document.getElementById('btnSubmitMailAccount');
+        if (emailStatusBadge) emailStatusBadge.innerHTML = '';
+        if (emailSuffixGroup) emailSuffixGroup.style.borderColor = '';
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.style.opacity = '';
+          btnSubmit.style.cursor = '';
+        }
+      }
+    }
+
+    if (btnAddMailModal) btnAddMailModal.addEventListener('click', openMailModal);
+    if (btnCloseMailModal) btnCloseMailModal.addEventListener('click', closeMailModal);
+
+    // Close when clicking backdrop
+    if (addMailModalOverlay) {
+      addMailModalOverlay.addEventListener('click', (e) => {
+        if (e.target === addMailModalOverlay) closeMailModal();
+      });
+    }
+
+    function checkEmailAvailability(prefix) {
+      const emailStatusBadge = document.getElementById('emailStatusBadge');
+      const emailSuffixGroup = document.getElementById('emailSuffixGroup');
+      const btnSubmit = document.getElementById('btnSubmitMailAccount');
+      if (!emailStatusBadge) return true;
+
+      const trimmed = prefix.trim().toLowerCase();
+      if (!trimmed) {
+        emailStatusBadge.innerHTML = '';
+        if (emailSuffixGroup) emailSuffixGroup.style.borderColor = '';
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.style.opacity = '';
+          btnSubmit.style.cursor = '';
+        }
+        return false;
+      }
+
+      const fullEmail = `${trimmed}@sibaq.com`;
+      const accounts = getStoredMailAccounts();
+      const isTaken = accounts.some(a => (a.email || '').toLowerCase() === fullEmail);
+
+      if (isTaken) {
+        emailStatusBadge.innerHTML = '<span style="color: #dc2626; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">✕ Already taken</span>';
+        if (emailSuffixGroup) emailSuffixGroup.style.borderColor = '#dc2626';
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.style.opacity = '0.5';
+          btnSubmit.style.cursor = 'not-allowed';
+        }
+        return false;
+      } else {
+        emailStatusBadge.innerHTML = '<span style="color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">✓ Usable</span>';
+        if (emailSuffixGroup) emailSuffixGroup.style.borderColor = '#16a34a';
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.style.opacity = '';
+          btnSubmit.style.cursor = '';
+        }
+        return true;
+      }
+    }
+
+    // Direct edit of email prefix with live taken/usable indicator
+    if (newMailPrefix) {
+      newMailPrefix.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase().replace(/[^a-z0-9.]/g, '');
+        e.target.value = val;
+        previewFullEmail.textContent = (val || 'username') + '@sibaq.com';
+        checkEmailAvailability(val);
+      });
+    }
+
+    // Generate Secure Password
+    if (btnGeneratePassword) {
+      btnGeneratePassword.addEventListener('click', () => {
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        const generated = `Sibaq#${randomNum}`;
+        newMailPassword.value = generated;
+        showToast('Generated password: ' + generated);
+      });
+    }
+    // ----------------------------------------------------
+    // Stored Mail Accounts (Synced with localStorage & add-mail.html)
+    // ----------------------------------------------------
+    const defaultMailAccounts = [
+      { id: '1', name: 'Mvs Designs', email: 'dest@sibaq.com', pwd: 'Sibaq#7421', status: 'active', initials: 'MD', colorBg: '#fdf1ee', colorFg: '#ea3a18' }
+    ];
+
+    function getStoredMailAccounts() {
+      try {
+        const stored = localStorage.getItem('sibaq_mail_accounts');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            // Clean out old demo accounts if present
+            const filtered = parsed.filter(a => a.email !== 'tariq@sibaq.com' && a.email !== 'sami@sibaq.com');
+            if (filtered.length !== parsed.length) {
+              localStorage.setItem('sibaq_mail_accounts', JSON.stringify(filtered));
+            }
+            return filtered;
+          }
+        }
+      } catch (err) {}
+      localStorage.setItem('sibaq_mail_accounts', JSON.stringify(defaultMailAccounts));
+      return defaultMailAccounts;
+    }
+
+    function saveStoredMailAccounts(accounts) {
+      localStorage.setItem('sibaq_mail_accounts', JSON.stringify(accounts));
+      if (window.SibaqFirebase && window.SibaqFirebase.syncMailAccountToFirestore) {
+        accounts.forEach(acc => window.SibaqFirebase.syncMailAccountToFirestore(acc));
+      }
+    }
+
+    function renderMailTable() {
+      const tbody = document.getElementById('usersTableBody');
+      if (!tbody) return;
+      const accounts = getStoredMailAccounts();
+      tbody.innerHTML = '';
+
+      if (accounts.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 36px 20px;">
+              No mail accounts found. Click <strong>Add Mail</strong> to create one.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      accounts.forEach(acc => {
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-id', acc.id || '');
+        tr.setAttribute('data-status', acc.status || 'active');
+
+        const initials = acc.initials || (acc.name ? acc.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'SB');
+        const colorBg = acc.colorBg || '#fdf1ee';
+        const colorFg = acc.colorFg || 'var(--brand-red)';
+
+        tr.innerHTML = `
+          <td><input type="checkbox" class="custom-check user-row-check" /></td>
+          <td>
+            <div class="user-cell-wrap">
+              <div class="user-initials-badge" style="background: ${colorBg}; color: ${colorFg};">${escapeHtml(acc.name ? initials : 'SB')}</div>
+              <span class="user-name-text">${escapeHtml(acc.name || '')}</span>
+            </div>
+          </td>
+          <td><span class="user-email-text">${escapeHtml(acc.email || '')}</span></td>
+          <td>
+            <div class="pwd-cell-wrap">
+              <span class="pwd-text-display" data-pwd="${escapeHtml(acc.pwd || '')}">••••••••</span>
+              <button type="button" class="icon-action-btn toggle-view-pwd" onclick="togglePasswordVisibility(this)" title="View/Hide password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+              <button type="button" class="icon-action-btn edit-pwd-btn" onclick="editRowPassword(this)" title="Edit password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <button class="delete-action-btn" onclick="deleteUserRow(this)" title="Delete user">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    renderMailTable();
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'sibaq_mail_accounts') {
+        renderMailTable();
+      }
+    });
+
+    document.getElementById('btnRefreshUsers')?.addEventListener('click', () => {
+      const icon = document.querySelector('#btnRefreshUsers svg');
+      if (icon) {
+        icon.style.transition = 'transform 0.5s ease';
+        icon.style.transform = 'rotate(360deg)';
+        setTimeout(() => { icon.style.transform = ''; }, 500);
+      }
+      renderMailTable();
+      showToast('Mail records refreshed!');
+    });
+
+    // Form Submission: Add to Table
+    if (addMailForm) {
+      addMailForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const nameVal = newMailName.value.trim();
+        const prefixVal = newMailPrefix.value.trim();
+        const pwdVal = newMailPassword.value.trim();
+
+        if (!nameVal || !prefixVal || !pwdVal) {
+          alert('Please fill out all required fields.');
+          return;
+        }
+
+        if (!checkEmailAvailability(prefixVal)) {
+          showToast('Email already taken! Please enter another email.');
+          return;
+        }
+
+        const fullEmail = `${prefixVal}@sibaq.com`;
+        const initials = nameVal
+          .split(' ')
+          .map(w => w[0])
+          .join('')
+          .substring(0, 2)
+          .toUpperCase() || 'SB';
+
+        const tbody = document.getElementById('usersTableBody');
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-status', 'active');
+        tr.innerHTML = `
+          <td><input type="checkbox" class="custom-check user-row-check" /></td>
+          <td>
+            <div class="user-cell-wrap">
+              <div class="user-initials-badge">${initials}</div>
+              <span class="user-name-text">${escapeHtml(nameVal)}</span>
+            </div>
+          </td>
+          <td><span class="user-email-text">${escapeHtml(fullEmail)}</span></td>
+          <td>
+            <div class="pwd-cell-wrap">
+              <span class="pwd-text-display" data-pwd="${escapeHtml(pwdVal)}">••••••••</span>
+              <button type="button" class="icon-action-btn toggle-view-pwd" onclick="togglePasswordVisibility(this)" title="View/Hide password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+              <button type="button" class="icon-action-btn edit-pwd-btn" onclick="editRowPassword(this)" title="Edit password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <button class="delete-action-btn" onclick="deleteUserRow(this)" title="Delete user">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+
+        const accounts = getStoredMailAccounts();
+        accounts.unshift({
+          id: Date.now().toString(),
+          name: nameVal,
+          email: fullEmail,
+          pwd: pwdVal,
+          status: 'active',
+          initials,
+          colorBg: '#fdf1ee',
+          colorFg: '#ea3a18'
+        });
+        saveStoredMailAccounts(accounts);
+        tbody.prepend(tr);
+        showToast(`Account created for ${fullEmail}!`);
+        closeMailModal();
+      });
+    }
+
+    // ----------------------------------------------------
+    // Password View & Edit Handlers
+    // ----------------------------------------------------
+    window.togglePasswordVisibility = function(btn) {
+      const wrap = btn.closest('.pwd-cell-wrap');
+      if (!wrap) return;
+      const display = wrap.querySelector('.pwd-text-display');
+      const realPwd = display.getAttribute('data-pwd') || '';
+
+      const isMasked = display.textContent.includes('•');
+      if (isMasked) {
+        display.textContent = realPwd;
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        `;
+        btn.title = "Hide password";
+      } else {
+        display.textContent = '••••••••';
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        `;
+        btn.title = "View password";
+      }
+    };
+
+    window.editRowPassword = function(btn) {
+      const wrap = btn.closest('.pwd-cell-wrap');
+      if (!wrap) return;
+      const display = wrap.querySelector('.pwd-text-display');
+      const currentPwd = display.getAttribute('data-pwd') || '';
+
+      const updated = prompt('Edit password for this account:', currentPwd);
+      if (updated !== null && updated.trim() !== '') {
+        const newPwd = updated.trim();
+        display.setAttribute('data-pwd', newPwd);
+        if (!display.textContent.includes('•')) {
+          display.textContent = newPwd;
+        }
+
+        const row = btn.closest('tr');
+        const email = row?.querySelector('.user-email-text')?.textContent.trim();
+        let accounts = getStoredMailAccounts();
+        const target = accounts.find(a => a.email === email);
+        if (target) {
+          target.pwd = newPwd;
+          saveStoredMailAccounts(accounts);
+        }
+        showToast('Password updated!');
+      }
+    };
+
+    window.deleteUserRow = function(btn) {
+      const row = btn.closest('tr');
+      if (!row) return;
+      const name = row.querySelector('.user-name-text')?.textContent || 'User';
+      if (confirm(`Are you sure you want to delete ${name}?`)) {
+        const email = row.querySelector('.user-email-text')?.textContent.trim();
+        let accounts = getStoredMailAccounts();
+        accounts = accounts.filter(a => a.email !== email && a.name !== name);
+        saveStoredMailAccounts(accounts);
+        if (window.SibaqFirebase && window.SibaqFirebase.deleteMailAccountFromFirestore) {
+          window.SibaqFirebase.deleteMailAccountFromFirestore(email || name);
+        }
+        row.remove();
+        showToast(`Deleted ${name}.`);
+      }
+    };
+
+    // ----------------------------------------------------
+    // Copy Row Action & Open in Form
+    // ----------------------------------------------------
+    window.openAndCopyRow = function(name, email, password) {
+      if (!newMailName || !newMailPrefix || !newMailPassword) return;
+
+      const prefix = email ? email.split('@')[0] : 'account';
+      newMailName.value = name || '';
+      newMailPrefix.value = prefix;
+      previewFullEmail.textContent = prefix + '@sibaq.com';
+      newMailPassword.value = password || 'Sibaq#7421';
+
+      // Copy text to clipboard
+      const copyPayload = `Name: ${name}\nEmail: ${prefix}@sibaq.com\nPassword: ${password}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(copyPayload).then(() => {
+          showToast('Copied credentials! Opened in form.');
+        }).catch(() => {
+          showToast('Opened in form for editing.');
+        });
+      } else {
+        showToast('Opened in form for editing.');
+      }
+
+      // Open the modal form so the user can enter through that form
+      openMailModal();
+    };
+
+    // ----------------------------------------------------
+    // Search Button Toggle & Live Table Filter
+    // ----------------------------------------------------
+    const toggleSearchBtn = document.getElementById('toggleSearchBtn');
+    const searchInputWrap = document.getElementById('searchInputWrap');
+    const userSearchInput = document.getElementById('userSearchInput');
+
+    if (toggleSearchBtn && searchInputWrap && userSearchInput) {
+      toggleSearchBtn.addEventListener('click', () => {
+        searchInputWrap.classList.toggle('active');
+        if (searchInputWrap.classList.contains('active')) {
+          userSearchInput.focus();
+        } else {
+          userSearchInput.value = '';
+          // Reset filtering
+          document.querySelectorAll('#usersTableBody tr').forEach(r => r.style.display = '');
+        }
+      });
+
+      userSearchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        document.querySelectorAll('#usersTableBody tr').forEach(row => {
+          const rowText = row.textContent.toLowerCase();
+          if (!query || rowText.includes(query)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // ----------------------------------------------------
+    // Top-right Header Copy Button (Yellow)
+    // Copies the link of the Add Mail form to the clipboard
+    // ----------------------------------------------------
+    const btnCopySelectedUsers = document.getElementById('btnCopySelectedUsers');
+    if (btnCopySelectedUsers) {
+      btnCopySelectedUsers.addEventListener('click', () => {
+        // Construct full shareable URL to add-mail.html
+        const formUrl = new URL('add-mail.html', window.location.href).href;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(formUrl).then(() => {
+            showToast('Add Mail form link copied! Paste anywhere to upload data.');
+          }).catch(() => {
+            prompt('Copy Add Mail form link:', formUrl);
+          });
+        } else {
+          prompt('Copy Add Mail form link:', formUrl);
+        }
+      });
+    }
+
+    // ====================================================
+    // USER ACCESS MANAGEMENT (MATCHING SCREENSHOTS 1 & 2)
+    // ====================================================
+    const ACCESS_STORAGE_KEY = 'sibaq_users_access_list';
+
+    function getStoredAccessUsers() {
+      const data = localStorage.getItem(ACCESS_STORAGE_KEY);
+      if (data) {
+        try {
+          return JSON.parse(data);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      // Initial default matching user screenshot
+      const initialUsers = [
+        {
+          id: 'ua_1',
+          name: 'Mvs Designs',
+          email: 'dest@gmail.com',
+          assignments: ['Main Event', 'Admin'],
+          status: 'ACTIVE'
+        }
+      ];
+      localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(initialUsers));
+      return initialUsers;
+    }
+
+    function saveStoredAccessUsers(list) {
+      localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(list));
+      if (window.SibaqFirebase && window.SibaqFirebase.syncUserAccessToFirestore) {
+        list.forEach(u => window.SibaqFirebase.syncUserAccessToFirestore(u));
+      }
+    }
+
+    let currentAccessFilter = 'ALL';
+    let currentAccessSearchQuery = '';
+
+    function getInitials(name) {
+      if (!name) return 'U';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+
+    function renderAccessUsersTable() {
+      const tbody = document.getElementById('accessUsersTableBody');
+      if (!tbody) return;
+
+      const users = getStoredAccessUsers();
+      tbody.innerHTML = '';
+
+      const filtered = users.filter(u => {
+        // Status filter
+        if (currentAccessFilter !== 'ALL' && (u.status || 'ACTIVE').toUpperCase() !== currentAccessFilter) {
+          return false;
+        }
+        // Search filter
+        if (currentAccessSearchQuery) {
+          const q = currentAccessSearchQuery.toLowerCase();
+          const matchName = (u.name || '').toLowerCase().includes(q);
+          const matchEmail = (u.email || '').toLowerCase().includes(q);
+          const matchAssign = (u.assignments || []).some(a => a.toLowerCase().includes(q));
+          if (!matchName && !matchEmail && !matchAssign) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 36px 20px;">
+              No users found matching current filters. Click <strong>Add User</strong> to grant access.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = user.id;
+
+        const initials = getInitials(user.name);
+        const assignmentsHtml = (user.assignments || ['Main Event', 'Admin']).map(role => 
+          `<span class="assignment-pill-tag">${escapeHtml(role)}</span>`
+        ).join(' ');
+
+        tr.innerHTML = `
+          <td>
+            <input type="checkbox" class="custom-check access-row-check" data-id="${user.id}" />
+          </td>
+          <td>
+            <div class="user-cell-wrap">
+              <span class="user-avatar-badge">${initials}</span>
+              <span class="access-user-name">${escapeHtml(user.name || 'User')}</span>
+            </div>
+          </td>
+          <td style="color: var(--text-main); font-weight: 500;">
+            ${escapeHtml(user.email)}
+          </td>
+          <td>
+            ${assignmentsHtml}
+          </td>
+          <td>
+            <span class="status-badge-active">${escapeHtml(user.status || 'ACTIVE')}</span>
+          </td>
+          <td style="text-align: right;">
+            <button class="delete-action-btn" onclick="deleteUserAccess('${user.id}')" title="Delete User Access">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    window.deleteUserAccess = function(id) {
+      const users = getStoredAccessUsers();
+      const target = users.find(u => u.id === id);
+      const name = target ? target.name : 'this user';
+      if (confirm(`Are you sure you want to remove access for ${name}?`)) {
+        const updated = users.filter(u => u.id !== id);
+        saveStoredAccessUsers(updated);
+        if (window.SibaqFirebase && window.SibaqFirebase.deleteUserAccessFromFirestore) {
+          window.SibaqFirebase.deleteUserAccessFromFirestore(id);
+        }
+        renderAccessUsersTable();
+        showToast(`Removed access for ${name}.`);
+      }
+    };
+
+    // Filter Pills
+    const userFilterPills = document.querySelectorAll('#userFilterPills .user-filter-pill');
+    userFilterPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        userFilterPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentAccessFilter = pill.getAttribute('data-filter') || 'ALL';
+        renderAccessUsersTable();
+      });
+    });
+
+    // Select all access users checkbox
+    const selectAllAccessUsers = document.getElementById('selectAllAccessUsers');
+    if (selectAllAccessUsers) {
+      selectAllAccessUsers.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        document.querySelectorAll('.access-row-check').forEach(cb => cb.checked = checked);
+      });
+    }
+
+    // Refresh Users button
+    const btnRefreshAccessUsers = document.getElementById('btnRefreshAccessUsers');
+    if (btnRefreshAccessUsers) {
+      btnRefreshAccessUsers.addEventListener('click', () => {
+        renderAccessUsersTable();
+        showToast('Users table refreshed.');
+      });
+    }
+
+    // Access live search bar
+    const toggleAccessSearchBtn = document.getElementById('toggleAccessSearchBtn');
+    const accessSearchInputWrap = document.getElementById('accessSearchInputWrap');
+    const accessSearchInput = document.getElementById('accessSearchInput');
+
+    if (toggleAccessSearchBtn && accessSearchInputWrap && accessSearchInput) {
+      toggleAccessSearchBtn.addEventListener('click', () => {
+        accessSearchInputWrap.classList.toggle('active');
+        if (accessSearchInputWrap.classList.contains('active')) {
+          accessSearchInput.focus();
+        } else {
+          accessSearchInput.value = '';
+          currentAccessSearchQuery = '';
+          renderAccessUsersTable();
+        }
+      });
+
+      accessSearchInput.addEventListener('input', (e) => {
+        currentAccessSearchQuery = e.target.value.trim();
+        renderAccessUsersTable();
+      });
+    }
+
+    // Modal elements
+    const addUserAccessModalOverlay = document.getElementById('addUserAccessModalOverlay');
+    const btnOpenAddAccessModal = document.getElementById('btnOpenAddAccessModal');
+    const btnCloseAccessModal = document.getElementById('btnCloseAccessModal');
+    const btnCancelAccessModal = document.getElementById('btnCancelAccessModal');
+    const addUserAccessForm = document.getElementById('addUserAccessForm');
+
+    const accessEmailInput = document.getElementById('accessEmailInput');
+    const accessMailAutocomplete = document.getElementById('accessMailAutocomplete');
+    const btnAddRolePopoverBtn = document.getElementById('btnAddRolePopoverBtn');
+    const rolePopoverMenu = document.getElementById('rolePopoverMenu');
+    const selectedRolesContainer = document.getElementById('selectedRolesContainer');
+
+    let selectedAccessRoles = [];
+    let selectedUserAccountName = '';
+
+    function openAccessModal() {
+      if (!addUserAccessModalOverlay) return;
+      selectedAccessRoles = [];
+      selectedUserAccountName = '';
+      if (accessEmailInput) accessEmailInput.value = '';
+      renderSelectedRolesPills();
+      updatePopoverCheckmarks();
+      if (rolePopoverMenu) rolePopoverMenu.style.display = 'none';
+      if (accessMailAutocomplete) accessMailAutocomplete.style.display = 'none';
+      addUserAccessModalOverlay.classList.add('active');
+      if (accessEmailInput) accessEmailInput.focus();
+    }
+
+    function closeAccessModal() {
+      if (!addUserAccessModalOverlay) return;
+      addUserAccessModalOverlay.classList.remove('active');
+      if (rolePopoverMenu) rolePopoverMenu.style.display = 'none';
+      if (accessMailAutocomplete) accessMailAutocomplete.style.display = 'none';
+    }
+
+    if (btnOpenAddAccessModal) btnOpenAddAccessModal.addEventListener('click', openAccessModal);
+    if (btnCloseAccessModal) btnCloseAccessModal.addEventListener('click', closeAccessModal);
+    if (btnCancelAccessModal) btnCancelAccessModal.addEventListener('click', closeAccessModal);
+
+    if (addUserAccessModalOverlay) {
+      addUserAccessModalOverlay.addEventListener('click', (e) => {
+        if (e.target === addUserAccessModalOverlay) {
+          closeAccessModal();
+        }
+      });
+    }
+
+    // Autocomplete for Registered Mail Search & Select
+    function showMailAutocompleteSuggestions(query = '') {
+      if (!accessMailAutocomplete) return;
+      const registeredMails = getStoredMailAccounts();
+      const q = query.trim().toLowerCase();
+
+      const matches = q
+        ? registeredMails.filter(m => 
+            (m.email && m.email.toLowerCase().includes(q)) ||
+            (m.name && m.name.toLowerCase().includes(q))
+          )
+        : registeredMails;
+
+      if (matches.length === 0) {
+        accessMailAutocomplete.innerHTML = `
+          <div style="padding: 12px 14px; font-size: 0.83rem; color: var(--text-muted); text-align: center;">
+            No registered mail found for "${escapeHtml(query)}". You can enter a custom email.
+          </div>
+        `;
+        accessMailAutocomplete.style.display = 'block';
+        return;
+      }
+
+      accessMailAutocomplete.innerHTML = matches.map(acc => {
+        const initials = getInitials(acc.name);
+        return `
+          <div class="mail-autocomplete-item" data-email="${escapeHtml(acc.email)}" data-name="${escapeHtml(acc.name)}">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="autocomplete-avatar">${initials}</span>
+              <div>
+                <div style="font-weight: 700; color: var(--text-main); font-size: 0.87rem; line-height: 1.2;">
+                  ${escapeHtml(acc.name)}
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.78rem;">
+                  ${escapeHtml(acc.email)}
+                </div>
+              </div>
+            </div>
+            <span class="autocomplete-select-badge">Select</span>
+          </div>
+        `;
+      }).join('');
+
+      accessMailAutocomplete.style.display = 'block';
+    }
+
+    if (accessEmailInput && accessMailAutocomplete) {
+      // Focus or click shows registered mail suggestions
+      accessEmailInput.addEventListener('focus', () => {
+        showMailAutocompleteSuggestions(accessEmailInput.value);
+      });
+
+      accessEmailInput.addEventListener('click', () => {
+        showMailAutocompleteSuggestions(accessEmailInput.value);
+      });
+
+      accessEmailInput.addEventListener('input', (e) => {
+        selectedUserAccountName = '';
+        showMailAutocompleteSuggestions(e.target.value);
+      });
+
+      // Delegate click on autocomplete items
+      accessMailAutocomplete.addEventListener('click', (e) => {
+        const item = e.target.closest('.mail-autocomplete-item');
+        if (!item) return;
+        const email = item.dataset.email;
+        const name = item.dataset.name;
+        accessEmailInput.value = email;
+        selectedUserAccountName = name;
+        accessMailAutocomplete.style.display = 'none';
+      });
+
+      // Close autocomplete on click outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#accessEmailInput') && !e.target.closest('#accessMailAutocomplete')) {
+          accessMailAutocomplete.style.display = 'none';
+        }
+      });
+    }
+
+    // Popover Toggle
+    if (btnAddRolePopoverBtn && rolePopoverMenu) {
+      btnAddRolePopoverBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isShown = rolePopoverMenu.style.display === 'block';
+        rolePopoverMenu.style.display = isShown ? 'none' : 'block';
+      });
+
+      // Close popover when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#rolePopoverMenu') && !e.target.closest('#btnAddRolePopoverBtn')) {
+          rolePopoverMenu.style.display = 'none';
+        }
+      });
+
+      // Role items click inside popover
+      document.querySelectorAll('#rolePopoverMenu .role-popover-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const role = item.dataset.role;
+          if (!role) return;
+
+          const idx = selectedAccessRoles.indexOf(role);
+          if (idx === -1) {
+            selectedAccessRoles.push(role);
+          } else {
+            selectedAccessRoles.splice(idx, 1);
+          }
+
+          updatePopoverCheckmarks();
+          renderSelectedRolesPills();
+        });
+      });
+    }
+
+    function updatePopoverCheckmarks() {
+      document.querySelectorAll('#rolePopoverMenu .role-popover-item').forEach(item => {
+        const role = item.dataset.role;
+        if (selectedAccessRoles.includes(role)) {
+          item.classList.add('selected');
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+    }
+
+    function renderSelectedRolesPills() {
+      if (!selectedRolesContainer) return;
+      selectedRolesContainer.innerHTML = selectedAccessRoles.map(role => `
+        <span class="role-pill-badge">
+          ${escapeHtml(role)}
+          <span class="role-pill-remove" data-role="${escapeHtml(role)}" title="Remove role">&times;</span>
+        </span>
+      `).join('');
+    }
+
+    // Remove pill click
+    if (selectedRolesContainer) {
+      selectedRolesContainer.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.role-pill-remove');
+        if (!removeBtn) return;
+        const roleToRemove = removeBtn.dataset.role;
+        selectedAccessRoles = selectedAccessRoles.filter(r => r !== roleToRemove);
+        updatePopoverCheckmarks();
+        renderSelectedRolesPills();
+      });
+    }
+
+    // Search fest or role inside modal table
+    const festRoleSearchInput = document.getElementById('festRoleSearchInput');
+    if (festRoleSearchInput) {
+      festRoleSearchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        const mainEventRow = document.querySelector('.fest-roles-row');
+        if (mainEventRow) {
+          const rowText = mainEventRow.textContent.toLowerCase();
+          mainEventRow.style.display = (!term || rowText.includes(term)) ? 'flex' : 'none';
+        }
+      });
+    }
+
+    // Add User Access Form Submit
+    if (addUserAccessForm) {
+      addUserAccessForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = accessEmailInput ? accessEmailInput.value.trim() : '';
+        if (!email) {
+          alert('Please enter or select an email address.');
+          return;
+        }
+
+        // Determine name: if user picked from registered accounts use that name,
+        // otherwise find in stored accounts or generate clean username from email
+        let userName = selectedUserAccountName;
+        if (!userName) {
+          const registered = getStoredMailAccounts();
+          const match = registered.find(m => m.email.toLowerCase() === email.toLowerCase());
+          if (match) {
+            userName = match.name;
+          } else {
+            const prefix = email.split('@')[0];
+            userName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+          }
+        }
+
+        // Roles: if none selected, default to Admin
+        const rolesToAssign = selectedAccessRoles.length > 0 ? [...selectedAccessRoles] : ['Admin'];
+        const assignments = ['Main Event', ...rolesToAssign];
+
+        const newUserAccess = {
+          id: 'ua_' + Date.now(),
+          name: userName,
+          email: email,
+          assignments: assignments,
+          status: 'ACTIVE'
+        };
+
+        const existingUsers = getStoredAccessUsers();
+        // Check if email already has access, update if so, else append
+        const existingIdx = existingUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+        if (existingIdx !== -1) {
+          existingUsers[existingIdx] = newUserAccess;
+        } else {
+          existingUsers.unshift(newUserAccess);
+        }
+
+        saveStoredAccessUsers(existingUsers);
+        renderAccessUsersTable();
+        closeAccessModal();
+        showToast(`User ${userName} granted access successfully!`);
+      });
+    }
+
+    // Initial render
+    renderAccessUsersTable();
+
+    // ----------------------------------------------------
+    // Firebase Real-time Firestore Live Listeners
+    // ----------------------------------------------------
+    if (window.SibaqFirebase) {
+      // Live listener for mail accounts
+      if (typeof window.SibaqFirebase.listenToMailAccounts === 'function') {
+        window.SibaqFirebase.listenToMailAccounts(firestoreList => {
+          if (Array.isArray(firestoreList) && firestoreList.length > 0) {
+            localStorage.setItem('sibaq_mail_accounts', JSON.stringify(firestoreList));
+            renderMailTable();
+          }
+        });
+      }
+
+      // Live listener for users access
+      if (typeof window.SibaqFirebase.listenToUserAccess === 'function') {
+        window.SibaqFirebase.listenToUserAccess(firestoreUsers => {
+          if (Array.isArray(firestoreUsers) && firestoreUsers.length > 0) {
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(firestoreUsers));
+            renderAccessUsersTable();
+          }
+        });
+      }
+
+      // Live listener for program records
+      if (typeof window.SibaqFirebase.listenToProgramRecords === 'function') {
+        window.SibaqFirebase.listenToProgramRecords(firestorePrograms => {
+          if (Array.isArray(firestorePrograms) && firestorePrograms.length > 0) {
+            localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(firestorePrograms));
+            programRecords = firestorePrograms;
+            renderProgramTable();
+          }
+        });
+      }
+    }
+
+    // Mobile drawer toggle handler
+    (function initMobileDrawer() {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('mobile-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openSidebar);
+      if (mobileSidebarClose) mobileSidebarClose.addEventListener('click', closeSidebar);
+      if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          if (window.innerWidth <= 992) {
+            closeSidebar();
+          }
+        });
+      });
+    })();
+  </script>
+  <script src="pwa-install.js"></script>
+</body>
+</html>

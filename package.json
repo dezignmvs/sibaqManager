@@ -1,0 +1,57 @@
+{
+  "name": "sibaq-desktop",
+  "version": "1.0.0",
+  "description": "Sibaq Portal - Desktop Executable Application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build:exe": "electron-builder --win portable --win nsis"
+  },
+  "keywords": [
+    "sibaq",
+    "portal",
+    "desktop",
+    "electron"
+  ],
+  "author": "Sibaq",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.sibaq.portal",
+    "productName": "Sibaq Portal",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**/*",
+      "!build/**/*",
+      "!node_modules/**/*",
+      "!*.bat",
+      "!*.ps1"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "icon": "favicon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Sibaq Portal"
+    },
+    "portable": {
+      "artifactName": "Sibaq-Portal-Portable.exe"
+    }
+  }
+}
