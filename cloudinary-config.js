@@ -60,9 +60,11 @@ window.SibaqCloudinary = {
 
       const data = await response.json();
       return {
-        url: data.url,
+        url: data.secure_url || data.url,
         secureUrl: data.secure_url,
+        secure_url: data.secure_url,
         publicId: data.public_id,
+        public_id: data.public_id,
         format: data.format,
         width: data.width,
         height: data.height

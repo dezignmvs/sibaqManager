@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css" />
+  <link rel="stylesheet" href="mobile-ui.css" />
   <style>
     :root {
       --brand-red: #ea3a18;
@@ -487,6 +488,41 @@
 
     .btn-brand-primary:hover {
       background: var(--brand-red-hover);
+    }
+
+    .btn-photo-upload,
+    .bg-fill-yellow {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 16px !important;
+      background: var(--brand-yellow, #eeb400) !important;
+      border: 1px solid #dca500 !important;
+      border-radius: 8px !important;
+      font-size: 0.84rem !important;
+      font-weight: 600 !important;
+      color: #1f1b18 !important;
+      cursor: pointer !important;
+      user-select: none !important;
+      box-shadow: 0 1px 3px rgba(238, 180, 0, 0.25) !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .btn-photo-upload:hover,
+    .bg-fill-yellow:hover {
+      background: var(--brand-yellow-hover, #dca500) !important;
+      border-color: #c89500 !important;
+    }
+
+    .btn-photo-upload:active,
+    .bg-fill-yellow:active {
+      transform: scale(0.97) !important;
+    }
+
+    .btn-photo-upload svg,
+    .bg-fill-yellow svg {
+      color: #1f1b18 !important;
+      flex-shrink: 0 !important;
     }
 
     .btn-fest-pill {
@@ -1497,9 +1533,23 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="evalImageInput">Evaluation Sheet Image (Optional)</label>
-                <input type="file" id="evalImageInput" class="form-input" accept="image/*" style="padding-top: 6px;" />
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <button type="button" class="btn-photo-upload bg-fill-yellow" id="evalUploadBtn" onclick="document.getElementById('evalImageInput').click()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span id="evalUploadText">Change photo</span>
+                  </button>
+                  <input type="file" id="evalImageInput" accept="image/*" style="display: none;" />
+                  <span id="evalFileName" style="font-size: 0.82rem; color: var(--text-muted); display: none;"></span>
+                </div>
                 <div id="evalImagePreviewContainer" style="display: none; margin-top: 10px;">
-                  <img id="evalImagePreview" src="" alt="Preview" style="max-height: 100px; border-radius: 8px; border: 1px solid var(--border-subtle);" />
+                  <div style="position: relative; display: inline-block;">
+                    <img id="evalImagePreview" src="" alt="Preview" style="max-height: 100px; border-radius: 8px; border: 1px solid var(--border-subtle); display: block;" />
+                    <button type="button" id="evalRemoveImageBtn" style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #ea3a18; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; line-height: 1;" title="Remove image">&times;</button>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -2120,6 +2170,17 @@
       const schedList = getStoredSchedule();
       const list = [];
 
+      // Filter slots for targetDate (if date provided, match s.date, else match any)
+      const matchingScheduleSlots = schedList.filter(s => {
+        return !targetDate || !s.date || s.date === targetDate;
+      });
+
+      if (matchingScheduleSlots.length === 0) {
+        return list;
+      }
+
+      const handledSlotKeys = new Set();
+
       records.forEach(p => {
         let candidatesArr = [];
         if (Array.isArray(p.candidates)) {
@@ -2133,39 +2194,80 @@
         const progName = p.name || p.program || 'Unnamed Program';
         const progNameLower = progName.trim().toLowerCase();
 
-        // Find schedule slots for this program on targetDate (if date provided, match s.date, else match any)
-        const matchingSlots = schedList.filter(s => {
-          const dateMatch = !targetDate || !s.date || s.date === targetDate;
-          if (!dateMatch) return false;
+        // Find schedule slots for this program on targetDate
+        const progSlots = matchingScheduleSlots.filter(s => {
           const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
           return progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
         });
 
-        candidatesArr.forEach(c => {
-          let name = '';
-          if (typeof c === 'string') {
-            name = c.trim();
-          } else if (c && typeof c === 'object') {
-            name = (c.name || c.studentName || '').trim();
-          }
-          if (!name) return;
+        if (progSlots.length === 0) return; // Only if schedule created!
 
-          const candNameLower = name.toLowerCase();
+        progSlots.forEach(slot => {
+          if (slot.id) handledSlotKeys.add(slot.id);
+        });
 
-          // Filter slots that specifically target this candidate or apply to the whole program
-          const candSlots = matchingSlots.filter(s => {
-            if (!s.candidate || !s.candidate.trim()) return true;
-            const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
-            return candsInSlot.includes(candNameLower);
+        if (candidatesArr.length > 0) {
+          candidatesArr.forEach(c => {
+            let name = '';
+            if (typeof c === 'string') {
+              name = c.trim();
+            } else if (c && typeof c === 'object') {
+              name = (c.name || c.studentName || '').trim();
+            }
+            if (!name) return;
+
+            const candNameLower = name.toLowerCase();
+
+            // Filter slots that specifically target this candidate or apply to the whole program
+            const candSlots = progSlots.filter(s => {
+              if (!s.candidate || !s.candidate.trim()) return true;
+              const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
+              return candsInSlot.includes(candNameLower);
+            });
+
+            if (candSlots.length > 0) {
+              candSlots.forEach((slot, sIdx) => {
+                list.push({
+                  name,
+                  program: progName,
+                  category: p.category || slot.category || 'General',
+                  slotId: slot.id || `slot_${sIdx + 1}`,
+                  timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                  startTime: slot.startTime || '',
+                  endTime: slot.endTime || '',
+                  timeSetName: slot.timeSetName || '',
+                  venue: slot.venue || '',
+                  slotIndex: sIdx + 1,
+                  totalSlots: candSlots.length
+                });
+              });
+            }
           });
-
-          if (candSlots.length > 0) {
-            // Program assigned 1, 2, or more times
-            candSlots.forEach((slot, sIdx) => {
+        } else {
+          // Program record had no candidates; use candidates specified on schedule slot
+          progSlots.forEach((slot, sIdx) => {
+            const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
+            if (slotCands.length > 0) {
+              slotCands.forEach(name => {
+                list.push({
+                  name,
+                  program: progName,
+                  category: p.category || slot.category || 'General',
+                  slotId: slot.id || `slot_${sIdx + 1}`,
+                  timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                  startTime: slot.startTime || '',
+                  endTime: slot.endTime || '',
+                  timeSetName: slot.timeSetName || '',
+                  venue: slot.venue || '',
+                  slotIndex: sIdx + 1,
+                  totalSlots: 1
+                });
+              });
+            } else {
               list.push({
-                name,
+                name: 'All Program Candidates',
                 program: progName,
-                category: p.category || 'General',
+                category: p.category || slot.category || 'General',
                 slotId: slot.id || `slot_${sIdx + 1}`,
                 timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
                 startTime: slot.startTime || '',
@@ -2173,27 +2275,52 @@
                 timeSetName: slot.timeSetName || '',
                 venue: slot.venue || '',
                 slotIndex: sIdx + 1,
-                totalSlots: candSlots.length
+                totalSlots: 1
               });
-            });
-          } else {
-            // Baseline unscheduled row
+            }
+          });
+        }
+      });
+
+      // Handle any schedule slots that were created for programs not in program records
+      matchingScheduleSlots.forEach((slot, sIdx) => {
+        if (slot.id && handledSlotKeys.has(slot.id)) return;
+        const progs = Array.isArray(slot.programs) ? slot.programs : (slot.program ? [slot.program] : ['General Program']);
+        const progName = progs[0] || 'Scheduled Program';
+        const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
+        if (slotCands.length > 0) {
+          slotCands.forEach(name => {
             list.push({
               name,
               program: progName,
-              category: p.category || 'General',
-              slotId: '',
-              timeSlot: '',
-              startTime: '',
-              endTime: '',
-              timeSetName: '',
-              venue: '',
+              category: slot.category || 'General',
+              slotId: slot.id || `slot_extra_${sIdx + 1}`,
+              timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+              startTime: slot.startTime || '',
+              endTime: slot.endTime || '',
+              timeSetName: slot.timeSetName || '',
+              venue: slot.venue || '',
               slotIndex: 1,
-              totalSlots: 0
+              totalSlots: 1
             });
-          }
-        });
+          });
+        } else {
+          list.push({
+            name: 'All Program Candidates',
+            program: progName,
+            category: slot.category || 'General',
+            slotId: slot.id || `slot_extra_${sIdx + 1}`,
+            timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+            startTime: slot.startTime || '',
+            endTime: slot.endTime || '',
+            timeSetName: slot.timeSetName || '',
+            venue: slot.venue || '',
+            slotIndex: 1,
+            totalSlots: 1
+          });
+        }
       });
+
       return list;
     }
 
@@ -2215,9 +2342,9 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="8" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-              <strong>No Program Candidate Records Found in Database</strong>
-              <div style="font-size: 0.82rem; margin-top: 4px;">Candidates registered under programs in Program Records will automatically populate here.</div>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <strong>No Scheduled Programs Found for Selected Date</strong>
+              <div style="font-size: 0.82rem; margin-top: 4px;">Candidate attendance is only displayed for scheduled programs. Create a schedule in Schedule Set to take attendance.</div>
             </td>
           </tr>
         `;
@@ -2477,76 +2604,66 @@
       const schedList = getStoredSchedule();
       const coaches = [];
 
-      // Collect coaches from program records and schedule slots
-      const coachMap = new Map();
+      // Only match slots for targetDate
+      const matchingScheduleSlots = schedList.filter(s => {
+        return !targetDate || !s.date || s.date === targetDate;
+      });
 
-      records.forEach(prog => {
-        const coachName = (prog.coach || prog.coachName || '').trim();
-        const progName = prog.name || prog.program || 'General Program';
-        if (coachName) {
-          coachMap.set(`${coachName.toLowerCase()}___${progName.toLowerCase()}`, {
+      if (matchingScheduleSlots.length === 0) {
+        return coaches;
+      }
+
+      // Group coach shifts directly based on scheduled programs and assigned coaches
+      const slotItems = [];
+
+      matchingScheduleSlots.forEach((slot, sIdx) => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+          ? slot.programs
+          : (slot.program ? [slot.program] : ['General Program']);
+
+        progs.forEach(progName => {
+          const progNameTrimmed = (progName || 'General Program').trim();
+          const progRecord = records.find(p => (p.name || p.program || '').trim().toLowerCase() === progNameTrimmed.toLowerCase());
+
+          let coachName = (slot.coach || '').trim();
+          if (!coachName && progRecord) {
+            coachName = (progRecord.coach || progRecord.coachName || '').trim();
+          }
+          if (!coachName) {
+            coachName = 'Assigned Coach';
+          }
+
+          slotItems.push({
             name: coachName,
-            program: progName
+            program: progNameTrimmed,
+            slotId: slot.id || `slot_${sIdx + 1}`,
+            timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+            startTime: slot.startTime || '',
+            endTime: slot.endTime || '',
+            timeSetName: slot.timeSetName || '',
+            venue: slot.venue || ''
           });
-        }
-      });
-
-      schedList.forEach(s => {
-        const sCoach = (s.coach || '').trim();
-        if (sCoach) {
-          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : ['General Program']);
-          progs.forEach(pr => {
-            const key = `${sCoach.toLowerCase()}___${pr.toLowerCase()}`;
-            if (!coachMap.has(key)) {
-              coachMap.set(key, { name: sCoach, program: pr });
-            }
-          });
-        }
-      });
-
-      coachMap.forEach(({ name: coachName, program: progName }) => {
-        const progNameLower = progName.trim().toLowerCase();
-        const coachNameLower = coachName.toLowerCase();
-
-        // Match schedule slots on targetDate
-        const matchingSlots = schedList.filter(s => {
-          const dateMatch = !targetDate || !s.date || s.date === targetDate;
-          if (!dateMatch) return false;
-          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
-          const progMatch = progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
-          const coachMatch = (s.coach || '').trim().toLowerCase() === coachNameLower;
-          return progMatch || coachMatch;
         });
+      });
 
-        if (matchingSlots.length > 0) {
-          matchingSlots.forEach((slot, sIdx) => {
-            coaches.push({
-              name: coachName,
-              program: progName,
-              slotId: slot.id || `slot_${sIdx + 1}`,
-              timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
-              startTime: slot.startTime || '',
-              endTime: slot.endTime || '',
-              timeSetName: slot.timeSetName || '',
-              venue: slot.venue || '',
-              slotIndex: sIdx + 1,
-              totalSlots: matchingSlots.length
-            });
-          });
-        } else {
-          coaches.push({
-            name: coachName,
-            program: progName,
-            slotId: '',
-            timeSlot: '',
-            startTime: '',
-            endTime: '',
-            timeSetName: '',
-            venue: '',
-            slotIndex: 1,
-            totalSlots: 0
-          });
-        }
+      // Calculate totalSlots and slotIndex for each coach + program combination
+      const countMap = new Map();
+      slotItems.forEach(item => {
+        const key = `${item.name.toLowerCase()}___${item.program.toLowerCase()}`;
+        countMap.set(key, (countMap.get(key) || 0) + 1);
+      });
+
+      const currentIdxMap = new Map();
+      slotItems.forEach(item => {
+        const key = `${item.name.toLowerCase()}___${item.program.toLowerCase()}`;
+        const currentIdx = (currentIdxMap.get(key) || 0) + 1;
+        currentIdxMap.set(key, currentIdx);
+
+        coaches.push({
+          ...item,
+          slotIndex: currentIdx,
+          totalSlots: countMap.get(key) || 1
+        });
       });
 
       return coaches;
@@ -2571,8 +2688,8 @@
           <tr>
             <td colspan="7" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
-              <strong>No Assigned Coaches Found in Database</strong>
-              <div style="font-size: 0.82rem; margin-top: 4px;">Coaches assigned to programs in Program Records will automatically populate here.</div>
+              <strong>No Scheduled Coach Shifts Found for Selected Date</strong>
+              <div style="font-size: 0.82rem; margin-top: 4px;">Coach shift attendance is only displayed for scheduled programs. Create a schedule in Schedule Set to take attendance.</div>
             </td>
           </tr>
         `;
@@ -3193,30 +3310,76 @@
       }
     });
 
+    let isUploadingToCloudinary = false;
     const evalImageInput = document.getElementById('evalImageInput');
     const evalImagePreview = document.getElementById('evalImagePreview');
     const evalImagePreviewContainer = document.getElementById('evalImagePreviewContainer');
+    const evalFileName = document.getElementById('evalFileName');
+    const evalRemoveImageBtn = document.getElementById('evalRemoveImageBtn');
+    const evalUploadBtn = document.getElementById('evalUploadBtn');
+    const evalUploadText = document.getElementById('evalUploadText');
 
     if (evalImageInput) {
       evalImageInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (re) => {
-            currentUploadedImageUrl = re.target.result;
-            if (evalImagePreview && evalImagePreviewContainer) {
-              evalImagePreview.src = currentUploadedImageUrl;
-              evalImagePreviewContainer.style.display = 'block';
-            }
-          };
-          reader.readAsDataURL(file);
+        if (!file) return;
 
-          if (window.SibaqCloudinary && window.SibaqCloudinary.uploadFile) {
-            window.SibaqCloudinary.uploadFile(file).then(res => {
-              if (res && res.secure_url) currentUploadedImageUrl = res.secure_url;
-            }).catch(e => console.warn(e));
+        // Immediately show local thumbnail preview and filename
+        if (evalFileName) {
+          evalFileName.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(file.name)}</span>`;
+          evalFileName.style.display = 'inline';
+        }
+
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          if (!currentUploadedImageUrl) currentUploadedImageUrl = re.target.result;
+          if (evalImagePreview && evalImagePreviewContainer) {
+            evalImagePreview.src = re.target.result;
+            evalImagePreviewContainer.style.display = 'block';
+          }
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to Cloudinary
+        if (window.SibaqCloudinary && typeof window.SibaqCloudinary.uploadFile === 'function') {
+          isUploadingToCloudinary = true;
+          if (evalUploadText) evalUploadText.textContent = 'Uploading to Cloudinary...';
+          if (evalUploadBtn) evalUploadBtn.style.opacity = '0.7';
+
+          try {
+            const res = await window.SibaqCloudinary.uploadFile(file, 'sibaq_evaluations');
+            const cldUrl = res?.secure_url || res?.secureUrl || res?.url;
+            if (cldUrl) {
+              currentUploadedImageUrl = cldUrl;
+              if (evalImagePreview) evalImagePreview.src = cldUrl;
+              if (evalFileName) {
+                evalFileName.innerHTML = `<span style="color: #16a34a; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Saved to Cloudinary (${escapeHtml(file.name)})</span>`;
+              }
+              showToast('Image successfully uploaded & saved to Cloudinary!');
+            }
+          } catch (err) {
+            console.error('Cloudinary upload error:', err);
+            showToast('Warning: Cloudinary upload failed. Using local copy. Check internet connection.');
+          } finally {
+            isUploadingToCloudinary = false;
+            if (evalUploadText) evalUploadText.textContent = 'Change photo';
+            if (evalUploadBtn) evalUploadBtn.style.opacity = '1';
           }
         }
+      });
+    }
+
+    if (evalRemoveImageBtn) {
+      evalRemoveImageBtn.addEventListener('click', () => {
+        currentUploadedImageUrl = '';
+        isUploadingToCloudinary = false;
+        if (evalImageInput) evalImageInput.value = '';
+        if (evalUploadText) evalUploadText.textContent = 'Change photo';
+        if (evalFileName) {
+          evalFileName.textContent = '';
+          evalFileName.style.display = 'none';
+        }
+        if (evalImagePreviewContainer) evalImagePreviewContainer.style.display = 'none';
       });
     }
 
@@ -3267,6 +3430,10 @@
 
     document.getElementById('evaluationForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (isUploadingToCloudinary) {
+        showToast('Please wait, evaluation sheet is uploading to Cloudinary...');
+        return;
+      }
       const progInput = document.getElementById('evalProgram');
       const searchInput = document.getElementById('evalProgSearch');
       const candidate = document.getElementById('evalCandidate').value.trim();
@@ -3298,6 +3465,12 @@
       document.getElementById('evaluationForm').reset();
       clearEvalProgramSelection();
       currentUploadedImageUrl = '';
+      isUploadingToCloudinary = false;
+      if (evalUploadText) evalUploadText.textContent = 'Change photo';
+      if (evalFileName) {
+        evalFileName.textContent = '';
+        evalFileName.style.display = 'none';
+      }
       if (evalImagePreviewContainer) evalImagePreviewContainer.style.display = 'none';
       showToast(`Evaluation for ${candidate} saved with score ${score}%!`);
     });
@@ -4791,6 +4964,7 @@
     // Initial render
     switchToTab('attendance');
   </script>
+  <script src="mobile-ui.js"></script>
   <script src="pwa-install.js"></script>
 </body>
 </html>

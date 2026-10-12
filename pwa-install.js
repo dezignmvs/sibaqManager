@@ -23,10 +23,26 @@
     e.preventDefault();
     deferredPrompt = e;
     console.log('[PWA] beforeinstallprompt captured');
-    // Show download/install button if hidden
-    const btn = document.getElementById('pwaDownloadBtn');
-    if (btn) btn.style.display = 'inline-flex';
   });
+
+  // Permanently remove any bottom floating buttons from DOM
+  function removeBottomFloatingButton() {
+    const floatSelectors = [
+      '.pwa-float-trigger',
+      '#pwaDownloadBtn',
+      '.pwa-download-float',
+      '[data-float-btn]',
+      '[data-pwa-float]'
+    ];
+    floatSelectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => el.remove());
+    });
+  }
+  removeBottomFloatingButton();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', removeBottomFloatingButton);
+  }
+  window.addEventListener('load', removeBottomFloatingButton);
 
   window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
@@ -65,35 +81,19 @@
       stroke-width: 2.3;
     }
 
-    /* Floating Download Trigger Button for Mobile & Desktop */
-    .pwa-float-trigger {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: linear-gradient(135deg, #ea3a18, #d23111);
-      color: #ffffff;
-      border: none;
-      border-radius: 50px;
-      padding: 11px 18px;
-      font-size: 0.84rem;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 6px 20px rgba(234, 58, 24, 0.38);
-      z-index: 9998;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
-    }
-    .pwa-float-trigger:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 24px rgba(234, 58, 24, 0.45);
-    }
-    .pwa-float-trigger svg {
-      width: 17px;
-      height: 17px;
-      stroke-width: 2.3;
+    /* Bottom / Floating Download Trigger Permanently Hidden */
+    .pwa-float-trigger,
+    #pwaDownloadBtn,
+    .pwa-download-float,
+    [data-float-btn],
+    [data-pwa-float] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      left: -9999px !important;
+      top: -9999px !important;
     }
 
     /* Modal Backdrop */
@@ -109,6 +109,8 @@
       padding: 16px;
       opacity: 0;
       transition: opacity 0.2s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .pwa-modal-backdrop.open {
       display: flex;
@@ -119,13 +121,16 @@
     .pwa-modal-card {
       background: #ffffff;
       border-radius: 18px;
-      padding: 28px 24px;
+      padding: 24px 20px;
       max-width: 440px;
       width: 100%;
       box-shadow: 0 20px 45px rgba(0,0,0,0.22);
       border: 1px solid #eae5de;
       transform: scale(0.95);
       transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      margin: auto;
     }
     .pwa-modal-backdrop.open .pwa-modal-card {
       transform: scale(1);
@@ -270,17 +275,6 @@
   `;
   document.body.appendChild(modalContainer);
 
-  // Floating Button Trigger
-  const floatBtn = document.createElement('button');
-  floatBtn.type = 'button';
-  floatBtn.className = 'pwa-float-trigger';
-  floatBtn.id = 'pwaFloatTrigger';
-  floatBtn.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-    Download App
-  `;
-  document.body.appendChild(floatBtn);
-
   // Toast container
   const toast = document.createElement('div');
   toast.className = 'pwa-toast';
@@ -301,8 +295,7 @@
     modalContainer.classList.remove('open');
   }
 
-  // Event Listeners
-  floatBtn.addEventListener('click', openPwaModal);
+  // Event Listeners (Triggers in header / navbar)
   document.querySelectorAll('.pwa-trigger-btn, #pwaDownloadBtn').forEach(btn => {
     btn.addEventListener('click', openPwaModal);
   });

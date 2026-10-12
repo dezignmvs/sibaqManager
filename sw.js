@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sibaq-pwa-v1';
+const CACHE_NAME = 'sibaq-pwa-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

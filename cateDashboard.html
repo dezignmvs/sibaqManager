@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,28 +14,30 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css" />
+  <link rel="stylesheet" href="mobile-ui.css" />
   <style>
     :root {
       --brand-red: #ea3a18;
       --brand-red-hover: #d23111;
       --brand-red-soft: #fdf1ee;
       --brand-red-border: #fecbc2;
-      
+
       --brand-yellow: #eeb400;
       --brand-yellow-hover: #dca500;
       --brand-yellow-soft: #fef9e8;
       --brand-yellow-border: #fae69e;
-      
+
       --bg-page: #faf8f5;
       --surface: #ffffff;
       --border-subtle: #eae5de;
-      
+
       --text-main: #1f1b18;
       --text-muted: #79716b;
       --text-placeholder: #a8a199;
-      
+
       --sidebar-width: 250px;
     }
 
@@ -317,8 +320,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Coordinator Page Layout & Cards */
@@ -489,6 +499,41 @@
       background: var(--brand-red-hover);
     }
 
+    .btn-photo-upload,
+    .bg-fill-yellow {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 16px !important;
+      background: var(--brand-yellow, #eeb400) !important;
+      border: 1px solid #dca500 !important;
+      border-radius: 8px !important;
+      font-size: 0.84rem !important;
+      font-weight: 600 !important;
+      color: #1f1b18 !important;
+      cursor: pointer !important;
+      user-select: none !important;
+      box-shadow: 0 1px 3px rgba(238, 180, 0, 0.25) !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .btn-photo-upload:hover,
+    .bg-fill-yellow:hover {
+      background: var(--brand-yellow-hover, #dca500) !important;
+      border-color: #c89500 !important;
+    }
+
+    .btn-photo-upload:active,
+    .bg-fill-yellow:active {
+      transform: scale(0.97) !important;
+    }
+
+    .btn-photo-upload svg,
+    .bg-fill-yellow svg {
+      color: #1f1b18 !important;
+      flex-shrink: 0 !important;
+    }
+
     .btn-fest-pill {
       background: #fef8e7;
       border: 1px solid #fae69e;
@@ -632,41 +677,50 @@
     #page-attendance-coach .coord-card {
       overflow: visible !important;
     }
+
     #page-attendance .table-responsive,
     #page-attendance-coach .table-responsive {
       overflow: visible !important;
     }
+
     #page-attendance table,
     #page-attendance-coach table {
       position: relative;
     }
+
     #page-attendance tr,
     #page-attendance-coach tr {
       position: relative;
     }
+
     #page-attendance td,
     #page-attendance-coach td {
       overflow: visible !important;
       position: relative;
     }
+
     #page-attendance tr:hover,
     #page-attendance-coach tr:hover {
       z-index: 10;
     }
+
     .status-dropdown-wrap {
       position: relative;
       width: 135px;
       user-select: none;
     }
+
     .status-dropdown-wrap.open {
       z-index: 9999 !important;
     }
+
     .status-dropdown-btn {
       width: 100%;
       height: 34px;
       padding: 0 10px;
       font-size: 0.84rem;
-      font-weight: 500; /* Regular weight, not bold */
+      font-weight: 500;
+      /* Regular weight, not bold */
       border-radius: 8px;
       border: 1px solid var(--border-subtle);
       background: #ffffff;
@@ -677,22 +731,29 @@
       transition: all 0.15s ease;
       color: var(--text-main);
     }
+
     .status-dropdown-btn:hover {
       border-color: #cbd5e1;
       background: #fafaf9;
     }
+
     .status-dropdown-btn .selected-val {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      font-weight: 500; /* Regular weight */
+      font-weight: 500;
+      /* Regular weight */
     }
+
     .status-dropdown-btn .label-text {
-      font-weight: 500; /* Regular weight */
+      font-weight: 500;
+      /* Regular weight */
     }
+
     .status-dropdown-btn i.hgi {
       font-size: 1.05rem;
     }
+
     .status-dropdown-menu {
       position: absolute;
       top: calc(100% + 4px);
@@ -701,50 +762,61 @@
       min-width: 140px;
       background: #ffffff !important;
       border: 1px solid #e2e8f0;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.15), 0 5px 10px rgba(0,0,0,0.08);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.08);
       border-radius: 8px;
       padding: 4px;
       display: none;
       flex-direction: column;
       gap: 2px;
-      z-index: 99999 !important; /* Overlay above rows and tables */
+      z-index: 99999 !important;
+      /* Overlay above rows and tables */
     }
+
     .status-dropdown-wrap.open .status-dropdown-menu {
       display: flex !important;
       visibility: visible !important;
       opacity: 1 !important;
     }
+
     .status-option {
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 6px 10px;
       font-size: 0.83rem;
-      font-weight: 400; /* Regular weight, not bold */
+      font-weight: 400;
+      /* Regular weight, not bold */
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.12s;
       color: var(--text-main);
     }
+
     .status-option:hover {
       background: #f1f5f9;
     }
+
     .status-option i.hgi {
       font-size: 1.05rem;
     }
+
     /* Specific status colors */
     .status-pending {
       color: #64748b;
     }
+
     .status-present {
       color: #16a34a;
     }
+
     .status-absent {
       color: #dc2626;
     }
+
     .status-late {
       color: #d97706;
     }
+
     .status-leave {
       color: #2563eb;
     }
@@ -767,26 +839,31 @@
       transition: all 0.15s ease;
       box-shadow: 0 1px 2px rgba(162, 28, 36, 0.18);
     }
+
     .btn-set-attend i.hgi {
       font-size: 0.95rem;
       line-height: 1;
     }
+
     .btn-set-attend:hover:not(:disabled) {
       background: #8b161d;
       border-color: #8b161d;
       color: #ffffff;
     }
+
     .btn-set-attend.is-set {
       background: #ffffff;
       color: var(--text-main);
       border: 1px solid var(--border-subtle);
       box-shadow: none;
     }
+
     .btn-set-attend.is-set:hover {
       background: var(--brand-red-soft);
       color: var(--brand-red);
       border-color: var(--brand-red-border);
     }
+
     .status-dropdown-wrap.is-locked .status-dropdown-btn {
       background: #f8fafc;
       border-color: #e2e8f0;
@@ -799,7 +876,7 @@
       margin-bottom: 8px;
     }
 
-    .sched-search-input-wrap > svg {
+    .sched-search-input-wrap>svg {
       position: absolute;
       left: 12px;
       top: 50%;
@@ -947,11 +1024,13 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
+
     .sched-subnav-btn:hover {
       background: #ffffff;
       color: var(--text-main);
       border-color: #d1cbc1;
     }
+
     .sched-subnav-btn.active {
       background: var(--brand-red-soft);
       color: var(--brand-red);
@@ -973,12 +1052,14 @@
       opacity: 0;
       transform: translateY(12px);
       transition: all 0.25s ease;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     }
+
     /* Mobile Drawer & Responsive Styles */
     .mobile-topbar {
       display: none;
     }
+
     .mobile-sidebar-close {
       display: none;
       margin-left: auto;
@@ -990,6 +1071,7 @@
       padding: 4px 8px;
       border-radius: 6px;
     }
+
     .sidebar-backdrop {
       display: none;
     }
@@ -998,6 +1080,7 @@
       body {
         flex-direction: column;
       }
+
       .mobile-topbar {
         display: flex;
         align-items: center;
@@ -1009,6 +1092,7 @@
         top: 0;
         z-index: 990;
       }
+
       .mobile-menu-btn {
         background: none;
         border: 1px solid var(--border-subtle);
@@ -1020,20 +1104,24 @@
         cursor: pointer;
         color: var(--text-main);
       }
+
       .mobile-brand {
         display: flex;
         align-items: center;
         gap: 8px;
       }
+
       .mobile-brand-img {
         width: 28px;
         height: auto;
       }
+
       .mobile-brand-text {
         font-size: 1.1rem;
         font-weight: 800;
         color: var(--text-main);
       }
+
       .mobile-status-dot {
         width: 10px;
         height: 10px;
@@ -1045,6 +1133,7 @@
       .mobile-sidebar-close {
         display: block;
       }
+
       .sidebar {
         position: fixed;
         top: 0;
@@ -1059,10 +1148,12 @@
         box-shadow: none;
         overflow-y: auto;
       }
+
       .sidebar.mobile-open {
         transform: translateX(0);
-        box-shadow: 0 0 30px rgba(0,0,0,0.25);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
       }
+
       .sidebar-backdrop {
         display: block;
         position: fixed;
@@ -1074,6 +1165,7 @@
         visibility: hidden;
         transition: opacity 0.25s ease, visibility 0.25s ease;
       }
+
       .sidebar-backdrop.active {
         opacity: 1;
         visibility: visible;
@@ -1106,12 +1198,14 @@
       .page-title {
         font-size: 1.3rem !important;
       }
+
       .modal-card {
         padding: 16px !important;
       }
     }
   </style>
 </head>
+
 <body>
   <!-- Mobile Backdrop Overlay -->
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -1119,7 +1213,12 @@
   <!-- Mobile Sticky Topbar -->
   <header class="mobile-topbar" id="mobileTopbar">
     <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
     </button>
     <div class="mobile-brand">
       <img src="Sibaq Logo.png" alt="Sibaq Logo" class="mobile-brand-img">
@@ -1142,20 +1241,31 @@
       <!-- Attendance -->
       <li class="nav-item has-submenu open active" data-tab="attendance">
         <a class="nav-link">
-          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
           Attendance
-          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </a>
         <ul class="submenu">
           <li class="submenu-item active" data-tab="attendance">
             <a class="submenu-link">
-              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+              </svg>
               Candidates
             </a>
           </li>
           <li class="submenu-item" data-tab="attendance-coach">
             <a class="submenu-link">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="5"></circle>
+                <path d="M20 21a8 8 0 1 0-16 0"></path>
+              </svg>
               Coach
             </a>
           </li>
@@ -1165,7 +1275,10 @@
       <!-- Tasks -->
       <li class="nav-item" data-tab="tasks">
         <a class="nav-link">
-          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          <svg viewBox="0 0 24 24">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
           Tasks
         </a>
       </li>
@@ -1173,7 +1286,11 @@
       <!-- Evaluation -->
       <li class="nav-item" data-tab="evaluation">
         <a class="nav-link">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <svg viewBox="0 0 24 24">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+            </polygon>
+          </svg>
           Evaluation
         </a>
       </li>
@@ -1181,7 +1298,11 @@
       <!-- Punishment -->
       <li class="nav-item" data-tab="punishment">
         <a class="nav-link">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
           Punishment
         </a>
       </li>
@@ -1189,7 +1310,12 @@
       <!-- Absence -->
       <li class="nav-item" data-tab="absence">
         <a class="nav-link">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
           Absence
         </a>
       </li>
@@ -1197,7 +1323,10 @@
       <!-- Schedule Set -->
       <li class="nav-item" data-tab="schedule">
         <a class="nav-link">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
           Schedule Set
         </a>
       </li>
@@ -1213,7 +1342,8 @@
         </div>
       </div>
       <button class="logout-btn" id="logoutBtn" title="Sign Out" aria-label="Sign Out">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -1231,7 +1361,11 @@
       </div>
       <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         <button type="button" class="pwa-trigger-btn pwa-download-btn" title="Download or Install Sibaq App">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
           Download App
         </button>
         <div class="session-badge">
@@ -1248,20 +1382,29 @@
           <div class="coord-header">
             <div class="coord-title-wrap">
               <div class="coord-icon-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
               </div>
               <div>
                 <h3 style="font-size: 1.15rem; font-weight: 800;">Candidate Attendance Roster</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Mark present, leave, or pending for scheduled candidates</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Mark present, leave, or pending for scheduled
+                  candidates</p>
               </div>
             </div>
             <div class="coord-actions-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <label for="studentAttendDate" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Attendance Date:</label>
-                <input type="date" id="studentAttendDate" class="form-input" style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
+                <label for="studentAttendDate"
+                  style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Attendance
+                  Date:</label>
+                <input type="date" id="studentAttendDate" class="form-input"
+                  style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
               </div>
               <button type="button" class="btn-brand-primary" id="btnSaveStudentAttendance">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
                 Save Attendance
               </button>
             </div>
@@ -1297,20 +1440,29 @@
           <div class="coord-header">
             <div class="coord-title-wrap">
               <div class="coord-icon-badge" style="background: var(--brand-yellow-soft); color: #855e00;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="8" r="5"></circle>
+                  <path d="M20 21a8 8 0 1 0-16 0"></path>
+                </svg>
               </div>
               <div>
                 <h3 style="font-size: 1.15rem; font-weight: 800;">Coach Attendance & Shifts</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Supervise assigned coaches and stage coordinators</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Supervise assigned coaches and stage
+                  coordinators</p>
               </div>
             </div>
             <div class="coord-actions-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <label for="coachAttendDate" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Shift Date:</label>
-                <input type="date" id="coachAttendDate" class="form-input" style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
+                <label for="coachAttendDate"
+                  style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Shift
+                  Date:</label>
+                <input type="date" id="coachAttendDate" class="form-input"
+                  style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
               </div>
               <button type="button" class="btn-brand-primary" id="btnSaveCoachAttendance">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
                 Save Shift Log
               </button>
             </div>
@@ -1345,17 +1497,26 @@
           <!-- Task Form Card -->
           <div class="coord-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Create New Task</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Assign task with live countdown timer and remarks</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Assign task with live
+              countdown timer and remarks</p>
 
             <form id="createTaskForm">
               <div class="form-group" style="position: relative;">
                 <label class="form-label" for="taskProgSearch">Program + Category (Search & Select)</label>
                 <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <input type="text" id="taskProgSearch" class="form-input" placeholder="Search program name..." autocomplete="off" required />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="taskProgSearch" class="form-input" placeholder="Search program name..."
+                    autocomplete="off" required />
                   <input type="hidden" id="taskProgramSelect" required />
                   <button type="button" id="taskProgClearBtn" class="search-clear-btn" title="Clear Selection">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                   </button>
                 </div>
                 <!-- Interactive Dropdown List from DB -->
@@ -1370,9 +1531,12 @@
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <label class="form-label" for="taskAssignee" style="margin-bottom: 0;">Assignee (Candidate)</label>
-                  <span id="assigneeDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                  <span id="assigneeDbBadge"
+                    style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Candidate
+                    (DB)</span>
                 </div>
-                <input type="text" id="taskAssignee" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="taskStudentSuggestions" required />
+                <input type="text" id="taskAssignee" class="form-input"
+                  placeholder="Auto-filled candidate from DB (or select/type)" list="taskStudentSuggestions" required />
                 <datalist id="taskStudentSuggestions"></datalist>
               </div>
 
@@ -1382,7 +1546,9 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="taskRemarks">Remarks / Instructions</label>
-                <textarea id="taskRemarks" class="form-input" style="height: 75px; padding: 10px 14px; resize: vertical;" placeholder="Add specific task instructions..."></textarea>
+                <textarea id="taskRemarks" class="form-input"
+                  style="height: 75px; padding: 10px 14px; resize: vertical;"
+                  placeholder="Add specific task instructions..."></textarea>
               </div>
               <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
                 + Start Task & Timer
@@ -1425,17 +1591,26 @@
           <!-- Evaluation Form Card -->
           <div class="coord-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Record Evaluation</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Score out of 100% and attach proof image</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Score out of 100% and attach
+              proof image</p>
 
             <form id="evaluationForm">
               <div class="form-group" style="position: relative;">
                 <label class="form-label" for="evalProgSearch">Program / Event (Search & Select)</label>
                 <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <input type="text" id="evalProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" required />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="evalProgSearch" class="form-input" placeholder="Search program name from DB..."
+                    autocomplete="off" required />
                   <input type="hidden" id="evalProgram" required />
                   <button type="button" id="evalProgClearBtn" class="search-clear-btn" title="Clear Selection">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                   </button>
                 </div>
                 <!-- Interactive Dropdown List from DB -->
@@ -1445,25 +1620,47 @@
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <label class="form-label" for="evalCandidate" style="margin-bottom: 0;">Candidate Name</label>
-                  <span id="evalCandidateDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                  <span id="evalCandidateDbBadge"
+                    style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Candidate
+                    (DB)</span>
                 </div>
-                <input type="text" id="evalCandidate" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="evalCandidateSuggestions" required />
+                <input type="text" id="evalCandidate" class="form-input"
+                  placeholder="Auto-filled candidate from DB (or select/type)" list="evalCandidateSuggestions"
+                  required />
                 <datalist id="evalCandidateSuggestions"></datalist>
               </div>
               <div class="form-group">
                 <label class="form-label" for="evalScore">Mark / Score (0 - 100%)</label>
-                <input type="number" id="evalScore" class="form-input" min="0" max="100" placeholder="e.g. 95" required />
+                <input type="number" id="evalScore" class="form-input" min="0" max="100" placeholder="e.g. 95"
+                  required />
               </div>
               <div class="form-group">
                 <label class="form-label" for="evalImageInput">Evaluation Sheet Image (Optional)</label>
-                <input type="file" id="evalImageInput" class="form-input" accept="image/*" style="padding-top: 6px;" />
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <button type="button" class="btn-photo-upload bg-fill-yellow" id="evalUploadBtn" onclick="document.getElementById('evalImageInput').click()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span id="evalUploadText">Change photo</span>
+                  </button>
+                  <input type="file" id="evalImageInput" accept="image/*" style="display: none;" />
+                  <span id="evalFileName" style="font-size: 0.82rem; color: var(--text-muted); display: none;"></span>
+                </div>
                 <div id="evalImagePreviewContainer" style="display: none; margin-top: 10px;">
-                  <img id="evalImagePreview" src="" alt="Preview" style="max-height: 100px; border-radius: 8px; border: 1px solid var(--border-subtle);" />
+                  <div style="position: relative; display: inline-block;">
+                    <img id="evalImagePreview" src="" alt="Preview"
+                      style="max-height: 100px; border-radius: 8px; border: 1px solid var(--border-subtle); display: block;" />
+                    <button type="button" id="evalRemoveImageBtn" style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #ea3a18; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; line-height: 1;" title="Remove image">&times;</button>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="form-label" for="evalRemarks">Evaluator Remarks</label>
-                <textarea id="evalRemarks" class="form-input" style="height: 75px; padding: 10px 14px; resize: vertical;" placeholder="Comments, jury notes..."></textarea>
+                <textarea id="evalRemarks" class="form-input"
+                  style="height: 75px; padding: 10px 14px; resize: vertical;"
+                  placeholder="Comments, jury notes..."></textarea>
               </div>
               <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
                 Save Evaluation Score
@@ -1507,17 +1704,26 @@
           <!-- Punishment Form Card -->
           <div class="coord-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Issue Disciplinary Penalty</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Log infraction and start penalty countdown timer</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Log infraction and start
+              penalty countdown timer</p>
 
             <form id="punishmentForm">
               <div class="form-group" style="position: relative;">
                 <label class="form-label" for="punishProgSearch">Program + Category (Search & Select)</label>
                 <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <input type="text" id="punishProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="punishProgSearch" class="form-input"
+                    placeholder="Search program name from DB..." autocomplete="off" />
                   <input type="hidden" id="punishProgram" />
                   <button type="button" id="punishProgClearBtn" class="search-clear-btn" title="Clear Selection">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                   </button>
                 </div>
                 <!-- Interactive Dropdown List from DB -->
@@ -1527,24 +1733,31 @@
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <label class="form-label" for="punishPerson" style="margin-bottom: 0;">Person / Candidate</label>
-                  <span id="punishPersonDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                  <span id="punishPersonDbBadge"
+                    style="display: none; font-size: 0.72rem; font-weight: 700; color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 999px;">Candidate
+                    (DB)</span>
                 </div>
-                <input type="text" id="punishPerson" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="punishPersonSuggestions" required />
+                <input type="text" id="punishPerson" class="form-input"
+                  placeholder="Auto-filled candidate from DB (or select/type)" list="punishPersonSuggestions"
+                  required />
                 <datalist id="punishPersonSuggestions"></datalist>
               </div>
               <div class="form-group">
                 <label class="form-label" for="punishReason">Infraction Reason</label>
-                <input type="text" id="punishReason" class="form-input" placeholder="e.g. False start or misconduct" required />
+                <input type="text" id="punishReason" class="form-input" placeholder="e.g. False start or misconduct"
+                  required />
               </div>
               <div class="form-group">
                 <label class="form-label" for="punishAction">Penalty Action</label>
-                <input type="text" id="punishAction" class="form-input" placeholder="e.g. 15m Stand-down bench" required />
+                <input type="text" id="punishAction" class="form-input" placeholder="e.g. 15m Stand-down bench"
+                  required />
               </div>
               <div class="form-group">
                 <label class="form-label" for="punishTimerMin">Penalty Timer (Minutes)</label>
                 <input type="number" id="punishTimerMin" class="form-input" min="1" max="120" value="15" required />
               </div>
-              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center; background: #dc2626;">
+              <button type="submit" class="btn-brand-primary"
+                style="width: 100%; justify-content: center; background: #dc2626;">
                 Issue Penalty & Start Timer
               </button>
             </form>
@@ -1585,17 +1798,26 @@
           <!-- Absence Form Card -->
           <div class="coord-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Log Absence Record</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Record official, medical, or unexcused leave</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Record official, medical, or
+              unexcused leave</p>
 
             <form id="absenceForm">
               <div class="form-group" style="position: relative;">
                 <label class="form-label" for="absenceProgSearch">Program + Category (Search & Select)</label>
                 <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <input type="text" id="absenceProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="absenceProgSearch" class="form-input"
+                    placeholder="Search program name from DB..." autocomplete="off" />
                   <input type="hidden" id="absenceProgram" />
                   <button type="button" id="absenceProgClearBtn" class="search-clear-btn" title="Clear Selection">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                   </button>
                 </div>
                 <!-- Interactive Dropdown List from DB -->
@@ -1605,9 +1827,13 @@
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <label class="form-label" for="absenceName" style="margin-bottom: 0;">Candidate / Person</label>
-                  <span id="absencePersonDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
+                  <span id="absencePersonDbBadge"
+                    style="display: none; font-size: 0.72rem; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 999px;">Candidate
+                    (DB)</span>
                 </div>
-                <input type="text" id="absenceName" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="absencePersonSuggestions" required />
+                <input type="text" id="absenceName" class="form-input"
+                  placeholder="Auto-filled candidate from DB (or select/type)" list="absencePersonSuggestions"
+                  required />
                 <datalist id="absencePersonSuggestions"></datalist>
               </div>
               <div class="form-group">
@@ -1625,7 +1851,9 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="absenceRemarks">Remarks & Documentation</label>
-                <textarea id="absenceRemarks" class="form-input" style="height: 80px; padding: 10px 14px; resize: vertical;" placeholder="Doctor note, coordinator note..."></textarea>
+                <textarea id="absenceRemarks" class="form-input"
+                  style="height: 80px; padding: 10px 14px; resize: vertical;"
+                  placeholder="Doctor note, coordinator note..."></textarea>
               </div>
               <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center;">
                 Save Absence Record
@@ -1666,13 +1894,24 @@
     <div class="tab-page" id="page-schedule">
       <div class="coord-page-container">
         <!-- Subnav Switcher for Schedule Set -->
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
-          <button type="button" class="sched-subnav-btn active" id="btnSubTabPrograms" onclick="switchScheduleSubTab('programs')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <div
+          style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+          <button type="button" class="sched-subnav-btn active" id="btnSubTabPrograms"
+            onclick="switchScheduleSubTab('programs')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
             Program Master Schedule
           </button>
-          <button type="button" class="sched-subnav-btn" id="btnSubTabTimeSets" onclick="switchScheduleSubTab('timesets')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <button type="button" class="sched-subnav-btn" id="btnSubTabTimeSets"
+            onclick="switchScheduleSubTab('timesets')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
             Time Sets Configuration
           </button>
         </div>
@@ -1682,7 +1921,8 @@
           <!-- Schedule Form Card -->
           <div class="coord-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Schedule Program Slot</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Select program, choose preset time sets, and assign coach</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Select program, choose preset
+              time sets, and assign coach</p>
 
             <form id="scheduleForm">
               <div class="form-group">
@@ -1693,11 +1933,19 @@
               <div class="form-group" style="position: relative;">
                 <label class="form-label" for="schedProgSearch">Program + Category (Search & Select)</label>
                 <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <input type="text" id="schedProgSearch" class="form-input" placeholder="Search program name..." autocomplete="off" required />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="schedProgSearch" class="form-input" placeholder="Search program name..."
+                    autocomplete="off" required />
                   <input type="hidden" id="schedProgramSelect" required />
                   <button type="button" id="schedProgClearBtn" class="search-clear-btn" title="Clear Selection">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                   </button>
                 </div>
                 <!-- Interactive Dropdown List from DB -->
@@ -1707,7 +1955,8 @@
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <label class="form-label" for="schedTimePreset" style="margin-bottom: 0;">Select Time Set</label>
-                  <button type="button" onclick="switchScheduleSubTab('timesets')" style="background: none; border: none; color: var(--brand-red); font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                  <button type="button" onclick="switchScheduleSubTab('timesets')"
+                    style="background: none; border: none; color: var(--brand-red); font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
                     + Manage Time Sets
                   </button>
                 </div>
@@ -1717,7 +1966,8 @@
                 <div class="timeset-preview-card" id="schedTimeSetPreview" style="display: none;">
                   <div>
                     <strong id="schedPreviewName" style="color: #15803d; font-size: 0.88rem;">Morning Set</strong>
-                    <div id="schedPreviewRange" style="font-size: 0.78rem; color: var(--text-muted);">08:30 - 11:45</div>
+                    <div id="schedPreviewRange" style="font-size: 0.78rem; color: var(--text-muted);">08:30 - 11:45
+                    </div>
                   </div>
                   <span class="pill pill-green">Active Preset</span>
                 </div>
@@ -1725,10 +1975,13 @@
 
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label" for="schedCandidate" style="margin-bottom: 0;">Candidate(s) / Participant(s)</label>
-                  <span id="schedCandidateSourceBadge" class="pill pill-green" style="font-size: 0.7rem; padding: 2px 6px; display: none;">Auto-filled (DB)</span>
+                  <label class="form-label" for="schedCandidate" style="margin-bottom: 0;">Candidate(s) /
+                    Participant(s)</label>
+                  <span id="schedCandidateSourceBadge" class="pill pill-green"
+                    style="font-size: 0.7rem; padding: 2px 6px; display: none;">Auto-filled (DB)</span>
                 </div>
-                <input type="text" id="schedCandidate" class="form-input" list="schedCandidatesDatalist" placeholder="Auto-filled from selected program or type custom" />
+                <input type="text" id="schedCandidate" class="form-input" list="schedCandidatesDatalist"
+                  placeholder="Auto-filled from selected program or type custom" />
                 <datalist id="schedCandidatesDatalist"></datalist>
               </div>
 
@@ -1785,48 +2038,30 @@
             <form id="timeSetForm" autocomplete="off">
               <div class="form-group">
                 <label class="form-label" for="timeSetName">Name / Title</label>
-                <input
-                  type="text"
-                  id="timeSetName"
-                  class="form-input"
-                  placeholder="e.g. Morning Session / 100m Sprint Heats"
-                  required
-                />
+                <input type="text" id="timeSetName" class="form-input"
+                  placeholder="e.g. Morning Session / 100m Sprint Heats" required />
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div class="form-group">
                   <label class="form-label" for="timeSetStart">Time Starting</label>
-                  <input
-                    type="time"
-                    id="timeSetStart"
-                    class="form-input"
-                    required
-                  />
+                  <input type="time" id="timeSetStart" class="form-input" required />
                 </div>
 
                 <div class="form-group">
                   <label class="form-label" for="timeSetEnd">Time Ending</label>
-                  <input
-                    type="time"
-                    id="timeSetEnd"
-                    class="form-input"
-                    required
-                  />
+                  <input type="time" id="timeSetEnd" class="form-input" required />
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="timeSetRemarks">Remarks / Notes</label>
-                <input
-                  type="text"
-                  id="timeSetRemarks"
-                  class="form-input"
-                  placeholder="e.g. Official competition slot"
-                />
+                <input type="text" id="timeSetRemarks" class="form-input"
+                  placeholder="e.g. Official competition slot" />
               </div>
 
-              <button type="submit" class="btn-brand-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+              <button type="submit" class="btn-brand-primary"
+                style="width: 100%; justify-content: center; margin-top: 10px;">
                 Save Time Set
               </button>
             </form>
@@ -2066,10 +2301,10 @@
                 const cleaned = list.filter(item => item && !mockIds.has(item.id));
                 localStorage.setItem(key, JSON.stringify(cleaned));
               }
-            } catch(e) {}
+            } catch (e) { }
           }
         });
-      } catch(e) {}
+      } catch (e) { }
     })();
 
     function getStoredProgramRecords() {
@@ -2081,7 +2316,7 @@
             return parsed.filter(p => p && !['prog_1', 'prog_2', 'prog_3', 'prog_4', 'prog_5'].includes(p.id));
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -2094,7 +2329,7 @@
             return parsed.filter(t => t && !['ts_default_1', 'ts_default_2'].includes(t.id));
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -2112,7 +2347,7 @@
           const map = JSON.parse(raw);
           return map[date] || {};
         }
-      } catch (e) {}
+      } catch (e) { }
       return {};
     }
 
@@ -2123,13 +2358,24 @@
         const map = raw ? JSON.parse(raw) : {};
         map[date] = recordsMap;
         localStorage.setItem(STUDENT_ATTENDANCE_STORAGE_KEY, JSON.stringify(map));
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function getAttendanceCandidates(targetDate) {
       const records = getStoredProgramRecords();
       const schedList = getStoredSchedule();
       const list = [];
+
+      // Filter slots for targetDate (if date provided, match s.date, else match any)
+      const matchingScheduleSlots = schedList.filter(s => {
+        return !targetDate || !s.date || s.date === targetDate;
+      });
+
+      if (matchingScheduleSlots.length === 0) {
+        return list;
+      }
+
+      const handledSlotKeys = new Set();
 
       records.forEach(p => {
         let candidatesArr = [];
@@ -2144,39 +2390,80 @@
         const progName = p.name || p.program || 'Unnamed Program';
         const progNameLower = progName.trim().toLowerCase();
 
-        // Find schedule slots for this program on targetDate (if date provided, match s.date, else match any)
-        const matchingSlots = schedList.filter(s => {
-          const dateMatch = !targetDate || !s.date || s.date === targetDate;
-          if (!dateMatch) return false;
+        // Find schedule slots for this program on targetDate
+        const progSlots = matchingScheduleSlots.filter(s => {
           const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
           return progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
         });
 
-        candidatesArr.forEach(c => {
-          let name = '';
-          if (typeof c === 'string') {
-            name = c.trim();
-          } else if (c && typeof c === 'object') {
-            name = (c.name || c.studentName || '').trim();
-          }
-          if (!name) return;
+        if (progSlots.length === 0) return; // Only if schedule created!
 
-          const candNameLower = name.toLowerCase();
+        progSlots.forEach(slot => {
+          if (slot.id) handledSlotKeys.add(slot.id);
+        });
 
-          // Filter slots that specifically target this candidate or apply to the whole program
-          const candSlots = matchingSlots.filter(s => {
-            if (!s.candidate || !s.candidate.trim()) return true;
-            const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
-            return candsInSlot.includes(candNameLower);
+        if (candidatesArr.length > 0) {
+          candidatesArr.forEach(c => {
+            let name = '';
+            if (typeof c === 'string') {
+              name = c.trim();
+            } else if (c && typeof c === 'object') {
+              name = (c.name || c.studentName || '').trim();
+            }
+            if (!name) return;
+
+            const candNameLower = name.toLowerCase();
+
+            // Filter slots that specifically target this candidate or apply to the whole program
+            const candSlots = progSlots.filter(s => {
+              if (!s.candidate || !s.candidate.trim()) return true;
+              const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
+              return candsInSlot.includes(candNameLower);
+            });
+
+            if (candSlots.length > 0) {
+              candSlots.forEach((slot, sIdx) => {
+                list.push({
+                  name,
+                  program: progName,
+                  category: p.category || slot.category || 'General',
+                  slotId: slot.id || `slot_${sIdx + 1}`,
+                  timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                  startTime: slot.startTime || '',
+                  endTime: slot.endTime || '',
+                  timeSetName: slot.timeSetName || '',
+                  venue: slot.venue || '',
+                  slotIndex: sIdx + 1,
+                  totalSlots: candSlots.length
+                });
+              });
+            }
           });
-
-          if (candSlots.length > 0) {
-            // Program assigned 1, 2, or more times
-            candSlots.forEach((slot, sIdx) => {
+        } else {
+          // Program record had no candidates; use candidates specified on schedule slot
+          progSlots.forEach((slot, sIdx) => {
+            const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
+            if (slotCands.length > 0) {
+              slotCands.forEach(name => {
+                list.push({
+                  name,
+                  program: progName,
+                  category: p.category || slot.category || 'General',
+                  slotId: slot.id || `slot_${sIdx + 1}`,
+                  timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                  startTime: slot.startTime || '',
+                  endTime: slot.endTime || '',
+                  timeSetName: slot.timeSetName || '',
+                  venue: slot.venue || '',
+                  slotIndex: sIdx + 1,
+                  totalSlots: 1
+                });
+              });
+            } else {
               list.push({
-                name,
+                name: 'All Program Candidates',
                 program: progName,
-                category: p.category || 'General',
+                category: p.category || slot.category || 'General',
                 slotId: slot.id || `slot_${sIdx + 1}`,
                 timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
                 startTime: slot.startTime || '',
@@ -2184,27 +2471,52 @@
                 timeSetName: slot.timeSetName || '',
                 venue: slot.venue || '',
                 slotIndex: sIdx + 1,
-                totalSlots: candSlots.length
+                totalSlots: 1
               });
-            });
-          } else {
-            // Baseline unscheduled row
+            }
+          });
+        }
+      });
+
+      // Handle any schedule slots that were created for programs not in program records
+      matchingScheduleSlots.forEach((slot, sIdx) => {
+        if (slot.id && handledSlotKeys.has(slot.id)) return;
+        const progs = Array.isArray(slot.programs) ? slot.programs : (slot.program ? [slot.program] : ['General Program']);
+        const progName = progs[0] || 'Scheduled Program';
+        const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
+        if (slotCands.length > 0) {
+          slotCands.forEach(name => {
             list.push({
               name,
               program: progName,
-              category: p.category || 'General',
-              slotId: '',
-              timeSlot: '',
-              startTime: '',
-              endTime: '',
-              timeSetName: '',
-              venue: '',
+              category: slot.category || 'General',
+              slotId: slot.id || `slot_extra_${sIdx + 1}`,
+              timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+              startTime: slot.startTime || '',
+              endTime: slot.endTime || '',
+              timeSetName: slot.timeSetName || '',
+              venue: slot.venue || '',
               slotIndex: 1,
-              totalSlots: 0
+              totalSlots: 1
             });
-          }
-        });
+          });
+        } else {
+          list.push({
+            name: 'All Program Candidates',
+            program: progName,
+            category: slot.category || 'General',
+            slotId: slot.id || `slot_extra_${sIdx + 1}`,
+            timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+            startTime: slot.startTime || '',
+            endTime: slot.endTime || '',
+            timeSetName: slot.timeSetName || '',
+            venue: slot.venue || '',
+            slotIndex: 1,
+            totalSlots: 1
+          });
+        }
       });
+
       return list;
     }
 
@@ -2226,9 +2538,9 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="8" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-              <strong>No Program Candidate Records Found in Database</strong>
-              <div style="font-size: 0.82rem; margin-top: 4px;">Candidates registered under programs in Program Records will automatically populate here.</div>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <strong>No Scheduled Programs Found for Selected Date</strong>
+              <div style="font-size: 0.82rem; margin-top: 4px;">Candidate attendance is only displayed for scheduled programs. Create a schedule in Schedule Set to take attendance.</div>
             </td>
           </tr>
         `;
@@ -2338,7 +2650,7 @@
     }
 
     // Toggle and select methods for attendance status
-    window.toggleStatusDropdown = function(btn, event) {
+    window.toggleStatusDropdown = function (btn, event) {
       if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -2356,7 +2668,7 @@
       }
     };
 
-    window.selectAttendanceStatus = function(optionEl, status) {
+    window.selectAttendanceStatus = function (optionEl, status) {
       const wrap = optionEl.closest('.status-dropdown-wrap');
       if (!wrap || wrap.classList.contains('is-locked')) return;
       wrap.dataset.status = status;
@@ -2373,7 +2685,7 @@
     };
 
     // Toggle Register / Edit on a specific candidate row
-    window.toggleRowSet = function(button) {
+    window.toggleRowSet = function (button) {
       const row = button.closest('tr');
       if (!row) return;
       const wrap = row.querySelector('.status-dropdown-wrap');
@@ -2492,7 +2804,7 @@
           const map = JSON.parse(raw);
           return map[date] || {};
         }
-      } catch (e) {}
+      } catch (e) { }
       return {};
     }
 
@@ -2503,7 +2815,7 @@
         const map = raw ? JSON.parse(raw) : {};
         map[date] = recordsMap;
         localStorage.setItem(COACH_ATTENDANCE_STORAGE_KEY, JSON.stringify(map));
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function getAttendanceCoaches(targetDate) {
@@ -2511,76 +2823,66 @@
       const schedList = getStoredSchedule();
       const coaches = [];
 
-      // Collect coaches from program records and schedule slots
-      const coachMap = new Map();
+      // Only match slots for targetDate
+      const matchingScheduleSlots = schedList.filter(s => {
+        return !targetDate || !s.date || s.date === targetDate;
+      });
 
-      records.forEach(prog => {
-        const coachName = (prog.coach || prog.coachName || '').trim();
-        const progName = prog.name || prog.program || 'General Program';
-        if (coachName) {
-          coachMap.set(`${coachName.toLowerCase()}___${progName.toLowerCase()}`, {
+      if (matchingScheduleSlots.length === 0) {
+        return coaches;
+      }
+
+      // Group coach shifts directly based on scheduled programs and assigned coaches
+      const slotItems = [];
+
+      matchingScheduleSlots.forEach((slot, sIdx) => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+          ? slot.programs
+          : (slot.program ? [slot.program] : ['General Program']);
+
+        progs.forEach(progName => {
+          const progNameTrimmed = (progName || 'General Program').trim();
+          const progRecord = records.find(p => (p.name || p.program || '').trim().toLowerCase() === progNameTrimmed.toLowerCase());
+
+          let coachName = (slot.coach || '').trim();
+          if (!coachName && progRecord) {
+            coachName = (progRecord.coach || progRecord.coachName || '').trim();
+          }
+          if (!coachName) {
+            coachName = 'Assigned Coach';
+          }
+
+          slotItems.push({
             name: coachName,
-            program: progName
+            program: progNameTrimmed,
+            slotId: slot.id || `slot_${sIdx + 1}`,
+            timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+            startTime: slot.startTime || '',
+            endTime: slot.endTime || '',
+            timeSetName: slot.timeSetName || '',
+            venue: slot.venue || ''
           });
-        }
-      });
-
-      schedList.forEach(s => {
-        const sCoach = (s.coach || '').trim();
-        if (sCoach) {
-          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : ['General Program']);
-          progs.forEach(pr => {
-            const key = `${sCoach.toLowerCase()}___${pr.toLowerCase()}`;
-            if (!coachMap.has(key)) {
-              coachMap.set(key, { name: sCoach, program: pr });
-            }
-          });
-        }
-      });
-
-      coachMap.forEach(({ name: coachName, program: progName }) => {
-        const progNameLower = progName.trim().toLowerCase();
-        const coachNameLower = coachName.toLowerCase();
-
-        // Match schedule slots on targetDate
-        const matchingSlots = schedList.filter(s => {
-          const dateMatch = !targetDate || !s.date || s.date === targetDate;
-          if (!dateMatch) return false;
-          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
-          const progMatch = progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
-          const coachMatch = (s.coach || '').trim().toLowerCase() === coachNameLower;
-          return progMatch || coachMatch;
         });
+      });
 
-        if (matchingSlots.length > 0) {
-          matchingSlots.forEach((slot, sIdx) => {
-            coaches.push({
-              name: coachName,
-              program: progName,
-              slotId: slot.id || `slot_${sIdx + 1}`,
-              timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
-              startTime: slot.startTime || '',
-              endTime: slot.endTime || '',
-              timeSetName: slot.timeSetName || '',
-              venue: slot.venue || '',
-              slotIndex: sIdx + 1,
-              totalSlots: matchingSlots.length
-            });
-          });
-        } else {
-          coaches.push({
-            name: coachName,
-            program: progName,
-            slotId: '',
-            timeSlot: '',
-            startTime: '',
-            endTime: '',
-            timeSetName: '',
-            venue: '',
-            slotIndex: 1,
-            totalSlots: 0
-          });
-        }
+      // Calculate totalSlots and slotIndex for each coach + program combination
+      const countMap = new Map();
+      slotItems.forEach(item => {
+        const key = `${item.name.toLowerCase()}___${item.program.toLowerCase()}`;
+        countMap.set(key, (countMap.get(key) || 0) + 1);
+      });
+
+      const currentIdxMap = new Map();
+      slotItems.forEach(item => {
+        const key = `${item.name.toLowerCase()}___${item.program.toLowerCase()}`;
+        const currentIdx = (currentIdxMap.get(key) || 0) + 1;
+        currentIdxMap.set(key, currentIdx);
+
+        coaches.push({
+          ...item,
+          slotIndex: currentIdx,
+          totalSlots: countMap.get(key) || 1
+        });
       });
 
       return coaches;
@@ -2605,8 +2907,8 @@
           <tr>
             <td colspan="7" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
-              <strong>No Assigned Coaches Found in Database</strong>
-              <div style="font-size: 0.82rem; margin-top: 4px;">Coaches assigned to programs in Program Records will automatically populate here.</div>
+              <strong>No Scheduled Coach Shifts Found for Selected Date</strong>
+              <div style="font-size: 0.82rem; margin-top: 4px;">Coach shift attendance is only displayed for scheduled programs. Create a schedule in Schedule Set to take attendance.</div>
             </td>
           </tr>
         `;
@@ -2794,7 +3096,7 @@
             return parsed.filter(t => t && t.id !== 'task_1');
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -2855,14 +3157,14 @@
       });
     }
 
-    window.completeTask = function(id) {
+    window.completeTask = function (id) {
       coordinatorTasks = coordinatorTasks.map(t => t.id === id ? { ...t, status: 'Completed' } : t);
       saveStoredTasks(coordinatorTasks);
       renderTasksTable();
       showToast('Task marked as completed!');
     };
 
-    window.deleteTaskItem = function(id) {
+    window.deleteTaskItem = function (id) {
       coordinatorTasks = coordinatorTasks.filter(t => t.id !== id);
       saveStoredTasks(coordinatorTasks);
       renderTasksTable();
@@ -2945,7 +3247,7 @@
           let cands = [];
           try {
             cands = JSON.parse(item.dataset.candidates || '[]');
-          } catch (err) {}
+          } catch (err) { }
 
           selectTaskProgram({
             id: item.dataset.id,
@@ -3098,7 +3400,7 @@
             return parsed.filter(e => e && e.id !== 'eval_1');
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -3166,7 +3468,7 @@
           let cands = [];
           try {
             cands = JSON.parse(item.dataset.candidates || '[]');
-          } catch (err) {}
+          } catch (err) { }
 
           selectEvalProgram({
             id: item.dataset.id,
@@ -3265,30 +3567,76 @@
       }
     });
 
+    let isUploadingToCloudinary = false;
     const evalImageInput = document.getElementById('evalImageInput');
     const evalImagePreview = document.getElementById('evalImagePreview');
     const evalImagePreviewContainer = document.getElementById('evalImagePreviewContainer');
+    const evalFileName = document.getElementById('evalFileName');
+    const evalRemoveImageBtn = document.getElementById('evalRemoveImageBtn');
+    const evalUploadBtn = document.getElementById('evalUploadBtn');
+    const evalUploadText = document.getElementById('evalUploadText');
 
     if (evalImageInput) {
       evalImageInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (re) => {
-            currentUploadedImageUrl = re.target.result;
-            if (evalImagePreview && evalImagePreviewContainer) {
-              evalImagePreview.src = currentUploadedImageUrl;
-              evalImagePreviewContainer.style.display = 'block';
-            }
-          };
-          reader.readAsDataURL(file);
+        if (!file) return;
 
-          if (window.SibaqCloudinary && window.SibaqCloudinary.uploadFile) {
-            window.SibaqCloudinary.uploadFile(file).then(res => {
-              if (res && res.secure_url) currentUploadedImageUrl = res.secure_url;
-            }).catch(e => console.warn(e));
+        // Immediately show local thumbnail preview and filename
+        if (evalFileName) {
+          evalFileName.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(file.name)}</span>`;
+          evalFileName.style.display = 'inline';
+        }
+
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          if (!currentUploadedImageUrl) currentUploadedImageUrl = re.target.result;
+          if (evalImagePreview && evalImagePreviewContainer) {
+            evalImagePreview.src = re.target.result;
+            evalImagePreviewContainer.style.display = 'block';
+          }
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to Cloudinary
+        if (window.SibaqCloudinary && typeof window.SibaqCloudinary.uploadFile === 'function') {
+          isUploadingToCloudinary = true;
+          if (evalUploadText) evalUploadText.textContent = 'Uploading to Cloudinary...';
+          if (evalUploadBtn) evalUploadBtn.style.opacity = '0.7';
+
+          try {
+            const res = await window.SibaqCloudinary.uploadFile(file, 'sibaq_evaluations');
+            const cldUrl = res?.secure_url || res?.secureUrl || res?.url;
+            if (cldUrl) {
+              currentUploadedImageUrl = cldUrl;
+              if (evalImagePreview) evalImagePreview.src = cldUrl;
+              if (evalFileName) {
+                evalFileName.innerHTML = `<span style="color: #16a34a; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Saved to Cloudinary (${escapeHtml(file.name)})</span>`;
+              }
+              showToast('Image successfully uploaded & saved to Cloudinary!');
+            }
+          } catch (err) {
+            console.error('Cloudinary upload error:', err);
+            showToast('Warning: Cloudinary upload failed. Using local copy. Check internet connection.');
+          } finally {
+            isUploadingToCloudinary = false;
+            if (evalUploadText) evalUploadText.textContent = 'Change photo';
+            if (evalUploadBtn) evalUploadBtn.style.opacity = '1';
           }
         }
+      });
+    }
+
+    if (evalRemoveImageBtn) {
+      evalRemoveImageBtn.addEventListener('click', () => {
+        currentUploadedImageUrl = '';
+        isUploadingToCloudinary = false;
+        if (evalImageInput) evalImageInput.value = '';
+        if (evalUploadText) evalUploadText.textContent = 'Change photo';
+        if (evalFileName) {
+          evalFileName.textContent = '';
+          evalFileName.style.display = 'none';
+        }
+        if (evalImagePreviewContainer) evalImagePreviewContainer.style.display = 'none';
       });
     }
 
@@ -3330,7 +3678,7 @@
       });
     }
 
-    window.deleteEvalItem = function(id) {
+    window.deleteEvalItem = function (id) {
       coordinatorEvaluations = coordinatorEvaluations.filter(e => e.id !== id);
       saveStoredEvaluations(coordinatorEvaluations);
       renderEvalTable();
@@ -3339,6 +3687,10 @@
 
     document.getElementById('evaluationForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (isUploadingToCloudinary) {
+        showToast('Please wait, evaluation sheet is uploading to Cloudinary...');
+        return;
+      }
       const progInput = document.getElementById('evalProgram');
       const searchInput = document.getElementById('evalProgSearch');
       const candidate = document.getElementById('evalCandidate').value.trim();
@@ -3370,6 +3722,12 @@
       document.getElementById('evaluationForm').reset();
       clearEvalProgramSelection();
       currentUploadedImageUrl = '';
+      isUploadingToCloudinary = false;
+      if (evalUploadText) evalUploadText.textContent = 'Change photo';
+      if (evalFileName) {
+        evalFileName.textContent = '';
+        evalFileName.style.display = 'none';
+      }
       if (evalImagePreviewContainer) evalImagePreviewContainer.style.display = 'none';
       showToast(`Evaluation for ${candidate} saved with score ${score}%!`);
     });
@@ -3388,7 +3746,7 @@
             return parsed.filter(p => p && p.id !== 'punish_1');
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -3455,7 +3813,7 @@
           let cands = [];
           try {
             cands = JSON.parse(item.dataset.candidates || '[]');
-          } catch (err) {}
+          } catch (err) { }
 
           selectPunishProgram({
             id: item.dataset.id,
@@ -3599,7 +3957,7 @@
       });
     }
 
-    window.deletePunishItem = function(id) {
+    window.deletePunishItem = function (id) {
       coordinatorPunishments = coordinatorPunishments.filter(p => p.id !== id);
       saveStoredPunishments(coordinatorPunishments);
       renderPunishTable();
@@ -3656,7 +4014,7 @@
             return parsed.filter(a => a && a.id !== 'abs_1');
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -3669,7 +4027,7 @@
     // Pull attendance records where status === 'Leave'
     function getAttendanceLeaveRecords() {
       const list = [];
-      
+
       // 1. Scan Student Attendance records from LocalStorage
       try {
         const studentRaw = localStorage.getItem(STUDENT_ATTENDANCE_STORAGE_KEY);
@@ -3695,7 +4053,7 @@
             });
           });
         }
-      } catch (e) {}
+      } catch (e) { }
 
       // 2. Scan Coach Attendance records from LocalStorage
       try {
@@ -3722,7 +4080,7 @@
             });
           });
         }
-      } catch (e) {}
+      } catch (e) { }
 
       return list;
     }
@@ -3784,7 +4142,7 @@
           let cands = [];
           try {
             cands = JSON.parse(item.dataset.candidates || '[]');
-          } catch (err) {}
+          } catch (err) { }
 
           selectAbsenceProgram({
             id: item.dataset.id,
@@ -3925,7 +4283,7 @@
       });
     }
 
-    window.deleteAbsenceItem = function(id, source, targetDate, rawKey) {
+    window.deleteAbsenceItem = function (id, source, targetDate, rawKey) {
       if (source === 'student_attendance' && targetDate && rawKey) {
         try {
           const map = getStoredStudentAttendance(targetDate);
@@ -3933,7 +4291,7 @@
             delete map[rawKey];
             saveStoredStudentAttendance(targetDate, map);
           }
-        } catch (e) {}
+        } catch (e) { }
       } else if (source === 'coach_attendance' && targetDate && rawKey) {
         try {
           const map = getStoredCoachAttendance(targetDate);
@@ -3941,7 +4299,7 @@
             delete map[rawKey];
             saveStoredCoachAttendance(targetDate, map);
           }
-        } catch (e) {}
+        } catch (e) { }
       } else {
         coordinatorAbsences = coordinatorAbsences.filter(a => a.id !== id);
         saveStoredAbsences(coordinatorAbsences);
@@ -3982,7 +4340,7 @@
         let matchedProg = records.find(p => (p.name || p.program) === selectedProg);
         const cat = matchedProg ? matchedProg.category : 'General';
         const key = `${selectedProg || 'general'}_${cat}_${name}`.toLowerCase();
-        
+
         studentAttendanceMap[key] = {
           program: selectedProg || 'General',
           category: cat,
@@ -3997,7 +4355,7 @@
           const firestoreList = Object.values(studentAttendanceMap);
           window.SibaqFirebase.syncStudentAttendanceToFirestore(date, firestoreList);
         }
-      } catch (err) {}
+      } catch (err) { }
 
       renderAbsenceTable();
       renderStudentAttendanceTable();
@@ -4021,7 +4379,7 @@
             return parsed.filter(s => s && s.id !== 'sched_1');
           }
         }
-      } catch (e) {}
+      } catch (e) { }
       return [];
     }
 
@@ -4096,7 +4454,7 @@
           let cands = [];
           try {
             cands = JSON.parse(item.dataset.candidates || '[]');
-          } catch (err) {}
+          } catch (err) { }
 
           selectScheduleProgram({
             id: item.dataset.id,
@@ -4246,8 +4604,8 @@
 
       coordinatorSchedule.forEach((slot, idx) => {
         const tr = document.createElement('tr');
-        const progs = Array.isArray(slot.programs) 
-          ? slot.programs 
+        const progs = Array.isArray(slot.programs)
+          ? slot.programs
           : (slot.program ? slot.program.split(',').map(s => s.trim()) : []);
 
         const programPills = progs.map(p => `<span class="program-chip-tag">${escapeHtml(p)}</span>`).join('');
@@ -4301,7 +4659,7 @@
       });
     }
 
-    window.deleteScheduleSlot = function(id) {
+    window.deleteScheduleSlot = function (id) {
       if (confirm('Are you sure you want to remove this schedule slot?')) {
         coordinatorSchedule = coordinatorSchedule.filter(s => s.id !== id);
         saveStoredSchedule(coordinatorSchedule);
@@ -4382,7 +4740,7 @@
     // ----------------------------------------------------
     // Schedule Sub-Tab Switcher
     // ----------------------------------------------------
-    window.switchScheduleSubTab = function(subTab) {
+    window.switchScheduleSubTab = function (subTab) {
       const viewPrograms = document.getElementById('schedViewPrograms');
       const viewTimeSets = document.getElementById('schedViewTimeSets');
       const btnPrograms = document.getElementById('btnSubTabPrograms');
@@ -4451,7 +4809,7 @@
       });
     }
 
-    window.deleteTimeSetItem = function(id) {
+    window.deleteTimeSetItem = function (id) {
       const sets = getStoredTimeSets();
       const target = sets.find(t => String(t.id) === String(id));
       const targetName = target ? target.name : 'this time set';
@@ -4543,7 +4901,7 @@
           renderStudentAttendanceTable();
           renderCoachAttendanceTable();
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     // Real-time Firestore Listener for Student Attendance on load
@@ -4564,7 +4922,7 @@
           saveStoredStudentAttendance(todayDateStr, map);
           renderStudentAttendanceTable();
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     // Real-time Firestore Listener for Coach Attendance on load
@@ -4584,7 +4942,7 @@
           saveStoredCoachAttendance(todayDateStr, map);
           renderCoachAttendanceTable();
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     // Live 1-second interval for countdown tickers
@@ -4633,6 +4991,8 @@
     // Initial render
     switchToTab('attendance');
   </script>
+  <script src="mobile-ui.js"></script>
   <script src="pwa-install.js"></script>
 </body>
+
 </html>
