@@ -749,36 +749,43 @@
       color: #2563eb;
     }
 
-    /* Set / Edit Row Action Button */
+    /* Register (Fill) / Edit (Outline) Row Action Button */
     .btn-set-attend {
       height: 32px;
-      padding: 0 12px;
-      font-size: 0.8rem;
+      padding: 0 13px;
+      font-size: 0.82rem;
       font-weight: 600;
       border-radius: 7px;
-      border: 1px solid var(--border-subtle);
-      background: #ffffff;
-      color: var(--text-main);
+      border: 1px solid var(--brand-red);
+      background: var(--brand-red);
+      color: #ffffff;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 6px;
       transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(162, 28, 36, 0.18);
+    }
+    .btn-set-attend i.hgi {
+      font-size: 0.95rem;
+      line-height: 1;
     }
     .btn-set-attend:hover:not(:disabled) {
-      border-color: var(--brand-red-border);
-      background: var(--brand-red-soft);
-      color: var(--brand-red);
+      background: #8b161d;
+      border-color: #8b161d;
+      color: #ffffff;
     }
     .btn-set-attend.is-set {
-      background: #f1f5f9;
-      color: #475569;
-      border-color: #cbd5e1;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      box-shadow: none;
     }
     .btn-set-attend.is-set:hover {
-      background: #e2e8f0;
-      color: #1e293b;
+      background: var(--brand-red-soft);
+      color: var(--brand-red);
+      border-color: var(--brand-red-border);
     }
     .status-dropdown-wrap.is-locked .status-dropdown-btn {
       background: #f8fafc;
@@ -792,7 +799,7 @@
       margin-bottom: 8px;
     }
 
-    .sched-search-input-wrap svg {
+    .sched-search-input-wrap > svg {
       position: absolute;
       left: 12px;
       top: 50%;
@@ -801,12 +808,50 @@
       height: 16px;
       stroke: var(--text-muted);
       pointer-events: none;
+      z-index: 2;
     }
 
     .sched-search-input-wrap input {
       padding-left: 36px !important;
+      padding-right: 36px !important;
       height: 40px !important;
       font-size: 0.88rem !important;
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      background: none;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      z-index: 5;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .search-clear-btn:hover {
+      background: #f1f5f9;
+      color: var(--brand-red);
+    }
+
+    .search-clear-btn svg {
+      position: static !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      width: 14px !important;
+      height: 14px !important;
+      stroke: currentColor !important;
+      pointer-events: auto !important;
     }
 
     .task-prog-dropdown-list {
@@ -1105,7 +1150,7 @@
           <li class="submenu-item active" data-tab="attendance">
             <a class="submenu-link">
               <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-              Students
+              Candidates
             </a>
           </li>
           <li class="submenu-item" data-tab="attendance-coach">
@@ -1181,8 +1226,8 @@
   <main class="main-content">
     <div class="top-bar">
       <div>
-        <h2 class="page-title" id="pageTitleText">Student Attendance</h2>
-        <p class="page-desc" id="pageDescText">Take and verify attendance of registered students</p>
+        <h2 class="page-title" id="pageTitleText">Candidate Attendance</h2>
+        <p class="page-desc" id="pageDescText">Take and verify attendance of registered candidates</p>
       </div>
       <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         <button type="button" class="pwa-trigger-btn pwa-download-btn" title="Download or Install Sibaq App">
@@ -1196,7 +1241,7 @@
       </div>
     </div>
 
-    <!-- ==================== 1. STUDENT ATTENDANCE ==================== -->
+    <!-- ==================== 1. CANDIDATE ATTENDANCE ==================== -->
     <div class="tab-page active-page" id="page-attendance">
       <div class="coord-page-container">
         <div class="coord-card">
@@ -1206,8 +1251,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
               </div>
               <div>
-                <h3 style="font-size: 1.15rem; font-weight: 800;">Student Attendance Roster</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Mark present, absent, excused, or late for scheduled candidates</p>
+                <h3 style="font-size: 1.15rem; font-weight: 800;">Candidate Attendance Roster</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Mark present, leave, or pending for scheduled candidates</p>
               </div>
             </div>
             <div class="coord-actions-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -1229,7 +1274,8 @@
                   <th style="width: 50px;">#</th>
                   <th>Program</th>
                   <th>Category</th>
-                  <th>Student</th>
+                  <th>Candidate</th>
+                  <th>Scheduled Time</th>
                   <th>Status</th>
                   <th>Remarks / Notes</th>
                   <th style="width: 95px; text-align: center;">Action</th>
@@ -1277,6 +1323,7 @@
                   <th style="width: 50px;">#</th>
                   <th>Coach Name</th>
                   <th>Assigned Program</th>
+                  <th>Scheduled Time</th>
                   <th>Shift Status</th>
                   <th>Shift Remarks</th>
                   <th style="width: 95px; text-align: center;">Action</th>
@@ -1307,7 +1354,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   <input type="text" id="taskProgSearch" class="form-input" placeholder="Search program name..." autocomplete="off" required />
                   <input type="hidden" id="taskProgramSelect" required />
-                  <button type="button" id="taskProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                  <button type="button" id="taskProgClearBtn" class="search-clear-btn" title="Clear Selection">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
@@ -1322,10 +1369,10 @@
 
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label" for="taskAssignee" style="margin-bottom: 0;">Assignee (Student)</label>
-                  <span id="assigneeDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Student (DB)</span>
+                  <label class="form-label" for="taskAssignee" style="margin-bottom: 0;">Assignee (Candidate)</label>
+                  <span id="assigneeDbBadge" style="display: none; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 999px;">Candidate (DB)</span>
                 </div>
-                <input type="text" id="taskAssignee" class="form-input" placeholder="Auto-filled student from DB (or select/type)" list="taskStudentSuggestions" required />
+                <input type="text" id="taskAssignee" class="form-input" placeholder="Auto-filled candidate from DB (or select/type)" list="taskStudentSuggestions" required />
                 <datalist id="taskStudentSuggestions"></datalist>
               </div>
 
@@ -1387,7 +1434,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   <input type="text" id="evalProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" required />
                   <input type="hidden" id="evalProgram" required />
-                  <button type="button" id="evalProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                  <button type="button" id="evalProgClearBtn" class="search-clear-btn" title="Clear Selection">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
@@ -1469,7 +1516,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   <input type="text" id="punishProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" />
                   <input type="hidden" id="punishProgram" />
-                  <button type="button" id="punishProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                  <button type="button" id="punishProgClearBtn" class="search-clear-btn" title="Clear Selection">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
@@ -1547,7 +1594,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   <input type="text" id="absenceProgSearch" class="form-input" placeholder="Search program name from DB..." autocomplete="off" />
                   <input type="hidden" id="absenceProgram" />
-                  <button type="button" id="absenceProgClearBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: none; padding: 2px;" title="Clear Selection">
+                  <button type="button" id="absenceProgClearBtn" class="search-clear-btn" title="Clear Selection">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
@@ -1635,7 +1682,7 @@
           <!-- Schedule Form Card -->
           <div class="coord-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">Schedule Program Slot</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Select programs, choose preset time sets, and assign venue</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;">Select program, choose preset time sets, and assign coach</p>
 
             <form id="scheduleForm">
               <div class="form-group">
@@ -1643,18 +1690,18 @@
                 <input type="date" id="schedDate" class="form-input" required />
               </div>
 
-              <div class="form-group">
-                <label class="form-label">Select Program(s)</label>
-                <div class="sched-search-input-wrap">
+              <div class="form-group" style="position: relative;">
+                <label class="form-label" for="schedProgSearch">Program + Category (Search & Select)</label>
+                <div class="sched-search-input-wrap" style="position: relative; margin-bottom: 0;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <input type="text" id="schedProgSearchInput" class="form-input" placeholder="Search program name..." />
+                  <input type="text" id="schedProgSearch" class="form-input" placeholder="Search program name..." autocomplete="off" required />
+                  <input type="hidden" id="schedProgramSelect" required />
+                  <button type="button" id="schedProgClearBtn" class="search-clear-btn" title="Clear Selection">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
                 </div>
-                <div class="selected-progs-pill-container" id="selectedProgChips">
-                  <span style="font-size: 0.8rem; color: var(--text-placeholder);">No programs selected</span>
-                </div>
-                <div class="program-multiselect-list" id="schedProgramChecklist">
-                  <!-- Populated via JS -->
-                </div>
+                <!-- Interactive Dropdown List from DB -->
+                <div id="schedProgDropdownMenu" class="task-prog-dropdown-list" style="display: none;"></div>
               </div>
 
               <div class="form-group">
@@ -1677,21 +1724,16 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="schedVenue">Venue / Stage</label>
-                <input type="text" id="schedVenue" class="form-input" placeholder="e.g. Main Track - Lane 1-8" />
-              </div>
-
-              <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <label class="form-label" for="schedCandidate" style="margin-bottom: 0;">Candidate(s) / Participant(s)</label>
                   <span id="schedCandidateSourceBadge" class="pill pill-green" style="font-size: 0.7rem; padding: 2px 6px; display: none;">Auto-filled (DB)</span>
                 </div>
-                <input type="text" id="schedCandidate" class="form-input" list="schedCandidatesDatalist" placeholder="Auto-filled from selected program(s) or type custom" />
+                <input type="text" id="schedCandidate" class="form-input" list="schedCandidatesDatalist" placeholder="Auto-filled from selected program or type custom" />
                 <datalist id="schedCandidatesDatalist"></datalist>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="schedCoach">Assigned Coach / Lead</label>
+                <label class="form-label" for="schedCoach">Assigned Coach</label>
                 <input type="text" id="schedCoach" class="form-input" placeholder="e.g. Coach Tariq" />
               </div>
 
@@ -1716,8 +1758,7 @@
                     <th>Time Slot</th>
                     <th>Program(s)</th>
                     <th>Candidate(s)</th>
-                    <th>Venue</th>
-                    <th>Lead</th>
+                    <th>Coach</th>
                     <th style="text-align: right;">Action</th>
                   </tr>
                 </thead>
@@ -1925,8 +1966,8 @@
         if (attendMenuParent) attendMenuParent.classList.add('active', 'open');
         const stuSub = document.querySelector('.submenu-item[data-tab="attendance"]');
         if (stuSub) stuSub.classList.add('active');
-        pageTitleText.textContent = 'Student Attendance';
-        pageDescText.textContent = 'Take and verify attendance of registered students';
+        pageTitleText.textContent = 'Candidate Attendance';
+        pageDescText.textContent = 'Take and verify attendance of registered candidates';
         renderStudentAttendanceTable();
       } else if (tabName === 'attendance-coach') {
         if (attendMenuParent) attendMenuParent.classList.add('active', 'open');
@@ -1960,10 +2001,9 @@
           renderAbsenceTable();
         } else if (tabName === 'schedule') {
           pageTitleText.textContent = 'Schedule Set & Program Timings';
-          pageDescText.textContent = 'Configure session time sets, schedule programs, and assign venues & coaches';
+          pageDescText.textContent = 'Configure session time sets, schedule programs, and assign coaches';
           renderScheduleTable();
           populateScheduleTimeSetsDropdown();
-          renderScheduleProgramList('');
           renderTimeSetTable();
         }
       }
@@ -2004,21 +2044,45 @@
     const PROGRAM_STORAGE_KEY = 'sibaq_program_records';
     const TIMESET_STORAGE_KEY = 'sibaq_time_sets';
 
+    // Purge legacy temporary/mock data from LocalStorage (database data only)
+    (function purgeLegacyMockData() {
+      try {
+        const mockIds = new Set(['task_1', 'eval_1', 'punish_1', 'abs_1', 'sched_1', 'prog_1', 'prog_2', 'prog_3', 'prog_4', 'prog_5', 'ts_default_1', 'ts_default_2']);
+        const storageKeys = [
+          PROGRAM_STORAGE_KEY,
+          TIMESET_STORAGE_KEY,
+          'sibaq_coordinator_tasks',
+          'sibaq_coordinator_evaluations',
+          'sibaq_coordinator_punishments',
+          'sibaq_coordinator_absences',
+          'sibaq_coordinator_schedule'
+        ];
+        storageKeys.forEach(key => {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            try {
+              const list = JSON.parse(raw);
+              if (Array.isArray(list)) {
+                const cleaned = list.filter(item => item && !mockIds.has(item.id));
+                localStorage.setItem(key, JSON.stringify(cleaned));
+              }
+            } catch(e) {}
+          }
+        });
+      } catch(e) {}
+    })();
+
     function getStoredProgramRecords() {
       try {
         const stored = localStorage.getItem(PROGRAM_STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed)) {
+            return parsed.filter(p => p && !['prog_1', 'prog_2', 'prog_3', 'prog_4', 'prog_5'].includes(p.id));
+          }
         }
       } catch (e) {}
-      return [
-        { id: 'prog_1', name: '100m Dash Championship', category: 'Ūla', candidates: 'Ali, Ziyad, Bilal', coach: 'Coach Tariq' },
-        { id: 'prog_2', name: 'Relay 4x100m', category: 'Bidāya', candidates: 'Saeed, Rayan, Hamza, Noor', coach: 'Coach Salman' },
-        { id: 'prog_3', name: 'Long Jump Challenge', category: 'Thānawiyya', candidates: 'Faris, Karim', coach: 'Coach Rashid' },
-        { id: 'prog_4', name: '200m Sprint', category: 'Ūla', candidates: 'Kareem, Omar', coach: 'Coach Tariq' },
-        { id: 'prog_5', name: 'Football Shootout', category: 'Āliya', candidates: 'Zaid, Hamza', coach: 'Coach Zaid' }
-      ];
+      return [];
     }
 
     function getStoredTimeSets() {
@@ -2026,13 +2090,12 @@
         const raw = localStorage.getItem(TIMESET_STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed)) {
+            return parsed.filter(t => t && !['ts_default_1', 'ts_default_2'].includes(t.id));
+          }
         }
       } catch (e) {}
-      return [
-        { id: 'ts_default_1', name: 'Morning Session Set', startTime: '08:30', endTime: '11:45', remarks: 'Track & Field Heats' },
-        { id: 'ts_default_2', name: 'Afternoon Championship Set', startTime: '14:00', endTime: '17:30', remarks: 'Finals & Stage Performances' }
-      ];
+      return [];
     }
 
     function saveStoredTimeSets(list) {
@@ -2063,9 +2126,11 @@
       } catch (e) {}
     }
 
-    function getAttendanceCandidates() {
+    function getAttendanceCandidates(targetDate) {
       const records = getStoredProgramRecords();
+      const schedList = getStoredSchedule();
       const list = [];
+
       records.forEach(p => {
         let candidatesArr = [];
         if (Array.isArray(p.candidates)) {
@@ -2076,6 +2141,17 @@
           candidatesArr = [p.candidate];
         }
 
+        const progName = p.name || p.program || 'Unnamed Program';
+        const progNameLower = progName.trim().toLowerCase();
+
+        // Find schedule slots for this program on targetDate (if date provided, match s.date, else match any)
+        const matchingSlots = schedList.filter(s => {
+          const dateMatch = !targetDate || !s.date || s.date === targetDate;
+          if (!dateMatch) return false;
+          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
+          return progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
+        });
+
         candidatesArr.forEach(c => {
           let name = '';
           if (typeof c === 'string') {
@@ -2083,11 +2159,48 @@
           } else if (c && typeof c === 'object') {
             name = (c.name || c.studentName || '').trim();
           }
-          if (name) {
+          if (!name) return;
+
+          const candNameLower = name.toLowerCase();
+
+          // Filter slots that specifically target this candidate or apply to the whole program
+          const candSlots = matchingSlots.filter(s => {
+            if (!s.candidate || !s.candidate.trim()) return true;
+            const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
+            return candsInSlot.includes(candNameLower);
+          });
+
+          if (candSlots.length > 0) {
+            // Program assigned 1, 2, or more times
+            candSlots.forEach((slot, sIdx) => {
+              list.push({
+                name,
+                program: progName,
+                category: p.category || 'General',
+                slotId: slot.id || `slot_${sIdx + 1}`,
+                timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                startTime: slot.startTime || '',
+                endTime: slot.endTime || '',
+                timeSetName: slot.timeSetName || '',
+                venue: slot.venue || '',
+                slotIndex: sIdx + 1,
+                totalSlots: candSlots.length
+              });
+            });
+          } else {
+            // Baseline unscheduled row
             list.push({
               name,
-              program: p.name || p.program || 'Unnamed Program',
-              category: p.category || 'General'
+              program: progName,
+              category: p.category || 'General',
+              slotId: '',
+              timeSlot: '',
+              startTime: '',
+              endTime: '',
+              timeSetName: '',
+              venue: '',
+              slotIndex: 1,
+              totalSlots: 0
             });
           }
         });
@@ -2106,13 +2219,13 @@
 
       const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
       const savedDateAttendance = getStoredStudentAttendance(selectedDate);
-      const candidates = getAttendanceCandidates();
+      const candidates = getAttendanceCandidates(selectedDate);
       tbody.innerHTML = '';
 
       if (candidates.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
+            <td colspan="8" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="23" y1="11" x2="17" y2="11"></line></svg>
               <strong>No Program Candidate Records Found in Database</strong>
               <div style="font-size: 0.82rem; margin-top: 4px;">Candidates registered under programs in Program Records will automatically populate here.</div>
@@ -2123,11 +2236,15 @@
       }
 
       candidates.forEach((cand, idx) => {
-        const rowKey = `${cand.program}_${cand.category}_${cand.name}`.toLowerCase();
-        const existing = savedDateAttendance[rowKey] || {};
-        // If already saved in DB/storage, use that status and lock it as set. Otherwise default to 'Pending'
+        const slotKeyPart = cand.slotId || (cand.startTime ? `${cand.startTime}_${cand.endTime}` : '');
+        const rowKey = slotKeyPart
+          ? `${cand.program}_${cand.category}_${cand.name}_${slotKeyPart}`.toLowerCase()
+          : `${cand.program}_${cand.category}_${cand.name}`.toLowerCase();
+        const fallbackKey = `${cand.program}_${cand.category}_${cand.name}`.toLowerCase();
+        const existing = savedDateAttendance[rowKey] || savedDateAttendance[fallbackKey] || {};
+
         let currentStatus = existing.status || 'Pending';
-        if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Absent' && currentStatus !== 'Late' && currentStatus !== 'Leave') {
+        if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Leave') {
           currentStatus = 'Pending';
         }
         const isLocked = existing.status ? true : false;
@@ -2136,21 +2253,46 @@
         const statusIcons = {
           'Pending': '<i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>',
           'Present': '<i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>',
-          'Absent': '<i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>',
-          'Late': '<i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>',
           'Leave': '<i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>'
         };
+
+        let timeBadgeHtml = '';
+        if (cand.totalSlots > 0) {
+          timeBadgeHtml = `
+            <div style="display: flex; flex-direction: column; gap: 3px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span style="font-weight: 700; font-family: monospace; font-size: 0.84rem; background: var(--brand-red-soft, rgba(162, 28, 36, 0.08)); color: var(--brand-red, #a21c24); padding: 2px 7px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  ${escapeHtml(cand.startTime)} - ${escapeHtml(cand.endTime)}
+                </span>
+                ${cand.totalSlots > 1 ? `
+                  <span style="font-size: 0.72rem; font-weight: 700; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde68a;">
+                    Slot ${cand.slotIndex} of ${cand.totalSlots}
+                  </span>
+                ` : ''}
+              </div>
+              ${cand.timeSetName ? `<small style="color: var(--text-muted); font-size: 0.74rem;">${escapeHtml(cand.timeSetName)}</small>` : ''}
+            </div>
+          `;
+        } else {
+          timeBadgeHtml = `<span style="color: var(--text-muted); font-size: 0.82rem; font-style: italic;">Unscheduled</span>`;
+        }
 
         const tr = document.createElement('tr');
         tr.dataset.program = cand.program;
         tr.dataset.category = cand.category;
         tr.dataset.student = cand.name;
+        tr.dataset.slotId = cand.slotId || '';
+        tr.dataset.timeSlot = cand.timeSlot || '';
+        tr.dataset.slotIndex = cand.slotIndex || '';
+        tr.dataset.totalSlots = cand.totalSlots || '';
         tr.dataset.locked = isLocked ? 'true' : 'false';
         tr.innerHTML = `
           <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
           <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(cand.program)}</td>
           <td><span class="pill pill-yellow">${escapeHtml(cand.category)}</span></td>
           <td style="font-weight: 600; color: var(--text-main);">${escapeHtml(cand.name)}</td>
+          <td>${timeBadgeHtml}</td>
           <td>
             <div class="status-dropdown-wrap ${isLocked ? 'is-locked' : ''}" data-status="${currentStatus}">
               <button type="button" class="status-dropdown-btn" onclick="toggleStatusDropdown(this, event)">
@@ -2169,14 +2311,6 @@
                   <i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>
                   <span>Present</span>
                 </div>
-                <div class="status-option" onclick="selectAttendanceStatus(this, 'Absent')">
-                  <i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>
-                  <span>Absent</span>
-                </div>
-                <div class="status-option" onclick="selectAttendanceStatus(this, 'Late')">
-                  <i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>
-                  <span>Late</span>
-                </div>
                 <div class="status-option" onclick="selectAttendanceStatus(this, 'Leave')">
                   <i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>
                   <span>Leave</span>
@@ -2190,11 +2324,11 @@
           <td style="text-align: center;">
             <button type="button" class="btn-set-attend ${isLocked ? 'is-set' : ''}" onclick="toggleRowSet(this)">
               ${isLocked ? `
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <i class="hgi hgi-stroke hgi-rounded hgi-edit-table"></i>
                 Edit
               ` : `
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                Set
+                <i class="hgi hgi-stroke hgi-rounded hgi-save"></i>
+                Register
               `}
             </button>
           </td>
@@ -2229,8 +2363,6 @@
       const statusIcons = {
         'Pending': '<i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>',
         'Present': '<i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>',
-        'Absent': '<i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>',
-        'Late': '<i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>',
         'Leave': '<i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>'
       };
       const selectedVal = wrap.querySelector('.selected-val');
@@ -2240,7 +2372,7 @@
       wrap.classList.remove('open');
     };
 
-    // Toggle Set / Edit on a specific candidate row
+    // Toggle Register / Edit on a specific candidate row
     window.toggleRowSet = function(button) {
       const row = button.closest('tr');
       if (!row) return;
@@ -2248,10 +2380,10 @@
       const isLocked = row.dataset.locked === 'true';
 
       if (!isLocked) {
-        // User clicked "Set"
+        // User clicked "Register"
         const currentStatus = wrap?.dataset.status || 'Pending';
         if (currentStatus === 'Pending') {
-          showToast('Please select Present, Absent, Late, or Leave before setting.');
+          showToast('Please select Present or Leave before registering.');
           return;
         }
         row.dataset.locked = 'true';
@@ -2259,18 +2391,18 @@
         wrap?.classList.remove('open');
         button.classList.add('is-set');
         button.innerHTML = `
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <i class="hgi hgi-stroke hgi-rounded hgi-edit-table"></i>
           Edit
         `;
-        showToast(`Status set as "${currentStatus}". Click "Save Attendance" to sync.`);
+        showToast(`Status registered as "${currentStatus}". Click "Save Attendance" to sync.`);
       } else {
         // User clicked "Edit"
         row.dataset.locked = 'false';
         wrap?.classList.remove('is-locked');
         button.classList.remove('is-set');
         button.innerHTML = `
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Set
+          <i class="hgi hgi-stroke hgi-rounded hgi-save"></i>
+          Register
         `;
       }
     };
@@ -2291,8 +2423,13 @@
           if (Array.isArray(remoteList)) {
             const map = {};
             remoteList.forEach(item => {
-              const key = `${item.program}_${item.category}_${item.student}`.toLowerCase();
+              const slotPart = item.slotId || item.timeSlot || '';
+              const key = slotPart
+                ? `${item.program}_${item.category}_${item.student || item.candidate}_${slotPart}`.toLowerCase()
+                : `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
               map[key] = item;
+              const legacyKey = `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
+              if (!map[legacyKey]) map[legacyKey] = item;
             });
             saveStoredStudentAttendance(selectedDate, map);
           }
@@ -2321,11 +2458,17 @@
         const program = row.dataset.program;
         const category = row.dataset.category;
         const student = row.dataset.student;
+        const slotId = row.dataset.slotId || '';
+        const timeSlot = row.dataset.timeSlot || '';
+        const slotIndex = row.dataset.slotIndex || '';
+        const totalSlots = row.dataset.totalSlots || '';
         const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Present';
         const remarks = row.querySelector('.attend-notes-input')?.value.trim() || '';
 
-        const record = { program, category, student, status, remarks, date: selectedDate };
-        const key = `${program}_${category}_${student}`.toLowerCase();
+        const record = { program, category, student, slotId, timeSlot, slotIndex, totalSlots, status, remarks, date: selectedDate };
+        const key = slotId
+          ? `${program}_${category}_${student}_${slotId}`.toLowerCase()
+          : `${program}_${category}_${student}`.toLowerCase();
         dateRecordsMap[key] = record;
         firestoreList.push(record);
       });
@@ -2336,7 +2479,7 @@
         window.SibaqFirebase.syncStudentAttendanceToFirestore(selectedDate, firestoreList);
       }
 
-      showToast(`Student attendance for ${selectedDate} saved successfully!`);
+      showToast(`Candidate attendance for ${selectedDate} saved successfully!`);
     });
 
     const COACH_ATTENDANCE_STORAGE_KEY = 'sibaq_coach_attendance';
@@ -2363,15 +2506,83 @@
       } catch (e) {}
     }
 
-    function getAttendanceCoaches() {
+    function getAttendanceCoaches(targetDate) {
       const records = getStoredProgramRecords();
+      const schedList = getStoredSchedule();
       const coaches = [];
+
+      // Collect coaches from program records and schedule slots
+      const coachMap = new Map();
+
       records.forEach(prog => {
         const coachName = (prog.coach || prog.coachName || '').trim();
-        if (coachName && !coaches.some(c => c.name.toLowerCase() === coachName.toLowerCase())) {
-          coaches.push({ name: coachName, program: prog.name || prog.program || 'General Program' });
+        const progName = prog.name || prog.program || 'General Program';
+        if (coachName) {
+          coachMap.set(`${coachName.toLowerCase()}___${progName.toLowerCase()}`, {
+            name: coachName,
+            program: progName
+          });
         }
       });
+
+      schedList.forEach(s => {
+        const sCoach = (s.coach || '').trim();
+        if (sCoach) {
+          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : ['General Program']);
+          progs.forEach(pr => {
+            const key = `${sCoach.toLowerCase()}___${pr.toLowerCase()}`;
+            if (!coachMap.has(key)) {
+              coachMap.set(key, { name: sCoach, program: pr });
+            }
+          });
+        }
+      });
+
+      coachMap.forEach(({ name: coachName, program: progName }) => {
+        const progNameLower = progName.trim().toLowerCase();
+        const coachNameLower = coachName.toLowerCase();
+
+        // Match schedule slots on targetDate
+        const matchingSlots = schedList.filter(s => {
+          const dateMatch = !targetDate || !s.date || s.date === targetDate;
+          if (!dateMatch) return false;
+          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
+          const progMatch = progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
+          const coachMatch = (s.coach || '').trim().toLowerCase() === coachNameLower;
+          return progMatch || coachMatch;
+        });
+
+        if (matchingSlots.length > 0) {
+          matchingSlots.forEach((slot, sIdx) => {
+            coaches.push({
+              name: coachName,
+              program: progName,
+              slotId: slot.id || `slot_${sIdx + 1}`,
+              timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+              startTime: slot.startTime || '',
+              endTime: slot.endTime || '',
+              timeSetName: slot.timeSetName || '',
+              venue: slot.venue || '',
+              slotIndex: sIdx + 1,
+              totalSlots: matchingSlots.length
+            });
+          });
+        } else {
+          coaches.push({
+            name: coachName,
+            program: progName,
+            slotId: '',
+            timeSlot: '',
+            startTime: '',
+            endTime: '',
+            timeSetName: '',
+            venue: '',
+            slotIndex: 1,
+            totalSlots: 0
+          });
+        }
+      });
+
       return coaches;
     }
 
@@ -2386,13 +2597,13 @@
 
       const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
       const savedDateAttendance = getStoredCoachAttendance(selectedDate);
-      const coaches = getAttendanceCoaches();
+      const coaches = getAttendanceCoaches(selectedDate);
       tbody.innerHTML = '';
 
       if (coaches.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
+            <td colspan="7" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
               <strong>No Assigned Coaches Found in Database</strong>
               <div style="font-size: 0.82rem; margin-top: 4px;">Coaches assigned to programs in Program Records will automatically populate here.</div>
@@ -2403,10 +2614,15 @@
       }
 
       coaches.forEach((c, idx) => {
-        const rowKey = `${c.program}_${c.name}`.toLowerCase();
-        const existing = savedDateAttendance[rowKey] || {};
+        const slotKeyPart = c.slotId || (c.startTime ? `${c.startTime}_${c.endTime}` : '');
+        const rowKey = slotKeyPart
+          ? `${c.program}_${c.name}_${slotKeyPart}`.toLowerCase()
+          : `${c.program}_${c.name}`.toLowerCase();
+        const fallbackKey = `${c.program}_${c.name}`.toLowerCase();
+        const existing = savedDateAttendance[rowKey] || savedDateAttendance[fallbackKey] || {};
+
         let currentStatus = existing.status || 'Pending';
-        if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Absent' && currentStatus !== 'Late' && currentStatus !== 'Leave') {
+        if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Leave') {
           currentStatus = 'Pending';
         }
         const isLocked = existing.status ? true : false;
@@ -2415,19 +2631,44 @@
         const statusIcons = {
           'Pending': '<i class="hgi hgi-stroke hgi-rounded hgi-clock-01 status-pending"></i>',
           'Present': '<i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>',
-          'Absent': '<i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>',
-          'Late': '<i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>',
           'Leave': '<i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>'
         };
+
+        let timeBadgeHtml = '';
+        if (c.totalSlots > 0) {
+          timeBadgeHtml = `
+            <div style="display: flex; flex-direction: column; gap: 3px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span style="font-weight: 700; font-family: monospace; font-size: 0.84rem; background: var(--brand-red-soft, rgba(162, 28, 36, 0.08)); color: var(--brand-red, #a21c24); padding: 2px 7px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  ${escapeHtml(c.startTime)} - ${escapeHtml(c.endTime)}
+                </span>
+                ${c.totalSlots > 1 ? `
+                  <span style="font-size: 0.72rem; font-weight: 700; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde68a;">
+                    Slot ${c.slotIndex} of ${c.totalSlots}
+                  </span>
+                ` : ''}
+              </div>
+              ${c.timeSetName ? `<small style="color: var(--text-muted); font-size: 0.74rem;">${escapeHtml(c.timeSetName)}</small>` : ''}
+            </div>
+          `;
+        } else {
+          timeBadgeHtml = `<span style="color: var(--text-muted); font-size: 0.82rem; font-style: italic;">Unscheduled</span>`;
+        }
 
         const tr = document.createElement('tr');
         tr.dataset.coach = c.name;
         tr.dataset.program = c.program;
+        tr.dataset.slotId = c.slotId || '';
+        tr.dataset.timeSlot = c.timeSlot || '';
+        tr.dataset.slotIndex = c.slotIndex || '';
+        tr.dataset.totalSlots = c.totalSlots || '';
         tr.dataset.locked = isLocked ? 'true' : 'false';
         tr.innerHTML = `
           <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
           <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(c.name)}</td>
           <td>${escapeHtml(c.program)}</td>
+          <td>${timeBadgeHtml}</td>
           <td>
             <div class="status-dropdown-wrap ${isLocked ? 'is-locked' : ''}" data-status="${currentStatus}">
               <button type="button" class="status-dropdown-btn" onclick="toggleStatusDropdown(this, event)">
@@ -2446,14 +2687,6 @@
                   <i class="hgi hgi-stroke hgi-rounded hgi-check status-present"></i>
                   <span>Present</span>
                 </div>
-                <div class="status-option" onclick="selectAttendanceStatus(this, 'Absent')">
-                  <i class="hgi hgi-stroke hgi-rounded hgi-cancel-01 status-absent"></i>
-                  <span>Absent</span>
-                </div>
-                <div class="status-option" onclick="selectAttendanceStatus(this, 'Late')">
-                  <i class="hgi hgi-stroke hgi-rounded hgi-alert-diamond status-late"></i>
-                  <span>Late</span>
-                </div>
                 <div class="status-option" onclick="selectAttendanceStatus(this, 'Leave')">
                   <i class="hgi hgi-stroke hgi-rounded hgi-calendar-03 status-leave"></i>
                   <span>Leave</span>
@@ -2467,11 +2700,11 @@
           <td style="text-align: center;">
             <button type="button" class="btn-set-attend ${isLocked ? 'is-set' : ''}" onclick="toggleRowSet(this)">
               ${isLocked ? `
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <i class="hgi hgi-stroke hgi-rounded hgi-edit-table"></i>
                 Edit
               ` : `
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                Set
+                <i class="hgi hgi-stroke hgi-rounded hgi-save"></i>
+                Register
               `}
             </button>
           </td>
@@ -2489,8 +2722,13 @@
           if (Array.isArray(remoteList)) {
             const map = {};
             remoteList.forEach(item => {
-              const key = `${item.program}_${item.coach}`.toLowerCase();
+              const slotPart = item.slotId || item.timeSlot || '';
+              const key = slotPart
+                ? `${item.program}_${item.coach}_${slotPart}`.toLowerCase()
+                : `${item.program}_${item.coach}`.toLowerCase();
               map[key] = item;
+              const legacyKey = `${item.program}_${item.coach}`.toLowerCase();
+              if (!map[legacyKey]) map[legacyKey] = item;
             });
             saveStoredCoachAttendance(selectedDate, map);
           }
@@ -2518,11 +2756,17 @@
       rows.forEach(row => {
         const coach = row.dataset.coach;
         const program = row.dataset.program;
+        const slotId = row.dataset.slotId || '';
+        const timeSlot = row.dataset.timeSlot || '';
+        const slotIndex = row.dataset.slotIndex || '';
+        const totalSlots = row.dataset.totalSlots || '';
         const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Pending';
         const remarks = row.querySelector('.coach-notes-input')?.value.trim() || '';
 
-        const record = { coach, program, status, remarks, date: selectedDate };
-        const key = `${program}_${coach}`.toLowerCase();
+        const record = { coach, program, slotId, timeSlot, slotIndex, totalSlots, status, remarks, date: selectedDate };
+        const key = slotId
+          ? `${program}_${coach}_${slotId}`.toLowerCase()
+          : `${program}_${coach}`.toLowerCase();
         dateRecordsMap[key] = record;
         firestoreList.push(record);
       });
@@ -2533,7 +2777,7 @@
         window.SibaqFirebase.syncCoachAttendanceToFirestore(selectedDate, firestoreList);
       }
 
-      showToast(`Coach shift log for ${selectedDate} saved successfully!`);
+      showToast(`Coach shift attendance for ${selectedDate} saved successfully!`);
     });
 
     // ----------------------------------------------------
@@ -2544,19 +2788,14 @@
     function getStoredTasks() {
       try {
         const raw = localStorage.getItem(TASKS_STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return [
-        {
-          id: 'task_1',
-          title: 'Track Inspection 100m',
-          assignee: 'Coach Tariq',
-          durationMin: 25,
-          remarks: 'Inspect track lanes 1-6 for obstacles',
-          startTime: Date.now() - 5 * 60 * 1000,
-          status: 'Active'
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(t => t && t.id !== 'task_1');
+          }
         }
-      ];
+      } catch (e) {}
+      return [];
     }
 
     function saveStoredTasks(tasks) {
@@ -2690,7 +2929,7 @@
               <span class="task-prog-item-name">${escapeHtml(pName)}</span>
               <span class="task-prog-item-coach">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                ${candStr ? `Student: <strong>${escapeHtml(candStr)}</strong>` : '<em style="color:#94a3b8;">No student assigned in DB</em>'}
+                ${candStr ? `Candidate: <strong>${escapeHtml(candStr)}</strong>` : '<em style="color:#94a3b8;">No candidate assigned in DB</em>'}
               </span>
             </div>
             <span class="program-cat-badge" style="margin-left: 8px; flex-shrink: 0;">${escapeHtml(pCat)}</span>
@@ -2734,7 +2973,7 @@
       if (clearBtn) clearBtn.style.display = 'block';
       if (dropdownMenu) dropdownMenu.style.display = 'none';
 
-      // Auto-fill Assignee with assigned student from DB
+      // Auto-fill Assignee with assigned candidate from DB
       const cands = p.candidates || [];
       if (suggestionsList) {
         suggestionsList.innerHTML = cands.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
@@ -2745,7 +2984,7 @@
           assigneeInput.value = cands[0];
           if (assigneeBadge) {
             assigneeBadge.style.display = 'inline-block';
-            assigneeBadge.textContent = cands.length > 1 ? `Student (1 of ${cands.length} in DB)` : 'Student (DB)';
+            assigneeBadge.textContent = cands.length > 1 ? `Candidate (1 of ${cands.length} in DB)` : 'Candidate (DB)';
           }
         } else {
           assigneeInput.value = '';
@@ -2853,18 +3092,14 @@
     function getStoredEvaluations() {
       try {
         const raw = localStorage.getItem(EVAL_STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return [
-        {
-          id: 'eval_1',
-          candidate: 'Ali Ahmed',
-          program: '100m Dash Championship',
-          score: 96,
-          imageUrl: 'Sibaq Logo.png',
-          remarks: 'Excellent acceleration and clean sprint technique'
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(e => e && e.id !== 'eval_1');
+          }
         }
-      ];
+      } catch (e) {}
+      return [];
     }
 
     function saveStoredEvaluations(list) {
@@ -3147,18 +3382,14 @@
     function getStoredPunishments() {
       try {
         const raw = localStorage.getItem(PUNISH_STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return [
-        {
-          id: 'punish_1',
-          person: 'Faris Karim',
-          reason: 'False start infraction',
-          action: '10 minute bench stand-down',
-          timerMin: 10,
-          startTime: Date.now() - 3 * 60 * 1000
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(p => p && p.id !== 'punish_1');
+          }
         }
-      ];
+      } catch (e) {}
+      return [];
     }
 
     function saveStoredPunishments(list) {
@@ -3419,17 +3650,14 @@
     function getStoredAbsences() {
       try {
         const raw = localStorage.getItem(ABSENCE_STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return [
-        {
-          id: 'abs_1',
-          name: 'Saeed Rayan',
-          date: new Date().toISOString().split('T')[0],
-          type: 'Medical',
-          remarks: 'Submitted medical certificate for sprained ankle'
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(a => a && a.id !== 'abs_1');
+          }
         }
-      ];
+      } catch (e) {}
+      return [];
     }
 
     function saveStoredAbsences(list) {
@@ -3789,21 +4017,12 @@
         const raw = localStorage.getItem(SCHED_STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed)) {
+            return parsed.filter(s => s && s.id !== 'sched_1');
+          }
         }
       } catch (e) {}
-      return [
-        {
-          id: 'sched_1',
-          timeSetName: 'Morning Session Set',
-          programs: ['100m Dash Championship'],
-          date: new Date().toISOString().split('T')[0],
-          startTime: '08:30',
-          endTime: '11:45',
-          venue: 'Main Track - Lane 1-8',
-          coach: 'Coach Tariq'
-        }
-      ];
+      return [];
     }
 
     function saveStoredSchedule(list) {
@@ -3811,122 +4030,173 @@
     }
 
     let coordinatorSchedule = getStoredSchedule();
-    let selectedSchedulePrograms = [];
 
     const schedDateInput = document.getElementById('schedDate');
     if (schedDateInput) {
       schedDateInput.value = new Date().toISOString().split('T')[0];
     }
 
-    function updateScheduleCandidatesFromPrograms() {
-      const candInput = document.getElementById('schedCandidate');
-      const datalist = document.getElementById('schedCandidatesDatalist');
-      const badge = document.getElementById('schedCandidateSourceBadge');
-      if (!candInput) return;
+    // Schedule - Program + Category Search & Select from DB
+    function renderScheduleProgramDropdown(searchQuery = '') {
+      const dropdownMenu = document.getElementById('schedProgDropdownMenu');
+      if (!dropdownMenu) return;
 
-      const programs = getStoredProgramRecords();
-      let allCandidates = [];
+      const records = getStoredProgramRecords();
+      const query = (searchQuery || '').toLowerCase().trim();
 
-      selectedSchedulePrograms.forEach(progName => {
-        const pObj = programs.find(p => (p.name || p.program) === progName);
-        if (pObj) {
-          const list = extractProgramCandidates(pObj);
-          list.forEach(c => {
-            if (!allCandidates.includes(c)) allCandidates.push(c);
-          });
-        }
+      const filtered = records.filter(p => {
+        const name = (p.name || p.program || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const cands = extractProgramCandidates(p).join(' ').toLowerCase();
+        return !query || name.includes(query) || cat.includes(query) || cands.includes(query);
       });
 
-      if (datalist) {
-        datalist.innerHTML = allCandidates.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
-      }
-
-      if (allCandidates.length > 0) {
-        candInput.value = allCandidates.join(', ');
-        if (badge) {
-          badge.style.display = 'inline-block';
-          badge.textContent = `${allCandidates.length} Candidate(s) (DB)`;
-        }
-      } else {
-        if (!candInput.value || candInput.value.includes(',')) {
-          candInput.value = '';
-        }
-        if (badge) badge.style.display = 'none';
-      }
-    }
-
-    function renderSelectedProgChips() {
-      const container = document.getElementById('selectedProgChips');
-      if (!container) return;
-      if (selectedSchedulePrograms.length === 0) {
-        container.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-placeholder);">No programs selected</span>';
-        updateScheduleCandidatesFromPrograms();
-        return;
-      }
-
-      container.innerHTML = selectedSchedulePrograms.map(name => `
-        <span class="selected-prog-chip">
-          ${escapeHtml(name)}
-          <span class="selected-prog-chip-remove" onclick="removeSelectedProg('${escapeHtml(name)}')">&times;</span>
-        </span>
-      `).join('');
-      updateScheduleCandidatesFromPrograms();
-    }
-
-    window.removeSelectedProg = function(progName) {
-      selectedSchedulePrograms = selectedSchedulePrograms.filter(n => n !== progName);
-      renderSelectedProgChips();
-      renderScheduleProgramList(document.getElementById('schedProgSearchInput')?.value || '');
-    };
-
-    function renderScheduleProgramList(query = '') {
-      const container = document.getElementById('schedProgramChecklist');
-      if (!container) return;
-      container.innerHTML = '';
-      const filter = (query || '').toLowerCase().trim();
-
-      const programs = getStoredProgramRecords();
-      let matched = programs.filter(p => !filter || p.name.toLowerCase().includes(filter));
-
-      if (matched.length === 0) {
-        container.innerHTML = '<div style="padding: 10px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">No programs found.</div>';
-        return;
-      }
-
-      matched.forEach(p => {
-        const isChecked = selectedSchedulePrograms.includes(p.name);
-        const item = document.createElement('label');
-        item.className = `program-checkbox-item ${isChecked ? 'checked' : ''}`;
-        item.innerHTML = `
-          <input type="checkbox" value="${escapeHtml(p.name)}" class="sched-prog-check" ${isChecked ? 'checked' : ''} />
-          <span style="font-weight: 600; color: var(--text-main); font-size: 0.86rem;">${escapeHtml(p.name)}</span>
-          <span class="program-cat-badge">${escapeHtml(p.category)}</span>
+      if (filtered.length === 0) {
+        dropdownMenu.innerHTML = `
+          <div style="padding: 12px 14px; font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+            No programs found in DB matching "${escapeHtml(searchQuery)}"
+          </div>
         `;
+        dropdownMenu.style.display = 'block';
+        return;
+      }
 
-        const cb = item.querySelector('input');
-        cb.addEventListener('change', () => {
-          if (cb.checked) {
-            if (!selectedSchedulePrograms.includes(p.name)) {
-              selectedSchedulePrograms.push(p.name);
-            }
-            item.classList.add('checked');
-          } else {
-            selectedSchedulePrograms = selectedSchedulePrograms.filter(name => name !== p.name);
-            item.classList.remove('checked');
-          }
-          renderSelectedProgChips();
+      dropdownMenu.innerHTML = filtered.map(p => {
+        const pName = p.name || p.program || 'Unnamed Program';
+        const pCat = p.category || 'General';
+        const cands = extractProgramCandidates(p);
+        const candStr = cands.length > 0 ? cands.join(', ') : '';
+        const coachName = p.coach || '';
+
+        return `
+          <div class="task-prog-dropdown-item" 
+               data-id="${escapeHtml(p.id || '')}" 
+               data-name="${escapeHtml(pName)}" 
+               data-cat="${escapeHtml(pCat)}" 
+               data-coach="${escapeHtml(coachName)}"
+               data-candidates="${escapeHtml(JSON.stringify(cands))}">
+            <div class="task-prog-item-info">
+              <span class="task-prog-item-name">${escapeHtml(pName)}</span>
+              <span class="task-prog-item-coach">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+                ${coachName ? `Coach: <strong>${escapeHtml(coachName)}</strong>` : ''}
+                ${candStr ? ` | Cand: ${escapeHtml(candStr)}` : ''}
+              </span>
+            </div>
+            <span class="program-cat-badge" style="margin-left: 8px; flex-shrink: 0;">${escapeHtml(pCat)}</span>
+          </div>
+        `;
+      }).join('');
+
+      dropdownMenu.style.display = 'block';
+
+      dropdownMenu.querySelectorAll('.task-prog-dropdown-item').forEach(item => {
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          let cands = [];
+          try {
+            cands = JSON.parse(item.dataset.candidates || '[]');
+          } catch (err) {}
+
+          selectScheduleProgram({
+            id: item.dataset.id,
+            name: item.dataset.name,
+            category: item.dataset.cat,
+            coach: item.dataset.coach,
+            candidates: cands
+          });
         });
-
-        container.appendChild(item);
       });
     }
 
-    const schedProgSearchInput = document.getElementById('schedProgSearchInput');
+    function selectScheduleProgram(p) {
+      const searchInput = document.getElementById('schedProgSearch');
+      const hiddenInput = document.getElementById('schedProgramSelect');
+      const clearBtn = document.getElementById('schedProgClearBtn');
+      const dropdownMenu = document.getElementById('schedProgDropdownMenu');
+      const candInput = document.getElementById('schedCandidate');
+      const candBadge = document.getElementById('schedCandidateSourceBadge');
+      const candDatalist = document.getElementById('schedCandidatesDatalist');
+      const coachInput = document.getElementById('schedCoach');
+
+      if (searchInput) searchInput.value = `${p.name} [${p.category}]`;
+      if (hiddenInput) hiddenInput.value = p.name;
+      if (clearBtn) clearBtn.style.display = 'flex';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+
+      const cands = p.candidates || [];
+      if (candDatalist) {
+        candDatalist.innerHTML = cands.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+      if (candInput) {
+        if (cands.length > 0) {
+          candInput.value = cands.join(', ');
+          if (candBadge) {
+            candBadge.style.display = 'inline-block';
+            candBadge.textContent = `${cands.length} Candidate(s) (DB)`;
+          }
+        } else {
+          candInput.value = '';
+          if (candBadge) candBadge.style.display = 'none';
+        }
+      }
+
+      if (coachInput && p.coach) {
+        coachInput.value = p.coach;
+      }
+    }
+
+    function clearScheduleProgramSelection() {
+      const searchInput = document.getElementById('schedProgSearch');
+      const hiddenInput = document.getElementById('schedProgramSelect');
+      const clearBtn = document.getElementById('schedProgClearBtn');
+      const dropdownMenu = document.getElementById('schedProgDropdownMenu');
+      const candInput = document.getElementById('schedCandidate');
+      const candBadge = document.getElementById('schedCandidateSourceBadge');
+      const candDatalist = document.getElementById('schedCandidatesDatalist');
+      const coachInput = document.getElementById('schedCoach');
+
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      if (hiddenInput) hiddenInput.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (dropdownMenu) dropdownMenu.style.display = 'none';
+      if (candInput) candInput.value = '';
+      if (candBadge) candBadge.style.display = 'none';
+      if (candDatalist) candDatalist.innerHTML = '';
+      if (coachInput) coachInput.value = '';
+    }
+
+    const schedProgSearchInput = document.getElementById('schedProgSearch');
+    const schedProgClearBtn = document.getElementById('schedProgClearBtn');
+    const schedProgDropdownMenu = document.getElementById('schedProgDropdownMenu');
+
     if (schedProgSearchInput) {
+      schedProgSearchInput.addEventListener('focus', () => {
+        renderScheduleProgramDropdown(schedProgSearchInput.value);
+      });
       schedProgSearchInput.addEventListener('input', (e) => {
-        renderScheduleProgramList(e.target.value);
+        const val = e.target.value.trim();
+        if (schedProgClearBtn) schedProgClearBtn.style.display = val ? 'flex' : 'none';
+        renderScheduleProgramDropdown(val);
       });
     }
+
+    if (schedProgClearBtn) {
+      schedProgClearBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearScheduleProgramSelection();
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#scheduleForm .form-group') && schedProgDropdownMenu) {
+        schedProgDropdownMenu.style.display = 'none';
+      }
+    });
 
     function populateScheduleTimeSetsDropdown() {
       const select = document.getElementById('schedTimePreset');
@@ -3970,7 +4240,7 @@
       if (badge) badge.textContent = `${coordinatorSchedule.length} Scheduled`;
 
       if (coordinatorSchedule.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 25px;">No program slots scheduled yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">No program slots scheduled yet.</td></tr>`;
         return;
       }
 
@@ -4020,7 +4290,6 @@
               ${candDisplay ? escapeHtml(candDisplay) : '<span style="color: var(--text-placeholder);">—</span>'}
             </div>
           </td>
-          <td><span class="pill pill-yellow">${escapeHtml(slot.venue || 'Main Stage')}</span></td>
           <td style="font-weight: 600;">${escapeHtml(slot.coach || '—')}</td>
           <td style="text-align: right;">
             <button type="button" class="delete-action-btn" onclick="deleteScheduleSlot('${slot.id}')" title="Delete schedule slot">
@@ -4040,6 +4309,8 @@
           window.SibaqFirebase.deleteScheduleFromFirestore(id);
         }
         renderScheduleTable();
+        renderStudentAttendanceTable();
+        renderCoachAttendanceTable();
         showToast('Schedule slot removed.');
       }
     };
@@ -4047,19 +4318,21 @@
     document.getElementById('scheduleForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
       const date = document.getElementById('schedDate').value;
+      const progInput = document.getElementById('schedProgramSelect');
+      const searchInput = document.getElementById('schedProgSearch');
+      const selectedProg = (progInput && progInput.value) ? progInput.value : (searchInput ? searchInput.value.trim() : '');
       const timeSetSelect = document.getElementById('schedTimePreset');
       const timeSetId = timeSetSelect.value;
-      const venue = document.getElementById('schedVenue').value.trim() || 'Main Stage';
       const candidate = document.getElementById('schedCandidate')?.value.trim() || '';
-      const coach = document.getElementById('schedCoach').value.trim() || (currentUser || 'Assigned Coordinator');
+      const coach = document.getElementById('schedCoach')?.value.trim() || (currentUser || 'Assigned Coach');
 
       if (!date) {
         alert('Please select an overall date.');
         return;
       }
 
-      if (selectedSchedulePrograms.length === 0) {
-        alert('Please select at least one program.');
+      if (!selectedProg) {
+        alert('Please search and select a program.');
         return;
       }
 
@@ -4078,9 +4351,8 @@
         timeSetName: selectedSet ? selectedSet.name : '',
         startTime: selectedSet ? selectedSet.startTime : '09:00',
         endTime: selectedSet ? selectedSet.endTime : '12:00',
-        programs: [...selectedSchedulePrograms],
+        programs: [selectedProg],
         candidate,
-        venue,
         coach,
         timestamp: new Date().toISOString()
       };
@@ -4093,20 +4365,18 @@
       }
 
       renderScheduleTable();
+      renderStudentAttendanceTable();
+      renderCoachAttendanceTable();
 
-      selectedSchedulePrograms = [];
-      renderSelectedProgChips();
-      if (schedProgSearchInput) schedProgSearchInput.value = '';
-      renderScheduleProgramList('');
+      clearScheduleProgramSelection();
       timeSetSelect.selectedIndex = 0;
       const preview = document.getElementById('schedTimeSetPreview');
       if (preview) preview.style.display = 'none';
-      document.getElementById('schedVenue').value = '';
       if (document.getElementById('schedCandidate')) document.getElementById('schedCandidate').value = '';
       if (document.getElementById('schedCandidateSourceBadge')) document.getElementById('schedCandidateSourceBadge').style.display = 'none';
-      document.getElementById('schedCoach').value = '';
+      if (document.getElementById('schedCoach')) document.getElementById('schedCoach').value = '';
 
-      showToast(`Schedule saved with ${newSlot.programs.length} program(s)!`);
+      showToast(`Schedule saved for "${selectedProg}"!`);
     });
 
     // ----------------------------------------------------
@@ -4283,8 +4553,13 @@
         if (Array.isArray(remoteList)) {
           const map = {};
           remoteList.forEach(item => {
-            const key = `${item.program}_${item.category}_${item.student}`.toLowerCase();
+            const slotPart = item.slotId || item.timeSlot || '';
+            const key = slotPart
+              ? `${item.program}_${item.category}_${item.student || item.candidate}_${slotPart}`.toLowerCase()
+              : `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
             map[key] = item;
+            const legacyKey = `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
+            if (!map[legacyKey]) map[legacyKey] = item;
           });
           saveStoredStudentAttendance(todayDateStr, map);
           renderStudentAttendanceTable();
@@ -4298,8 +4573,13 @@
         if (Array.isArray(remoteList)) {
           const map = {};
           remoteList.forEach(item => {
-            const key = `${item.program}_${item.coach}`.toLowerCase();
+            const slotPart = item.slotId || item.timeSlot || '';
+            const key = slotPart
+              ? `${item.program}_${item.coach}_${slotPart}`.toLowerCase()
+              : `${item.program}_${item.coach}`.toLowerCase();
             map[key] = item;
+            const legacyKey = `${item.program}_${item.coach}`.toLowerCase();
+            if (!map[legacyKey]) map[legacyKey] = item;
           });
           saveStoredCoachAttendance(todayDateStr, map);
           renderCoachAttendanceTable();

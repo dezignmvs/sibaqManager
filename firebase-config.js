@@ -249,6 +249,20 @@ window.SibaqFirebase = {
     }
   },
 
+  async loadTimeSetsFromFirestore() {
+    if (!firestoreDb) return null;
+    try {
+      const snapshot = await firestoreDb.collection('time_sets').get();
+      if (snapshot.empty) return null;
+      const list = [];
+      snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+      return list;
+    } catch (err) {
+      console.warn("Firestore load warning for time_sets:", err.message);
+      return null;
+    }
+  },
+
   // --- Schedule Service ---
   async syncScheduleToFirestore(scheduleItem) {
     if (!firestoreDb) return false;
@@ -369,6 +383,141 @@ window.SibaqFirebase = {
       return doc.data().records || null;
     } catch (err) {
       console.warn("Firestore load warning for coach_attendance:", err.message);
+      return null;
+    }
+  },
+
+  // --- Student Ratings Service ---
+  async syncRatingsToFirestore(date, ratingsMap) {
+    if (!firestoreDb) return false;
+    try {
+      await firestoreDb.collection('student_ratings').doc(String(date)).set({
+        date,
+        ratings: ratingsMap,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+      return true;
+    } catch (err) {
+      console.warn("Firestore sync warning for student_ratings:", err.message);
+      return false;
+    }
+  },
+
+  async loadRatingsFromFirestore(date) {
+    if (!firestoreDb) return null;
+    try {
+      const doc = await firestoreDb.collection('student_ratings').doc(String(date)).get();
+      if (!doc.exists) return null;
+      return doc.data().ratings || null;
+    } catch (err) {
+      console.warn("Firestore load warning for student_ratings:", err.message);
+      return null;
+    }
+  },
+
+  listenToRatings(date, callback) {
+    if (!firestoreDb) return null;
+    try {
+      return firestoreDb.collection('student_ratings').doc(String(date)).onSnapshot(doc => {
+        if (doc && doc.exists) {
+          callback(doc.data().ratings || {});
+        } else {
+          callback({});
+        }
+      }, err => {
+        console.warn("Firestore listener error for student_ratings:", err.message);
+      });
+    } catch (e) {
+      return null;
+    }
+  },
+
+  // --- Coordinator Tasks Service ---
+  async loadTasksFromFirestore() {
+    if (!firestoreDb) return null;
+    try {
+      const snapshot = await firestoreDb.collection('coordinator_tasks').get();
+      if (snapshot.empty) return null;
+      const list = [];
+      snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+      return list;
+    } catch (err) {
+      console.warn("Firestore load warning for coordinator_tasks:", err.message);
+      return null;
+    }
+  },
+
+  listenToTasks(callback) {
+    if (!firestoreDb) return null;
+    try {
+      return firestoreDb.collection('coordinator_tasks').onSnapshot(snapshot => {
+        const list = [];
+        snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+        callback(list);
+      }, err => {
+        console.warn("Firestore listener error for coordinator_tasks:", err.message);
+      });
+    } catch (e) {
+      return null;
+    }
+  },
+
+  // --- Evaluations Service ---
+  async loadEvaluationsFromFirestore() {
+    if (!firestoreDb) return null;
+    try {
+      const snapshot = await firestoreDb.collection('evaluations').get();
+      if (snapshot.empty) return null;
+      const list = [];
+      snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+      return list;
+    } catch (err) {
+      console.warn("Firestore load warning for evaluations:", err.message);
+      return null;
+    }
+  },
+
+  listenToEvaluations(callback) {
+    if (!firestoreDb) return null;
+    try {
+      return firestoreDb.collection('evaluations').onSnapshot(snapshot => {
+        const list = [];
+        snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+        callback(list);
+      }, err => {
+        console.warn("Firestore listener error for evaluations:", err.message);
+      });
+    } catch (e) {
+      return null;
+    }
+  },
+
+  // --- Punishments Service ---
+  async loadPunishmentsFromFirestore() {
+    if (!firestoreDb) return null;
+    try {
+      const snapshot = await firestoreDb.collection('punishments').get();
+      if (snapshot.empty) return null;
+      const list = [];
+      snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+      return list;
+    } catch (err) {
+      console.warn("Firestore load warning for punishments:", err.message);
+      return null;
+    }
+  },
+
+  listenToPunishments(callback) {
+    if (!firestoreDb) return null;
+    try {
+      return firestoreDb.collection('punishments').onSnapshot(snapshot => {
+        const list = [];
+        snapshot.forEach(doc => list.push({ ...doc.data(), id: doc.id }));
+        callback(list);
+      }, err => {
+        console.warn("Firestore listener error for punishments:", err.message);
+      });
+    } catch (e) {
       return null;
     }
   }

@@ -2,10 +2,12 @@
 // Cloudinary Configuration & Uploader for Sibaq
 // ====================================================
 
+const savedCloud = localStorage.getItem('cloudinary_cloud_name');
+const savedPreset = localStorage.getItem('cloudinary_upload_preset');
+
 const CLOUDINARY_CONFIG = {
-  // Replace these with your Cloudinary credentials or keep default
-  cloudName: localStorage.getItem('cloudinary_cloud_name') || 'sibaq-cloud',
-  uploadPreset: localStorage.getItem('cloudinary_upload_preset') || 'sibaq_preset'
+  cloudName: (savedCloud && savedCloud !== 'sibaq-cloud') ? savedCloud : 'da6fjyirm',
+  uploadPreset: (savedPreset && savedPreset !== 'sibaq_preset') ? savedPreset : 'sibaq_tracking'
 };
 
 window.SibaqCloudinary = {

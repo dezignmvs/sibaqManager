@@ -375,7 +375,6 @@
 
     <p class="footer-note">© Sibaq. All rights reserved.</p>
   </div>
-
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -383,6 +382,11 @@
   <script src="firebase-config.js"></script>
 
   <script>
+    // WebAuthn requires a valid domain string (like 'localhost') and strictly disallows raw IP addresses like 127.0.0.1
+    if (window.location.hostname === '127.0.0.1') {
+      window.location.replace(window.location.href.replace('127.0.0.1', 'localhost'));
+    }
+
     // Check if user is already authenticated on this device (Persistent Login)
     const existingAuth = (localStorage.getItem('isAuthenticated') === 'true') || (sessionStorage.getItem('isAuthenticated') === 'true');
     const existingRole = (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole') || '').toLowerCase();
@@ -596,6 +600,126 @@
       return null;
     }
 
+    // --- Direct Native System Passkey (Windows Hello / Device Biometric) Flow ---
+    async function verifyNativeSystemPasskey(user) {
+      if (!window.PublicKeyCredential) {
+        showAlert('error', 'Passkey / Biometric authentication is not supported on this browser.');
+        return false;
+      }
+
+      try {
+        showAlert('success', `Credentials verified. Confirm your device passkey (Windows Hello / Fingerprint)...`);
+
+        const challenge = new Uint8Array(32);
+        window.crypto.getRandomValues(challenge);
+        const userId = new Uint8Array(16);
+        window.crypto.getRandomValues(userId);
+
+        const rpConfig = { name: 'Sibaq System' };
+        // WebAuthn spec requires valid domain name (e.g. 'localhost' or domain), never raw IP
+        if (window.location.hostname && window.location.hostname !== '127.0.0.1') {
+          rpConfig.id = window.location.hostname;
+        }
+
+        let cred = null;
+
+        // Try creating/registering platform credential (triggers Windows Hello fingerprint/PIN)
+        try {
+          cred = await navigator.credentials.create({
+            publicKey: {
+              challenge: challenge,
+              rp: rpConfig,
+              user: {
+                id: userId,
+                name: (user.email || user.name || 'user').toLowerCase(),
+                displayName: user.name || 'User'
+              },
+              pubKeyCredParams: [
+                { alg: -7, type: 'public-key' },  // ES256
+                { alg: -257, type: 'public-key' } // RS256
+              ],
+              authenticatorSelection: {
+                authenticatorAttachment: 'platform',
+                userVerification: 'required'
+              },
+              timeout: 60000
+            }
+          });
+        } catch (createErr) {
+          if (createErr.name === 'NotAllowedError') {
+            showAlert('error', 'Device passkey verification was cancelled.');
+            return false;
+          }
+
+          // If create failed, try assertion request
+          try {
+            const getOptions = {
+              publicKey: {
+                challenge: challenge,
+                userVerification: 'required',
+                timeout: 60000
+              }
+            };
+            if (rpConfig.id) getOptions.publicKey.rpId = rpConfig.id;
+            cred = await navigator.credentials.get(getOptions);
+          } catch (getErr) {
+            if (getErr.name === 'NotAllowedError') {
+              showAlert('error', 'Device passkey verification was cancelled.');
+              return false;
+            }
+            throw createErr;
+          }
+        }
+
+        if (cred) {
+          return true;
+        }
+      } catch (err) {
+        console.warn('Native passkey error:', err);
+        showAlert('error', 'Passkey verification failed or is not available on this device.');
+        return false;
+      }
+
+      return false;
+    }
+
+    function completeLogin(authenticatedUser) {
+      showAlert('success', `Passkey verified! Welcome, ${authenticatedUser.name}. Opening dashboard...`);
+
+      sessionStorage.setItem('isAuthenticated', 'true');
+      sessionStorage.setItem('currentUser', authenticatedUser.name);
+      sessionStorage.setItem('currentUserEmail', authenticatedUser.email || '');
+      sessionStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
+      sessionStorage.setItem('loginTime', new Date().toLocaleTimeString());
+
+      // Persistent Login: keep login until explicit logout
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('currentUser', authenticatedUser.name);
+      localStorage.setItem('currentUserEmail', authenticatedUser.email || '');
+      localStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
+      localStorage.setItem('loginTime', new Date().toLocaleTimeString());
+
+      // Route to separated dashboards based on user role
+      const roleLower = (authenticatedUser.role || '').toLowerCase();
+      let targetDashboard = 'nonData.html'; // Default if not promoted
+
+      if (roleLower.includes('category coordinator')) {
+        targetDashboard = 'cateDashboard.html';
+      } else if (roleLower.includes('chief')) {
+        targetDashboard = 'chiefDashboard.html';
+      } else if (roleLower.includes('teacher')) {
+        targetDashboard = 'teahDashboard.html';
+      } else if (roleLower.includes('admin')) {
+        targetDashboard = 'dashboard.html';
+      } else {
+        targetDashboard = 'nonData.html';
+      }
+
+      setTimeout(() => {
+        window.location.href = targetDashboard;
+      }, 500);
+    }
+
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -610,41 +734,16 @@
         const authenticatedUser = await verifyCredentials(userInput, password);
 
         if (authenticatedUser) {
-          showAlert('success', `Credentials verified. Welcome, ${authenticatedUser.name}! Redirecting...`);
+          // Immediately prompt native Windows Hello / Device passkey
+          const passkeySuccess = await verifyNativeSystemPasskey(authenticatedUser);
 
-          sessionStorage.setItem('isAuthenticated', 'true');
-          sessionStorage.setItem('currentUser', authenticatedUser.name);
-          sessionStorage.setItem('currentUserEmail', authenticatedUser.email || '');
-          sessionStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
-          sessionStorage.setItem('loginTime', new Date().toLocaleTimeString());
+          submitBtn.disabled = false;
+          btnLabel.style.display = 'inline-block';
+          spinner.style.display = 'none';
 
-          // Persistent Login: keep login until explicit logout
-          localStorage.setItem('isAuthenticated', 'true');
-          localStorage.setItem('currentUser', authenticatedUser.name);
-          localStorage.setItem('currentUserEmail', authenticatedUser.email || '');
-          localStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
-          localStorage.setItem('loginTime', new Date().toLocaleTimeString());
-
-          // Route to separated dashboards based on user role
-          const roleLower = (authenticatedUser.role || '').toLowerCase();
-          let targetDashboard = 'nonData.html'; // Default if not promoted
-
-          if (roleLower.includes('category coordinator')) {
-            targetDashboard = 'cateDashboard.html';
-          } else if (roleLower.includes('chief')) {
-            targetDashboard = 'chiefDashboard.html';
-          } else if (roleLower.includes('teacher')) {
-            targetDashboard = 'teahDashboard.html';
-          } else if (roleLower.includes('admin')) {
-            targetDashboard = 'dashboard.html';
-          } else {
-            // Registered account with no promoted role assigned
-            targetDashboard = 'nonData.html';
+          if (passkeySuccess) {
+            completeLogin(authenticatedUser);
           }
-
-          setTimeout(() => {
-            window.location.href = targetDashboard;
-          }, 600);
         } else {
           submitBtn.disabled = false;
           btnLabel.style.display = 'inline-block';
