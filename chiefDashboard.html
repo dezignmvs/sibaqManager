@@ -878,6 +878,12 @@
           Coordinators Log
         </a>
       </li>
+      <li class="nav-item" data-tab="attendance-track">
+        <a class="nav-link">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Attendance Tracker
+        </a>
+      </li>
       <li class="nav-item" data-tab="data-inspect">
         <a class="nav-link">
           <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
@@ -1188,6 +1194,99 @@
         </div>
       </div>
     </div>
+
+    <!-- ==================== TAB: ATTENDANCE TRACKER ==================== -->
+    <div class="tab-page" id="page-attendance-track">
+      <div class="panel-card" style="margin-bottom: 24px;">
+        <div class="panel-header" style="flex-wrap: wrap; gap: 14px;">
+          <div>
+            <h3 style="font-size: 1.18rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--brand-red);">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+              Attendance Tracker
+            </h3>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 2px;">
+              Select any event date to inspect real-time student and coach attendance records submitted across categories
+            </p>
+          </div>
+
+          <!-- Date Selector & Filter Controls -->
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px; background: #f8fafc; border: 1.5px solid var(--border-subtle); padding: 4px 12px; border-radius: 9px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color: var(--text-muted);">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <label for="chiefAttendDate" style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Date:</label>
+              <input type="date" id="chiefAttendDate" style="border: none; background: transparent; font-family: inherit; font-size: 0.88rem; font-weight: 700; color: var(--text-main); outline: none; cursor: pointer;" />
+            </div>
+
+            <!-- Target Switch: Students vs Coaches -->
+            <div style="display: flex; background: #f1f5f9; padding: 3px; border-radius: 9px; border: 1px solid var(--border-subtle);">
+              <button type="button" id="btnTrackStudents" class="btn-action-primary" style="padding: 5px 12px; font-size: 0.8rem; border-radius: 6px; background: var(--brand-red); color: #fff;">
+                Students
+              </button>
+              <button type="button" id="btnTrackCoaches" style="padding: 5px 12px; font-size: 0.8rem; border-radius: 6px; background: transparent; border: none; font-weight: 700; color: var(--text-muted); cursor: pointer;">
+                Coaches
+              </button>
+            </div>
+
+            <button type="button" id="btnRefreshAttendance" class="btn-action-primary" style="background: #0f172a; padding: 6px 14px; font-size: 0.82rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance Summary Metrics -->
+        <div class="metrics-grid" style="margin-top: 18px; margin-bottom: 20px;">
+          <div class="metric-card">
+            <div class="metric-label">Total Roster</div>
+            <div class="metric-value" id="trackTotalCount">0</div>
+            <div class="metric-sub" id="trackDateLabel">Selected Date</div>
+          </div>
+          <div class="metric-card" style="border-top-color: var(--success);">
+            <div class="metric-label">Present</div>
+            <div class="metric-value" style="color: var(--success);" id="trackPresentCount">0</div>
+            <div class="metric-sub" id="trackPresentPct">0% recorded</div>
+          </div>
+          <div class="metric-card" style="border-top-color: var(--danger);">
+            <div class="metric-label">Absent</div>
+            <div class="metric-value" style="color: var(--danger);" id="trackAbsentCount">0</div>
+            <div class="metric-sub" id="trackAbsentPct">0% recorded</div>
+          </div>
+          <div class="metric-card" style="border-top-color: var(--warning);">
+            <div class="metric-label">Late / Leave / Pending</div>
+            <div class="metric-value" style="color: #b45309;" id="trackOtherCount">0</div>
+            <div class="metric-sub">Need attention</div>
+          </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr id="trackTableHeader">
+                <th style="width: 40px;">#</th>
+                <th>Participant</th>
+                <th>Program</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Remarks / Notes</th>
+                <th>Logged At</th>
+              </tr>
+            </thead>
+            <tbody id="trackAttendanceTableBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Toast Notification -->
@@ -1201,28 +1300,40 @@
 
   <script>
     // ----------------------------------------------------
-    // Session Guard
+    // Session Guard (Supports persistent login on device)
     // ----------------------------------------------------
-    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
-    const currentUser = sessionStorage.getItem('currentUser');
-    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const isAuthenticated = (localStorage.getItem('isAuthenticated') === 'true') || (sessionStorage.getItem('isAuthenticated') === 'true');
+    const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+    const currentUserRole = (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole') || '').toLowerCase();
 
     // Strict Access: Requires sign-in as Chief Coordinator
     if (!isAuthenticated || !currentUserRole.includes('chief')) {
       sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.replace('index.html?portal=chief&msg=signin_required');
+    } else {
+      sessionStorage.setItem('isAuthenticated', 'true');
+      if (currentUser) sessionStorage.setItem('currentUser', currentUser);
+      sessionStorage.setItem('currentUserRole', currentUserRole);
     }
 
     const userDisplayName = document.getElementById('userDisplayName');
-    if (userDisplayName) userDisplayName.textContent = currentUser;
+    if (userDisplayName && currentUser) userDisplayName.textContent = currentUser;
     const avatarLetter = document.getElementById('avatarLetter');
-    if (avatarLetter) avatarLetter.textContent = currentUser.charAt(0).toUpperCase();
+    if (avatarLetter && currentUser) avatarLetter.textContent = currentUser.charAt(0).toUpperCase();
 
-    // Logout
+    // Explicit Logout only
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('isAuthenticated');
-      sessionStorage.removeItem('currentUser');
-      sessionStorage.removeItem('loginTime');
+      sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.href = 'index.html';
     });
 
@@ -1285,6 +1396,7 @@
       alerts: document.getElementById('page-alerts'),
       staging: document.getElementById('page-staging'),
       coordinators: document.getElementById('page-coordinators'),
+      'attendance-track': document.getElementById('page-attendance-track'),
       'data-inspect': document.getElementById('page-data-inspect')
     };
 
@@ -1922,11 +2034,252 @@
       });
     })();
 
+    // ----------------------------------------------------
+    // Attendance Tracker Logic (Student & Coach Inspection by Date)
+    // ----------------------------------------------------
+    let currentAttendanceMode = 'students'; // 'students' or 'coaches'
+    const chiefAttendDateInput = document.getElementById('chiefAttendDate');
+    const btnTrackStudents = document.getElementById('btnTrackStudents');
+    const btnTrackCoaches = document.getElementById('btnTrackCoaches');
+    const btnRefreshAttendance = document.getElementById('btnRefreshAttendance');
+
+    // Default to today's date in local ISO format (YYYY-MM-DD)
+    const todayIsoDate = new Date().toISOString().split('T')[0];
+    if (chiefAttendDateInput) {
+      chiefAttendDateInput.value = todayIsoDate;
+    }
+
+    if (btnTrackStudents && btnTrackCoaches) {
+      btnTrackStudents.addEventListener('click', () => {
+        currentAttendanceMode = 'students';
+        btnTrackStudents.style.background = 'var(--brand-red)';
+        btnTrackStudents.style.color = '#fff';
+        btnTrackCoaches.style.background = 'transparent';
+        btnTrackCoaches.style.color = 'var(--text-muted)';
+        renderChiefAttendanceTracker();
+      });
+
+      btnTrackCoaches.addEventListener('click', () => {
+        currentAttendanceMode = 'coaches';
+        btnTrackCoaches.style.background = 'var(--brand-red)';
+        btnTrackCoaches.style.color = '#fff';
+        btnTrackStudents.style.background = 'transparent';
+        btnTrackStudents.style.color = 'var(--text-muted)';
+        renderChiefAttendanceTracker();
+      });
+    }
+
+    if (chiefAttendDateInput) {
+      chiefAttendDateInput.addEventListener('change', () => {
+        renderChiefAttendanceTracker();
+      });
+    }
+
+    if (btnRefreshAttendance) {
+      btnRefreshAttendance.addEventListener('click', () => {
+        showToast('Refreshing attendance records from database...');
+        renderChiefAttendanceTracker(true);
+      });
+    }
+
+    async function renderChiefAttendanceTracker(forceRemote = false) {
+      const selectedDate = chiefAttendDateInput ? chiefAttendDateInput.value : todayIsoDate;
+      const trackBody = document.getElementById('trackAttendanceTableBody');
+      const trackHeader = document.getElementById('trackTableHeader');
+      const trackDateLabel = document.getElementById('trackDateLabel');
+      const trackTotalCount = document.getElementById('trackTotalCount');
+      const trackPresentCount = document.getElementById('trackPresentCount');
+      const trackPresentPct = document.getElementById('trackPresentPct');
+      const trackAbsentCount = document.getElementById('trackAbsentCount');
+      const trackAbsentPct = document.getElementById('trackAbsentPct');
+      const trackOtherCount = document.getElementById('trackOtherCount');
+
+      if (!trackBody) return;
+      if (trackDateLabel) trackDateLabel.textContent = selectedDate ? `Date: ${selectedDate}` : 'All records';
+
+      // Update Header columns according to selected mode
+      if (trackHeader) {
+        if (currentAttendanceMode === 'students') {
+          trackHeader.innerHTML = `
+            <th style="width: 40px;">#</th>
+            <th>Candidate / Student</th>
+            <th>Program</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Remarks / Notes</th>
+            <th>Date</th>
+          `;
+        } else {
+          trackHeader.innerHTML = `
+            <th style="width: 40px;">#</th>
+            <th>Coach Name</th>
+            <th>Program</th>
+            <th>Status</th>
+            <th>Session Notes</th>
+            <th>Date</th>
+          `;
+        }
+      }
+
+      trackBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            Loading attendance records for ${selectedDate}...
+          </td>
+        </tr>
+      `;
+
+      let records = [];
+
+      if (currentAttendanceMode === 'students') {
+        // Try Firestore first
+        if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
+          try {
+            const remote = await window.SibaqFirebase.loadStudentAttendanceFromFirestore(selectedDate);
+            if (Array.isArray(remote) && remote.length > 0) {
+              records = remote;
+            }
+          } catch (e) {}
+        }
+
+        // Fallback to local storage map
+        if (records.length === 0) {
+          try {
+            const localMap = JSON.parse(localStorage.getItem('sibaq_student_attendance') || '{}');
+            const dayRecords = localMap[selectedDate];
+            if (dayRecords) {
+              records = Object.values(dayRecords);
+            }
+          } catch (e) {}
+        }
+      } else {
+        // Coach Attendance mode
+        if (window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
+          try {
+            const remote = await window.SibaqFirebase.loadCoachAttendanceFromFirestore(selectedDate);
+            if (Array.isArray(remote) && remote.length > 0) {
+              records = remote;
+            }
+          } catch (e) {}
+        }
+
+        if (records.length === 0) {
+          try {
+            const localMap = JSON.parse(localStorage.getItem('sibaq_coach_attendance') || '{}');
+            const dayRecords = localMap[selectedDate];
+            if (dayRecords) {
+              records = Object.values(dayRecords);
+            }
+          } catch (e) {}
+        }
+      }
+
+      // If no recorded attendance exists for this day, construct roster from program records
+      if (records.length === 0) {
+        const programs = getLocalData(STORAGE_PROGRAMS, []);
+        if (currentAttendanceMode === 'students') {
+          programs.forEach(prog => {
+            const candidatesStr = prog.candidates || '';
+            const list = candidatesStr.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+            list.forEach(candidate => {
+              records.push({
+                student: candidate,
+                program: prog.name || 'General',
+                category: prog.category || 'Ūla',
+                status: 'Pending',
+                remarks: 'Not yet marked by coordinator',
+                date: selectedDate
+              });
+            });
+          });
+        } else {
+          programs.forEach(prog => {
+            if (prog.coach && prog.coach !== '—') {
+              records.push({
+                coach: prog.coach,
+                program: prog.name || 'General',
+                status: 'Pending',
+                remarks: 'Not yet marked by coordinator',
+                date: selectedDate
+              });
+            }
+          });
+        }
+      }
+
+      // Compute status breakdown
+      let presentCount = 0;
+      let absentCount = 0;
+      let otherCount = 0;
+
+      records.forEach(r => {
+        const s = (r.status || 'Pending').toLowerCase();
+        if (s === 'present') presentCount++;
+        else if (s === 'absent') absentCount++;
+        else otherCount++;
+      });
+
+      const totalCount = records.length;
+      if (trackTotalCount) trackTotalCount.textContent = totalCount;
+      if (trackPresentCount) trackPresentCount.textContent = presentCount;
+      if (trackPresentPct) trackPresentPct.textContent = totalCount > 0 ? `${Math.round((presentCount / totalCount) * 100)}% of roster` : '0%';
+      if (trackAbsentCount) trackAbsentCount.textContent = absentCount;
+      if (trackAbsentPct) trackAbsentPct.textContent = totalCount > 0 ? `${Math.round((absentCount / totalCount) * 100)}% of roster` : '0%';
+      if (trackOtherCount) trackOtherCount.textContent = otherCount;
+
+      trackBody.innerHTML = '';
+
+      if (records.length === 0) {
+        trackBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 36px;">
+              No registered participants or attendance entries found for ${selectedDate}.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      records.forEach((rec, idx) => {
+        const tr = document.createElement('tr');
+        const status = rec.status || 'Pending';
+        let pillClass = 'pill-yellow';
+        if (status.toLowerCase() === 'present') pillClass = 'pill-green';
+        else if (status.toLowerCase() === 'absent') pillClass = 'pill-red';
+        else if (status.toLowerCase() === 'late') pillClass = 'pill-yellow';
+        else if (status.toLowerCase() === 'leave') pillClass = 'pill-blue';
+
+        if (currentAttendanceMode === 'students') {
+          tr.innerHTML = `
+            <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+            <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(rec.student || rec.name || '—')}</td>
+            <td>${escapeHtml(rec.program || '—')}</td>
+            <td><span class="pill pill-blue">${escapeHtml(rec.category || '—')}</span></td>
+            <td><span class="pill ${pillClass}">${escapeHtml(status)}</span></td>
+            <td style="color: var(--text-muted); font-size: 0.83rem;">${escapeHtml(rec.remarks || '—')}</td>
+            <td style="font-size: 0.82rem; color: var(--text-muted); font-family: monospace;">${escapeHtml(rec.date || selectedDate)}</td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+            <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(rec.coach || rec.name || '—')}</td>
+            <td>${escapeHtml(rec.program || '—')}</td>
+            <td><span class="pill ${pillClass}">${escapeHtml(status)}</span></td>
+            <td style="color: var(--text-muted); font-size: 0.83rem;">${escapeHtml(rec.remarks || '—')}</td>
+            <td style="font-size: 0.82rem; color: var(--text-muted); font-family: monospace;">${escapeHtml(rec.date || selectedDate)}</td>
+          `;
+        }
+
+        trackBody.appendChild(tr);
+      });
+    }
+
     // Initial render
     renderAlertsList();
     renderStagingMonitor();
     renderCoordinatorsAudit();
     renderDataInspector('');
+    renderChiefAttendanceTracker();
   </script>
   <script src="pwa-install.js"></script>
 </body>

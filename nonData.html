@@ -423,15 +423,26 @@
 
   <script>
     // ----------------------------------------------------
-    // Session Verification
+    // Session Verification (Supports persistent login on device)
     // ----------------------------------------------------
-    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
-    const currentUser = sessionStorage.getItem('currentUser') || 'User';
-    const currentUserEmail = sessionStorage.getItem('currentUserEmail') || '';
-    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const isAuthenticated = (localStorage.getItem('isAuthenticated') === 'true') || (sessionStorage.getItem('isAuthenticated') === 'true');
+    const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || 'User';
+    const currentUserEmail = localStorage.getItem('currentUserEmail') || sessionStorage.getItem('currentUserEmail') || '';
+    const currentUserRole = (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole') || '').toLowerCase();
 
     if (!isAuthenticated) {
+      sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.replace('index.html');
+    } else {
+      sessionStorage.setItem('isAuthenticated', 'true');
+      sessionStorage.setItem('currentUser', currentUser);
+      sessionStorage.setItem('currentUserEmail', currentUserEmail);
+      sessionStorage.setItem('currentUserRole', currentUserRole);
     }
 
     // If user already has a promoted role, route them to their permitted dashboard
@@ -466,9 +477,14 @@
       }, 3000);
     }
 
-    // Sign out
+    // Sign out (Explicit Logout only)
     document.getElementById('btnLogout').addEventListener('click', () => {
       sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.replace('index.html');
     });
 

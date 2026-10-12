@@ -2261,23 +2261,6 @@
           </li>
         </ul>
       </li>
-
-      <!-- Dedicated Portal Links for Administrators -->
-      <li style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-subtle);">
-        <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 10px;">Sub-Portals</span>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="cateDashboard.html" title="Open Category Coordinator Dashboard">
-          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-          Category Portal ↗
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="chiefDashboard.html" title="Open Chief Coordinator Monitoring">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          Chief Monitor ↗
-        </a>
-      </li>
     </ul>
 
     <div class="sidebar-user">
@@ -2310,10 +2293,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Download App
         </button>
-        <button id="roleSwitchBtn" style="background: #faf8f5; border: 1.5px solid var(--border-subtle); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <span id="roleSwitchBtnText">Switch Role</span>
-        </button>
         <div class="session-badge">
           <span class="session-dot"></span>
           <span>Active Session</span>
@@ -2332,8 +2311,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
             </div>
           </div>
-          <div class="stat-value" id="statTotalCount">2,845</div>
-          <div class="stat-trend">+12.4% this month</div>
+          <div class="stat-value" id="statTotalCount">0</div>
+          <div class="stat-trend" id="statTotalTrend">Real-time DB records</div>
         </div>
 
         <div class="stat-card card-accent-yellow">
@@ -2343,8 +2322,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             </div>
           </div>
-          <div class="stat-value">5</div>
-          <div class="stat-trend" style="color: #926a00;">Bidāya, Ūla, Thāniya, Thānawiyya, Āliya</div>
+          <div class="stat-value" id="statCategoryCount">5</div>
+          <div class="stat-trend" id="statCategoryTrend" style="color: #926a00;">Bidāya, Ūla, Thāniya, Thānawiyya, Āliya</div>
         </div>
 
         <div class="stat-card card-accent-red">
@@ -2354,8 +2333,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
           </div>
-          <div class="stat-value" id="statProgramCount">142</div>
-          <div class="stat-trend">100% verified</div>
+          <div class="stat-value" id="statProgramCount">0</div>
+          <div class="stat-trend" id="statProgramTrend">Synced with Firestore</div>
         </div>
 
         <div class="stat-card card-accent-yellow">
@@ -2365,8 +2344,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
             </div>
           </div>
-          <div class="stat-value">Online</div>
-          <div class="stat-trend" style="color: #926a00;">All services operational</div>
+          <div class="stat-value" id="statSystemStatus">Online</div>
+          <div class="stat-trend" id="statSystemStatusTrend" style="color: #926a00;">Database connected</div>
         </div>
       </section>
 
@@ -2387,31 +2366,8 @@
                   <th>Time</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Admin Authentication</td>
-                  <td>System</td>
-                  <td><span class="pill pill-yellow">Success</span></td>
-                  <td id="sessionTimeCell">Just now</td>
-                </tr>
-                <tr>
-                  <td>Sprint 200m Added</td>
-                  <td>Senior</td>
-                  <td><span class="pill pill-red">Finished</span></td>
-                  <td>10m ago</td>
-                </tr>
-                <tr>
-                  <td>Candidate Enrollment</td>
-                  <td>Youth</td>
-                  <td><span class="pill pill-yellow">Confirmed</span></td>
-                  <td>25m ago</td>
-                </tr>
-                <tr>
-                  <td>Results Times Uploaded</td>
-                  <td>Junior</td>
-                  <td><span class="pill pill-red">Verified</span></td>
-                  <td>1h ago</td>
-                </tr>
+              <tbody id="recentActivityTableBody">
+                <!-- Dynamically populated from actual data -->
               </tbody>
             </table>
           </div>
@@ -3174,18 +3130,28 @@
 
   <script>
     // ----------------------------------------------------
-    // Session Guard
+    // Session Guard (Supports persistent login on device)
     // ----------------------------------------------------
-    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
-    const currentUser = sessionStorage.getItem('currentUser') || 'admin';
-    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
-    const loginTime = sessionStorage.getItem('loginTime');
+    const isAuthenticated = (localStorage.getItem('isAuthenticated') === 'true') || (sessionStorage.getItem('isAuthenticated') === 'true');
+    const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || 'admin';
+    const currentUserRole = (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const loginTime = localStorage.getItem('loginTime') || sessionStorage.getItem('loginTime');
 
     // Strict Access Control: Requires sign-in as Administrator
     if (!isAuthenticated || !currentUserRole.includes('admin')) {
       sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.replace('index.html?portal=admin&msg=signin_required');
     } else {
+      // Keep sessionStorage synchronized
+      sessionStorage.setItem('isAuthenticated', 'true');
+      sessionStorage.setItem('currentUser', currentUser);
+      sessionStorage.setItem('currentUserRole', currentUserRole);
+
       const greetingUsername = document.getElementById('greetingUsername');
       if (greetingUsername) greetingUsername.textContent = currentUser;
 
@@ -3213,9 +3179,14 @@
       }
     }
 
-    // Logout
+    // Explicit Logout only
     document.getElementById('logoutBtn').addEventListener('click', () => {
       sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.href = 'index.html';
     });
 
@@ -3329,23 +3300,137 @@
       if (data) {
         try {
           const parsed = JSON.parse(data);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed)) return parsed;
         } catch (e) {
           console.error(e);
         }
       }
-      return [
-        { id: 'prog_1', name: '100m Dash Championship', category: 'Ūla', candidates: 'Ali, Ziyad, Bilal', coach: 'Coach Tariq' },
-        { id: 'prog_2', name: 'Relay 4x100m', category: 'Bidāya', candidates: 'Saeed, Rayan, Hamza, Noor', coach: 'Coach Salman' },
-        { id: 'prog_3', name: 'Long Jump Challenge', category: 'Thānawiyya', candidates: 'Faris, Karim', coach: 'Coach Rashid' }
-      ];
+      return [];
     }
 
     function saveStoredProgramRecords(list) {
       localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(list));
+      updateDashboardHomeStats();
     }
 
     let programRecords = getStoredProgramRecords();
+
+    // ----------------------------------------------------
+    // Live Dynamic Database Stats for Home Page
+    // ----------------------------------------------------
+    function updateDashboardHomeStats() {
+      const statTotalCount = document.getElementById('statTotalCount');
+      const statTotalTrend = document.getElementById('statTotalTrend');
+      const statCategoryCount = document.getElementById('statCategoryCount');
+      const statCategoryTrend = document.getElementById('statCategoryTrend');
+      const statProgramCount = document.getElementById('statProgramCount');
+      const statProgramTrend = document.getElementById('statProgramTrend');
+      const statSystemStatus = document.getElementById('statSystemStatus');
+      const statSystemStatusTrend = document.getElementById('statSystemStatusTrend');
+
+      const totalPrograms = Array.isArray(programRecords) ? programRecords.length : 0;
+
+      // Calculate total entries (programs + all individual candidate participants)
+      let totalCandidatesCount = 0;
+      const categoriesFound = new Set();
+
+      if (Array.isArray(programRecords)) {
+        programRecords.forEach(p => {
+          if (p.category) categoriesFound.add(p.category.trim());
+          if (p.candidates && p.candidates !== '—') {
+            const split = p.candidates.split(/[,;\n]+/).filter(c => c.trim().length > 0);
+            totalCandidatesCount += (split.length > 0 ? split.length : 1);
+          }
+        });
+      }
+
+      const totalEntriesCount = totalPrograms + totalCandidatesCount;
+
+      if (statTotalCount) {
+        statTotalCount.textContent = totalEntriesCount.toLocaleString();
+      }
+      if (statTotalTrend) {
+        statTotalTrend.textContent = `${totalCandidatesCount} candidates across ${totalPrograms} programs`;
+      }
+
+      if (statProgramCount) {
+        statProgramCount.textContent = totalPrograms.toLocaleString();
+      }
+      if (statProgramTrend) {
+        statProgramTrend.textContent = totalPrograms > 0 ? '100% synced with Firestore' : 'No programs registered yet';
+      }
+
+      if (statCategoryCount) {
+        const catCount = categoriesFound.size > 0 ? categoriesFound.size : 5;
+        statCategoryCount.textContent = catCount;
+      }
+      if (statCategoryTrend) {
+        if (categoriesFound.size > 0) {
+          statCategoryTrend.textContent = Array.from(categoriesFound).join(', ');
+        } else {
+          statCategoryTrend.textContent = 'Bidāya, Ūla, Thāniya, Thānawiyya, Āliya';
+        }
+      }
+
+      if (statSystemStatus) {
+        statSystemStatus.textContent = 'Online';
+      }
+      if (statSystemStatusTrend) {
+        statSystemStatusTrend.textContent = window.SibaqFirebase ? 'Firebase Firestore connected' : 'Local storage active';
+      }
+
+      renderRecentActivityTable();
+    }
+
+    function renderRecentActivityTable() {
+      const recentBody = document.getElementById('recentActivityTableBody');
+      if (!recentBody) return;
+      recentBody.innerHTML = '';
+
+      const activities = [];
+
+      // Add Admin login event
+      const currentLoginTime = sessionStorage.getItem('loginTime') || localStorage.getItem('loginTime') || 'Active session';
+      activities.push({
+        event: 'Admin Authentication',
+        category: 'System',
+        status: 'Success',
+        statusClass: 'pill-yellow',
+        time: currentLoginTime
+      });
+
+      // Add recent programs from real database
+      if (Array.isArray(programRecords) && programRecords.length > 0) {
+        const sorted = [...programRecords].slice(0, 4);
+        sorted.forEach(p => {
+          let timeDisplay = 'Synced';
+          if (p.timestamp) {
+            try {
+              const d = new Date(p.timestamp);
+              timeDisplay = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch (e) {}
+          }
+          activities.push({
+            event: `${p.name || 'Program'} Registered`,
+            category: p.category || 'General',
+            status: 'Verified',
+            statusClass: 'pill-red',
+            time: timeDisplay
+          });
+        });
+      }
+
+      activities.forEach(act => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight: 600;">${escapeHtml(act.event)}</td>
+          <td>${escapeHtml(act.category)}</td>
+          <td><span class="pill ${act.statusClass}">${escapeHtml(act.status)}</span></td>
+          <td>${escapeHtml(act.time)}</td>
+        `;
+        recentBody.appendChild(row);
+      });
+    }
 
     const programTableBody = document.getElementById('programTableBody');
     const recordCountBadge = document.getElementById('recordCountBadge');
@@ -3430,6 +3515,7 @@
       });
 
       updateDeleteSelectedButton();
+      updateDashboardHomeStats();
     }
 
     // Select All Checkbox Listener
@@ -4872,14 +4958,30 @@
       // Live listener for program records
       if (typeof window.SibaqFirebase.listenToProgramRecords === 'function') {
         window.SibaqFirebase.listenToProgramRecords(firestorePrograms => {
-          if (Array.isArray(firestorePrograms) && firestorePrograms.length > 0) {
+          if (Array.isArray(firestorePrograms)) {
             localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(firestorePrograms));
             programRecords = firestorePrograms;
             renderProgramTable();
+            updateDashboardHomeStats();
           }
         });
       }
+
+      // Initial one-time fetch for program records if listener is pending
+      if (typeof window.SibaqFirebase.loadProgramRecordsFromFirestore === 'function') {
+        window.SibaqFirebase.loadProgramRecordsFromFirestore().then(remoteRecords => {
+          if (Array.isArray(remoteRecords)) {
+            localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(remoteRecords));
+            programRecords = remoteRecords;
+            renderProgramTable();
+            updateDashboardHomeStats();
+          }
+        }).catch(err => console.warn('Program records initial fetch warning:', err));
+      }
     }
+
+    // Trigger initial stats update on page load
+    updateDashboardHomeStats();
 
     // Mobile drawer toggle handler
     (function initMobileDrawer() {

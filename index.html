@@ -383,6 +383,35 @@
   <script src="firebase-config.js"></script>
 
   <script>
+    // Check if user is already authenticated on this device (Persistent Login)
+    const existingAuth = (localStorage.getItem('isAuthenticated') === 'true') || (sessionStorage.getItem('isAuthenticated') === 'true');
+    const existingRole = (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const currentUrlParams = new URLSearchParams(window.location.search);
+
+    if (existingAuth && !currentUrlParams.has('portal') && !currentUrlParams.has('msg')) {
+      // Sync to sessionStorage
+      const existingUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || '';
+      const existingEmail = localStorage.getItem('currentUserEmail') || sessionStorage.getItem('currentUserEmail') || '';
+      const existingLoginTime = localStorage.getItem('loginTime') || sessionStorage.getItem('loginTime') || '';
+      sessionStorage.setItem('isAuthenticated', 'true');
+      sessionStorage.setItem('currentUser', existingUser);
+      sessionStorage.setItem('currentUserEmail', existingEmail);
+      sessionStorage.setItem('currentUserRole', existingRole);
+      sessionStorage.setItem('loginTime', existingLoginTime);
+
+      if (existingRole.includes('category coordinator')) {
+        window.location.replace('cateDashboard.html');
+      } else if (existingRole.includes('chief')) {
+        window.location.replace('chiefDashboard.html');
+      } else if (existingRole.includes('teacher')) {
+        window.location.replace('teahDashboard.html');
+      } else if (existingRole.includes('admin')) {
+        window.location.replace('dashboard.html');
+      } else {
+        window.location.replace('nonData.html');
+      }
+    }
+
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
@@ -588,6 +617,13 @@
           sessionStorage.setItem('currentUserEmail', authenticatedUser.email || '');
           sessionStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
           sessionStorage.setItem('loginTime', new Date().toLocaleTimeString());
+
+          // Persistent Login: keep login until explicit logout
+          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('currentUser', authenticatedUser.name);
+          localStorage.setItem('currentUserEmail', authenticatedUser.email || '');
+          localStorage.setItem('currentUserRole', authenticatedUser.role || 'Member');
+          localStorage.setItem('loginTime', new Date().toLocaleTimeString());
 
           // Route to separated dashboards based on user role
           const roleLower = (authenticatedUser.role || '').toLowerCase();

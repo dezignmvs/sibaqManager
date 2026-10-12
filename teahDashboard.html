@@ -1666,32 +1666,44 @@
 
   <script>
     // ----------------------------------------------------
-    // Session Guard
+    // Session Guard (Supports persistent login on device)
     // ----------------------------------------------------
-    const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
-    const currentUser = sessionStorage.getItem('currentUser');
-    const currentUserRole = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const isAuthenticated = (localStorage.getItem('isAuthenticated') === 'true') || (sessionStorage.getItem('isAuthenticated') === 'true');
+    const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+    const currentUserRole = (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole') || '').toLowerCase();
 
     // Strict Access: Requires sign-in as Teacher or Coordinator/Admin
     if (!isAuthenticated || (!currentUserRole.includes('teacher') && !currentUserRole.includes('category coordinator') && !currentUserRole.includes('admin') && !currentUserRole.includes('chief'))) {
       sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.replace('index.html?portal=teacher&msg=signin_required');
+    } else {
+      sessionStorage.setItem('isAuthenticated', 'true');
+      if (currentUser) sessionStorage.setItem('currentUser', currentUser);
+      sessionStorage.setItem('currentUserRole', currentUserRole);
     }
 
     const userDisplayName = document.getElementById('userDisplayName');
     if (userDisplayName && currentUser) userDisplayName.textContent = currentUser;
     const userDisplayRole = document.getElementById('userDisplayRole');
-    if (userDisplayRole && sessionStorage.getItem('currentUserRole')) {
-      userDisplayRole.textContent = sessionStorage.getItem('currentUserRole');
+    if (userDisplayRole && (localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole'))) {
+      userDisplayRole.textContent = localStorage.getItem('currentUserRole') || sessionStorage.getItem('currentUserRole');
     }
     const avatarLetter = document.getElementById('avatarLetter');
     if (avatarLetter && currentUser) avatarLetter.textContent = currentUser.charAt(0).toUpperCase();
 
-    // Logout
+    // Explicit Logout only
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('isAuthenticated');
-      sessionStorage.removeItem('currentUser');
-      sessionStorage.removeItem('loginTime');
+      sessionStorage.clear();
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserEmail');
+      localStorage.removeItem('currentUserRole');
+      localStorage.removeItem('loginTime');
       window.location.href = 'index.html';
     });
 
