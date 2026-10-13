@@ -99,9 +99,11 @@
 
       // Only horizontal swipes
       if (Math.abs(diffX) > 60 && Math.abs(diffY) < 50) {
-        // Swipe right from left edge to open drawer
-        if (diffX > 0 && touchStartX < 40 && !sidebar.classList.contains('mobile-open')) {
-          openDrawer();
+        // Swipe right from extreme left edge only (<25px) and not when interacting with a scrollable table
+        if (diffX > 0 && touchStartX < 25 && !sidebar.classList.contains('mobile-open')) {
+          if (!e.target.closest('table, .table-scroll-wrapper, .table-responsive')) {
+            openDrawer();
+          }
         }
         // Swipe left to close drawer
         else if (diffX < 0 && sidebar.classList.contains('mobile-open')) {
@@ -329,26 +331,65 @@
   }
 
   /* ==========================================================================
-     4. TABLE SWIPE ASSISTANT (Mobile Only)
+     4. TABLE SWIPE ASSISTANT & DYNAMIC HORIZONTAL SCROLL ENABLER
      ========================================================================== */
   function setupTableScrollAssist() {
-    // Only apply scroll hint on small touch screens
-    if (window.innerWidth > 768) return;
+    function isTableEmpty(table) {
+      if (!table) return true;
+      const tbody = table.querySelector('tbody');
+      if (!tbody) return false;
+      const rows = tbody.querySelectorAll('tr');
+      if (rows.length === 0) return true;
+      // If single row with td[colspan] or all rows have td[colspan]
+      if (rows.length === 1 && rows[0].querySelector('td[colspan]')) return true;
+      return false;
+    }
 
-    const tables = document.querySelectorAll('table');
-    tables.forEach((table) => {
+    function syncTableState(table, scrollParent) {
+      if (!table || !scrollParent) return;
+      const empty = isTableEmpty(table);
+      let hint = scrollParent.previousElementSibling;
+      if (hint && !hint.classList.contains('table-scroll-hint')) hint = null;
+
+      if (empty) {
+        table.classList.add('table-empty');
+        scrollParent.style.overflowX = 'hidden';
+        if (hint) hint.style.display = 'none';
+      } else {
+        table.classList.remove('table-empty');
+        scrollParent.style.overflowX = 'auto';
+        if (hint && window.innerWidth <= 992) {
+          const hasOverflow = scrollParent.scrollWidth > scrollParent.clientWidth + 5;
+          hint.style.display = hasOverflow ? 'inline-flex' : 'none';
+        }
+      }
+    }
+
+    function processTable(table) {
+      if (!table) return;
+
       const parent = table.parentElement;
+      let scrollParent = parent;
+
       if (!parent.classList.contains('table-responsive') && !parent.classList.contains('table-scroll-wrapper')) {
         const wrapper = document.createElement('div');
         wrapper.className = 'table-scroll-wrapper';
+        wrapper.style.overflowX = 'auto';
+        wrapper.style.webkitOverflowScrolling = 'touch';
+        wrapper.style.touchAction = 'pan-x pan-y';
         parent.insertBefore(wrapper, table);
         wrapper.appendChild(table);
+        scrollParent = wrapper;
+      } else {
+        scrollParent.style.overflowX = 'auto';
+        scrollParent.style.webkitOverflowScrolling = 'touch';
+        scrollParent.style.touchAction = 'pan-x pan-y';
       }
 
-      // Add scroll hint only on mobile touch screens
-      const scrollParent = table.closest('.table-responsive, .table-scroll-wrapper');
-      if (scrollParent && !scrollParent.previousElementSibling?.classList.contains('table-scroll-hint')) {
-        const hint = document.createElement('div');
+      // Add scroll hint on touch/mobile screens if not already present
+      let hint = scrollParent.previousElementSibling;
+      if (!hint || !hint.classList.contains('table-scroll-hint')) {
+        hint = document.createElement('div');
         hint.className = 'table-scroll-hint';
         hint.innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:14px;height:14px;max-width:14px;max-height:14px;flex-shrink:0;"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>
@@ -356,16 +397,58 @@
         `;
         scrollParent.parentElement.insertBefore(hint, scrollParent);
 
-        // Hide hint once scrolled
         scrollParent.addEventListener('scroll', () => {
-          if (scrollParent.scrollLeft > 20) {
+          if (scrollParent.scrollLeft > 15) {
             hint.style.opacity = '0';
             hint.style.transition = 'opacity 0.3s ease';
             setTimeout(() => { hint.style.display = 'none'; }, 300);
           }
-        }, { passive: true, once: true });
+        }, { passive: true });
       }
-    });
+
+      syncTableState(table, scrollParent);
+
+      if (!table.dataset.scrollAssisted) {
+        table.dataset.scrollAssisted = 'true';
+        if (typeof MutationObserver !== 'undefined') {
+          const obs = new MutationObserver(() => {
+            syncTableState(table, scrollParent);
+          });
+          obs.observe(table, { childList: true, subtree: true });
+        }
+      }
+    }
+
+    // Process all existing tables
+    document.querySelectorAll('table').forEach(processTable);
+
+    // Watch for dynamically rendered tables
+    if (typeof MutationObserver !== 'undefined') {
+      try {
+        const observer = new MutationObserver((mutations) => {
+          let hasNewNodes = false;
+          for (let i = 0; i < mutations.length; i++) {
+            if (mutations[i].addedNodes.length > 0) {
+              hasNewNodes = true;
+              break;
+            }
+          }
+          if (hasNewNodes) {
+            document.querySelectorAll('table:not([data-scroll-assisted="true"])').forEach(processTable);
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+      } catch (e) {
+        // Fallback
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('table').forEach(table => {
+        const scrollParent = table.closest('.table-responsive, .table-scroll-wrapper') || table.parentElement;
+        syncTableState(table, scrollParent);
+      });
+    }, { passive: true });
   }
 
   /* ==========================================================================

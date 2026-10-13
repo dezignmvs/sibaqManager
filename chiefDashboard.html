@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Chief Coordinator Monitoring | Sibaq</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="shortcut icon" type="image/png" href="favicon.png">
@@ -796,7 +796,9 @@
       .main-content {
         padding: 16px;
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
       }
 
       .monitor-top-bar {
@@ -1268,7 +1270,7 @@
         </div>
 
         <!-- Attendance Table -->
-        <div class="table-responsive">
+        <div class="table-responsive" id="trackAttendanceTableWrap">
           <table>
             <thead>
               <tr id="trackTableHeader">
@@ -1286,6 +1288,7 @@
             </tbody>
           </table>
         </div>
+        <div id="trackAttendanceEmptyState" class="attendance-empty-card" style="display: none;"></div>
       </div>
     </div>
   </main>
@@ -2228,18 +2231,27 @@
       if (trackAbsentPct) trackAbsentPct.textContent = totalCount > 0 ? `${Math.round((absentCount / totalCount) * 100)}% of roster` : '0%';
       if (trackOtherCount) trackOtherCount.textContent = otherCount;
 
+      const tableWrap = document.getElementById('trackAttendanceTableWrap');
+      const emptyState = document.getElementById('trackAttendanceEmptyState');
       trackBody.innerHTML = '';
 
       if (records.length === 0) {
-        trackBody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 36px;">
-              No registered participants or attendance entries found for ${selectedDate}.
-            </td>
-          </tr>
-        `;
+        if (tableWrap) tableWrap.style.display = 'none';
+        if (emptyState) {
+          emptyState.style.display = 'flex';
+          emptyState.innerHTML = `
+            <div class="empty-illustration">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <h4>No Attendance Entries Found for ${selectedDate}</h4>
+            <p>No participant or coordinator attendance records found for this date. Choose another date or refresh monitors.</p>
+          `;
+        }
         return;
       }
+
+      if (tableWrap) tableWrap.style.display = 'block';
+      if (emptyState) emptyState.style.display = 'none';
 
       records.forEach((rec, idx) => {
         const tr = document.createElement('tr');

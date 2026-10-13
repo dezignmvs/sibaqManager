@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Login | Sibaq</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="shortcut icon" type="image/png" href="favicon.png">
@@ -178,23 +178,26 @@
 
     .input-icon {
       position: absolute;
-      left: 14px;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
       width: 18px;
       height: 18px;
       color: var(--text-muted);
       pointer-events: none;
+      z-index: 2;
     }
 
     .form-control {
       width: 100%;
-      height: 46px;
+      height: 48px;
       background: var(--surface-white);
       border: 1px solid var(--border-subtle);
       border-radius: 10px;
       color: var(--text-main);
-      font-size: 0.94rem;
+      font-size: 0.95rem;
       font-family: inherit;
-      padding: 0 42px 0 42px;
+      padding: 0 44px 0 48px;
       outline: none;
       transition: border-color 0.2s, background-color 0.2s;
     }

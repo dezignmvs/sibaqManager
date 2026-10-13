@@ -22,12 +22,16 @@
   --mobile-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Base mobile fluid behaviors */
+/* Base mobile fluid behaviors with FULL vertical and horizontal scrolling */
 @media (max-width: 992px) {
   html, body {
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: auto !important;
     width: 100% !important;
     position: relative;
+    touch-action: pan-x pan-y !important;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -39,6 +43,9 @@
     min-height: 100vh !important;
     padding: 0 !important;
     background-color: var(--bg-page, #faf8f5) !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   /* Prevent zoom on input focus in iOS */
@@ -443,7 +450,10 @@
     width: 100% !important;
     max-width: 100% !important;
     padding: 16px 14px calc(var(--mobile-bottom-nav-height) + 28px) 14px !important;
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
   }
 
   /* Top Bar adjustments */
@@ -579,12 +589,25 @@
 
   .coord-header, .card-header, .table-header {
     display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
     padding-bottom: 14px !important;
     margin-bottom: 14px !important;
     border-bottom: 1px solid var(--border-subtle, #eae5de) !important;
+  }
+
+  .coord-header .pill,
+  .coord-header .badge,
+  .coord-header [class*="pill-"],
+  .card-header .pill,
+  .card-header .badge {
+    align-self: center !important;
+    width: auto !important;
+    max-width: fit-content !important;
+    display: inline-flex !important;
   }
 
   .coord-title-wrap {
@@ -617,26 +640,91 @@
     align-items: center !important;
   }
 
-  /* Full width mobile controls */
+  /* Full width mobile controls with safe icon spacing */
   .search-input-wrap,
   .form-control,
   select.filter-select,
   input[type="text"],
+  input[type="password"],
   input[type="search"],
   input[type="date"],
   select {
     width: 100% !important;
     max-width: 100% !important;
-    height: 44px !important;
+    height: 46px !important;
     border-radius: var(--mobile-radius-sm) !important;
     font-size: 16px !important; /* Prevents auto zoom on iOS */
-    padding: 0 12px !important;
+    padding: 0 14px;
+    box-sizing: border-box !important;
   }
 
-  .search-input-wrap input {
+  /* Specific rule for input-containers with leading icons to prevent text/placeholder overlap */
+  .input-container {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  .input-container .input-icon {
+    position: absolute !important;
+    left: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 20px !important;
+    height: 20px !important;
+    color: var(--text-placeholder, #a8a199) !important;
+    pointer-events: none !important;
+    z-index: 5 !important;
+  }
+
+  .input-container input,
+  .input-container .form-control {
+    padding-left: 50px !important;
+    padding-right: 48px !important;
+    text-indent: 0 !important;
+    width: 100% !important;
+  }
+
+  .input-container .toggle-pwd {
+    position: absolute !important;
+    right: 14px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 5 !important;
+    cursor: pointer !important;
+    background: transparent !important;
+  }
+
+  /* Search inputs with leading search icon */
+  .search-input-wrap input,
+  .sched-search-input-wrap input,
+  .fest-search-input-wrap input,
+  .attendance-filter-search input {
     height: 44px !important;
     font-size: 16px !important;
     border-radius: 99px !important;
+    padding-left: 44px !important;
+    padding-right: 16px !important;
+  }
+
+  .search-input-wrap svg,
+  .sched-search-input-wrap > svg,
+  .fest-search-input-wrap svg,
+  .attendance-filter-search svg {
+    position: absolute !important;
+    left: 14px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 18px !important;
+    height: 18px !important;
+    pointer-events: none !important;
+    z-index: 5 !important;
   }
 
   .btn, .btn-action-primary, .btn-primary, .btn-secondary, .btn-add {
@@ -656,10 +744,15 @@
    8. RESPONSIVE DATA TABLES & SWIPE ASSISTANT
    ========================================================================== */
 .table-responsive,
-.table-scroll-wrapper {
+.table-scroll-wrapper,
+.table-card,
+.data-grid-wrap {
   width: 100% !important;
+  max-width: 100% !important;
   overflow-x: auto !important;
+  overflow-y: visible !important;
   -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x pan-y !important;
   position: relative !important;
   border-radius: var(--mobile-radius-md) !important;
   border: 1px solid var(--border-subtle, #eae5de) !important;
@@ -682,14 +775,13 @@
 }
 
 @media (max-width: 992px) {
-  /* Force two-column form+table grids to stack vertically in one column on mobile */
+  /* Force two-column form+table grids to stack vertically in one column on mobile without breaking all grids */
   div[style*="340px 1fr"],
-  div[style*="360px 1fr"],
-  div[style*="grid-template-columns"] {
+  div[style*="360px 1fr"] {
     grid-template-columns: 1fr !important;
   }
 
-  /* Scroll hint pill only visible on touch/mobile screens */
+  /* Scroll hint pill only visible on touch/mobile screens with scrollable content */
   .table-scroll-hint {
     display: inline-flex !important;
     align-items: center !important;
@@ -715,11 +807,48 @@
     flex-shrink: 0 !important;
   }
 
-  /* Table styling enhancements on mobile */
+  /* Table styling enhancements on mobile: allow smooth horizontal scroll without shrinking columns */
   table {
-    min-width: 600px !important;
+    min-width: 650px !important;
+    width: 100% !important;
     border-collapse: separate !important;
     border-spacing: 0 !important;
+  }
+
+  /* Empty tables or tables showing a single empty/notice row should never force 650px min-width */
+  table.table-empty,
+  table:has(tbody tr td[colspan]),
+  table:has(tbody:empty) {
+    min-width: 100% !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  table.table-empty thead,
+  table:has(tbody tr td[colspan]) thead {
+    display: none !important;
+  }
+
+  table.table-empty tbody td,
+  table:has(tbody tr td[colspan]) tbody td {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    padding: 24px 14px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    color: var(--text-muted, #79716b) !important;
+    font-size: 0.88rem !important;
+    border-bottom: none !important;
+  }
+
+  /* When table is empty, wrapper should not have horizontal scrollbar */
+  .table-responsive:has(table.table-empty),
+  .table-scroll-wrapper:has(table.table-empty),
+  .table-responsive:has(table:has(tbody tr td[colspan])),
+  .table-scroll-wrapper:has(table:has(tbody tr td[colspan])) {
+    overflow-x: hidden !important;
   }
 
   th {
@@ -794,7 +923,9 @@
     display: flex !important;
     flex-direction: column !important;
     overflow-y: auto !important;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
     padding: 16px 20px calc(24px + env(safe-area-inset-bottom, 0px)) 20px !important;
     animation: mobileSheetSlideUp 0.32s var(--mobile-ease-spring) !important;
     position: relative !important;
@@ -923,6 +1054,12 @@
     font-size: 16px !important;
   }
 
+  .input-container input,
+  .input-container .form-control {
+    padding-left: 50px !important;
+    padding-right: 48px !important;
+  }
+
   .btn-submit, .btn-primary-action {
     height: 52px !important;
     border-radius: 12px !important;
@@ -966,3 +1103,465 @@
   color: #1f1b18 !important;
   flex-shrink: 0 !important;
 }
+
+/* ==========================================================================
+   12. MOBILE HORIZONTAL & VERTICAL SCROLL INDICATORS
+   ========================================================================== */
+@media (max-width: 992px) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(234, 58, 24, 0.45) rgba(0, 0, 0, 0.05);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(234, 58, 24, 0.4);
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(234, 58, 24, 0.7);
+  }
+
+  /* Ensure horizontal scroll containers show horizontal scrollbar clearly */
+  .table-responsive::-webkit-scrollbar,
+  .table-scroll-wrapper::-webkit-scrollbar,
+  .main-content::-webkit-scrollbar,
+  .modal-card::-webkit-scrollbar,
+  .modal-content::-webkit-scrollbar {
+    height: 6px;
+    display: block;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb,
+  .table-scroll-wrapper::-webkit-scrollbar-thumb,
+  .main-content::-webkit-scrollbar-thumb {
+    background: rgba(234, 58, 24, 0.55);
+  }
+}
+
+/* ==========================================================================
+   13. LUXURY ATTENDANCE PAGE EXPERIENCE (KPIs, Stepper, Empty States)
+   ========================================================================== */
+.attendance-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 992px) {
+  .attendance-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+.attendance-kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #eae5de);
+  border-radius: var(--mobile-radius-md, 14px);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.attendance-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.attendance-kpi-card .kpi-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-total .kpi-icon-wrap {
+  background: #f4efe8;
+  color: #1f1b18;
+}
+
+.kpi-present .kpi-icon-wrap {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.kpi-pending .kpi-icon-wrap {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.kpi-leave .kpi-icon-wrap {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.attendance-kpi-card .kpi-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.attendance-kpi-card .kpi-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted, #79716b);
+  margin-bottom: 2px;
+}
+
+.attendance-kpi-card .kpi-value {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-main, #1f1b18);
+  line-height: 1.1;
+}
+
+.attendance-kpi-card .kpi-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+
+.kpi-pill-green {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* Attendance Progress Ribbon */
+.attendance-progress-wrap {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #eae5de);
+  border-radius: var(--mobile-radius-sm, 10px);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.attendance-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted, #79716b);
+  margin-bottom: 6px;
+}
+
+.attendance-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #f1ede8;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.attendance-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 99px;
+  transition: width 0.35s ease;
+}
+
+/* Attendance Controls Bar (Date stepper & Action buttons) */
+.attendance-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .attendance-controls-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+}
+
+.date-stepper-group {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #eae5de);
+  border-radius: var(--mobile-radius-sm, 10px);
+  padding: 3px;
+  gap: 4px;
+}
+
+@media (max-width: 992px) {
+  .date-stepper-group {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+}
+
+.btn-date-step {
+  width: 32px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #79716b);
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-date-step:hover {
+  background: #f3eee7;
+  color: var(--text-main, #1f1b18);
+}
+
+.date-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+}
+
+.date-input-wrap svg {
+  position: absolute;
+  left: 8px;
+  color: var(--text-muted, #79716b);
+  pointer-events: none;
+}
+
+.attendance-date-input {
+  height: 34px !important;
+  padding-left: 28px !important;
+  padding-right: 8px !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  width: 140px !important;
+  color: var(--text-main, #1f1b18) !important;
+}
+
+@media (max-width: 992px) {
+  .attendance-date-input {
+    width: 100% !important;
+  }
+}
+
+.btn-today-shortcut {
+  height: 30px;
+  padding: 0 10px;
+  background: #f4efe6;
+  border: 1px solid #e7ded2;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main, #1f1b18);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-today-shortcut:hover {
+  background: var(--brand-yellow-soft, #fef8e7);
+  border-color: var(--brand-yellow-border, #fae69e);
+  color: #7d5900;
+}
+
+/* Filter search inside attendance */
+.attendance-filter-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 180px;
+}
+
+.attendance-filter-search svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-placeholder, #a8a199);
+  pointer-events: none;
+}
+
+.attendance-filter-search input {
+  width: 100%;
+  height: 40px;
+  padding-left: 36px;
+  padding-right: 12px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #eae5de);
+  border-radius: var(--mobile-radius-sm, 10px);
+  font-size: 0.88rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.attendance-filter-search input:focus {
+  border-color: var(--brand-red, #ea3a18);
+}
+
+/* Action button row */
+.attendance-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 992px) {
+  .attendance-action-buttons {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+.btn-quick-present {
+  height: 40px;
+  padding: 0 14px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  border-radius: var(--mobile-radius-sm, 10px);
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-quick-present:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+}
+
+.btn-save-pulse {
+  height: 40px !important;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(234, 58, 24, 0.25);
+}
+
+/* Modern Centered Empty State */
+.attendance-empty-card {
+  width: 100% !important;
+  max-width: 520px;
+  box-sizing: border-box !important;
+  padding: 32px 18px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: var(--mobile-radius-md, 14px);
+  border: 1px solid var(--border-subtle, #eae5de);
+  margin: 12px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.attendance-empty-card .empty-illustration {
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fef3c7, #fee2e2);
+  border: 1px solid #fed7aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-red, #ea3a18);
+  box-shadow: 0 8px 20px rgba(234, 58, 24, 0.08);
+  margin-bottom: 4px;
+}
+
+.attendance-empty-card h4 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main, #1f1b18);
+  margin: 0;
+  word-break: break-word;
+}
+
+.attendance-empty-card p {
+  font-size: 0.88rem;
+  color: var(--text-muted, #79716b);
+  max-width: 100%;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.attendance-empty-card .empty-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-empty-today {
+  height: 38px;
+  padding: 0 16px;
+  background: var(--brand-red, #ea3a18);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s ease;
+}
+
+.btn-empty-today:active {
+  transform: scale(0.97);
+}
+
+.btn-empty-schedule {
+  height: 38px;
+  padding: 0 16px;
+  background: #f4efe6;
+  color: var(--text-main, #1f1b18);
+  border: 1px solid var(--border-subtle, #eae5de);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s ease;
+}
+
+.btn-empty-schedule:active {
+  transform: scale(0.97);
+}
+
+
