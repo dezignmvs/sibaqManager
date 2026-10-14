@@ -3081,14 +3081,35 @@
           ? slot.programs
           : (slot.program ? [slot.program] : ['General Program']);
 
-        progs.forEach(progName => {
+        progs.forEach((progName, pIdx) => {
           const progNameTrimmed = (progName || 'General Program').trim();
           const progRecord = records.find(p => (p.name || p.program || '').trim().toLowerCase() === progNameTrimmed.toLowerCase());
 
-          let coachName = (slot.coach || '').trim();
-          if (!coachName && progRecord) {
-            coachName = (progRecord.coach || progRecord.coachName || '').trim();
+          let coachName = '';
+          if (progs.length > 1) {
+            // When multiple programs are scheduled in one slot, assign each program's own coach only
+            if (progRecord && (progRecord.coach || progRecord.coachName || progRecord.lead)) {
+              coachName = (progRecord.coach || progRecord.coachName || progRecord.lead).trim();
+            }
+            if (!coachName && slot.programCoaches) {
+              coachName = (slot.programCoaches[progNameTrimmed] || slot.programCoaches[progNameTrimmed.toLowerCase()] || '').trim();
+            }
+            if (!coachName && slot.coach) {
+              const parts = slot.coach.split(',').map(s => s.trim()).filter(Boolean);
+              if (parts.length === progs.length && parts[pIdx]) {
+                coachName = parts[pIdx];
+              } else if (parts.length === 1) {
+                coachName = parts[0];
+              }
+            }
+          } else {
+            // Single program slot: use slot.coach if provided, otherwise program record's coach
+            coachName = (slot.coach || '').trim();
+            if (!coachName && progRecord) {
+              coachName = (progRecord.coach || progRecord.coachName || progRecord.lead || '').trim();
+            }
           }
+
           if (!coachName) {
             coachName = 'Assigned Coach';
           }
@@ -3175,7 +3196,17 @@
           ? `${c.program}_${c.name}_${slotKeyPart}`.toLowerCase()
           : `${c.program}_${c.name}`.toLowerCase();
         const fallbackKey = `${c.program}_${c.name}`.toLowerCase();
-        const existing = savedDateAttendance[rowKey] || savedDateAttendance[fallbackKey] || {};
+        let existing = savedDateAttendance[rowKey] || savedDateAttendance[fallbackKey];
+        if (!existing) {
+          const progPrefix = `${c.program.toLowerCase()}_`;
+          for (const k in savedDateAttendance) {
+            if (k.startsWith(progPrefix) && (!slotKeyPart || k.includes(slotKeyPart.toLowerCase()))) {
+              existing = savedDateAttendance[k];
+              break;
+            }
+          }
+        }
+        existing = existing || {};
 
         let currentStatus = existing.status || 'Pending';
         if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Leave') {
@@ -5039,6 +5070,16 @@
       const sets = getStoredTimeSets();
       const selectedSet = sets.find(s => s.id === timeSetId);
 
+      const programRecords = getStoredProgramRecords();
+      const programCoaches = {};
+      programList.forEach(pName => {
+        const pObj = selectedSchedulePrograms.find(sp => (sp.name || '').trim().toLowerCase() === pName.trim().toLowerCase()) 
+                  || programRecords.find(p => (p.name || p.program || '').trim().toLowerCase() === pName.trim().toLowerCase());
+        if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+          programCoaches[pName.trim()] = (pObj.coach || pObj.coachName || pObj.lead).trim();
+        }
+      });
+
       const newSlot = {
         id: 'sched_' + Date.now(),
         date,
@@ -5047,6 +5088,7 @@
         startTime: selectedSet ? selectedSet.startTime : '09:00',
         endTime: selectedSet ? selectedSet.endTime : '12:00',
         programs: programList,
+        programCoaches,
         candidate,
         coach,
         timestamp: new Date().toISOString()
