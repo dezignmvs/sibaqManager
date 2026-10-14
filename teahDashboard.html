@@ -1765,11 +1765,20 @@
               </div>
             </div>
 
-            <!-- Controls: Date, Search & Submit Button -->
+            <!-- Controls: Date Stepper, Search & Submit Button -->
             <div class="coord-actions-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <label for="ratingDateSelect" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">Schedule Date:</label>
-                <input type="date" id="ratingDateSelect" class="form-input" style="height: 38px; padding: 0 12px; font-weight: 600; font-size: 0.88rem; width: auto; min-width: 155px; border-radius: 8px;" />
+              <div class="date-stepper-group" style="display: inline-flex; align-items: center; background: #fff; border: 1px solid var(--border-subtle); border-radius: 9px; padding: 2px;">
+                <button type="button" class="btn-date-step" id="btnPrevRatingDate" title="Previous Day">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="date-input-wrap" style="display: inline-flex; align-items: center; gap: 6px; padding: 0 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  <input type="date" id="ratingDateSelect" class="form-input" style="border: none; background: transparent; height: 34px; padding: 0 4px; font-weight: 700; font-size: 0.88rem; width: auto; min-width: 135px; outline: none; box-shadow: none;" />
+                </div>
+                <button type="button" class="btn-date-step" id="btnNextRatingDate" title="Next Day">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <button type="button" class="btn-today-shortcut" id="btnTodayRatingShortcut" style="padding: 5px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 7px; background: var(--brand-red-soft); color: var(--brand-red); border: 1px solid var(--brand-red-border); cursor: pointer; margin-left: 2px;">Today</button>
               </div>
 
               <div style="display: flex; align-items: center; gap: 8px;">
@@ -1963,9 +1972,9 @@
           pageDescText.textContent = 'Rate today\'s scheduled program candidates and coaches in % score with live remarks';
           const rDateInput = document.getElementById('ratingDateSelect');
           if (rDateInput && !rDateInput.value) {
-            rDateInput.value = new Date().toISOString().split('T')[0];
+            rDateInput.value = getTodayLocalDateStr();
           }
-          const curDate = rDateInput ? rDateInput.value : new Date().toISOString().split('T')[0];
+          const curDate = rDateInput ? rDateInput.value : getTodayLocalDateStr();
           if (window.SibaqFirebase && typeof window.SibaqFirebase.loadRatingsFromFirestore === 'function') {
             window.SibaqFirebase.loadRatingsFromFirestore(curDate).then(remoteMap => {
               if (remoteMap && typeof remoteMap === 'object') {
@@ -2246,6 +2255,31 @@
     let coordinatorPunishments = getStoredPunishments();
     let coordinatorAbsences = getStoredAbsences();
 
+    function getTodayLocalDateStr() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatLocalDate(d) {
+      if (!d || isNaN(d.getTime())) return getTodayLocalDateStr();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseLocalDate(dateStr) {
+      if (!dateStr) return new Date();
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      }
+      return new Date(dateStr);
+    }
+
     function getAttendanceCandidates(targetDate) {
       const records = getStoredProgramRecords();
       const schedList = getStoredSchedule();
@@ -2267,7 +2301,7 @@
         if (Array.isArray(p.candidates)) {
           candidatesArr = p.candidates;
         } else if (typeof p.candidates === 'string' && p.candidates.trim()) {
-          candidatesArr = p.candidates.split(',');
+          candidatesArr = p.candidates.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
         } else if (p.candidate) {
           candidatesArr = [p.candidate];
         }
@@ -2277,14 +2311,16 @@
 
         // Find schedule slots for this program on targetDate
         const progSlots = matchingScheduleSlots.filter(s => {
-          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
+          const progs = Array.isArray(s.programs) && s.programs.length > 0 
+            ? s.programs 
+            : (s.program ? s.program.split(',').map(pr => pr.trim()) : []);
           return progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
         });
 
         if (progSlots.length === 0) return; // Only if schedule created!
 
-        progSlots.forEach(slot => {
-          if (slot.id) handledSlotKeys.add(slot.id);
+        progSlots.forEach((slot, sIdx) => {
+          handledSlotKeys.add(`${slot.id || sIdx}_${progNameLower}`);
         });
 
         if (candidatesArr.length > 0) {
@@ -2301,9 +2337,11 @@
 
             // Filter slots that specifically target this candidate or apply to the whole program
             const candSlots = progSlots.filter(s => {
+              const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
+              if (progs.length > 1) return true; // Multi-program slot: include this program's candidates
               if (!s.candidate || !s.candidate.trim()) return true;
-              const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
-              return candsInSlot.includes(candNameLower);
+              const candsInSlot = s.candidate.split(/[,;\n]+/).map(x => x.trim().toLowerCase());
+              return candsInSlot.includes(candNameLower) || candsInSlot.includes('all candidates');
             });
 
             if (candSlots.length > 0) {
@@ -2327,7 +2365,7 @@
         } else {
           // Program record had no candidates; use candidates specified on schedule slot
           progSlots.forEach((slot, sIdx) => {
-            const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
+            const slotCands = (slot.candidate || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
             if (slotCands.length > 0) {
               slotCands.forEach(name => {
                 list.push({
@@ -2365,15 +2403,36 @@
 
       // Handle any schedule slots that were created for programs not in program records
       matchingScheduleSlots.forEach((slot, sIdx) => {
-        if (slot.id && handledSlotKeys.has(slot.id)) return;
-        const progs = Array.isArray(slot.programs) ? slot.programs : (slot.program ? [slot.program] : ['General Program']);
-        const progName = progs[0] || 'Scheduled Program';
-        const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
-        if (slotCands.length > 0) {
-          slotCands.forEach(name => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+          ? slot.programs
+          : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
+
+        progs.forEach((progName) => {
+          const progClean = (progName || '').trim();
+          const progKey = `${slot.id || sIdx}_${progClean.toLowerCase()}`;
+          if (handledSlotKeys.has(progKey)) return;
+
+          const slotCands = (slot.candidate || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
+          if (slotCands.length > 0) {
+            slotCands.forEach(name => {
+              list.push({
+                name,
+                program: progClean,
+                category: slot.category || 'General',
+                slotId: slot.id || `slot_extra_${sIdx + 1}`,
+                timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                startTime: slot.startTime || '',
+                endTime: slot.endTime || '',
+                timeSetName: slot.timeSetName || '',
+                venue: slot.venue || '',
+                slotIndex: 1,
+                totalSlots: 1
+              });
+            });
+          } else {
             list.push({
-              name,
-              program: progName,
+              name: 'All Program Candidates',
+              program: progClean,
               category: slot.category || 'General',
               slotId: slot.id || `slot_extra_${sIdx + 1}`,
               timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
@@ -2384,22 +2443,8 @@
               slotIndex: 1,
               totalSlots: 1
             });
-          });
-        } else {
-          list.push({
-            name: 'All Program Candidates',
-            program: progName,
-            category: slot.category || 'General',
-            slotId: slot.id || `slot_extra_${sIdx + 1}`,
-            timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
-            startTime: slot.startTime || '',
-            endTime: slot.endTime || '',
-            timeSetName: slot.timeSetName || '',
-            venue: slot.venue || '',
-            slotIndex: 1,
-            totalSlots: 1
-          });
-        }
+          }
+        });
       });
 
       return list;
@@ -2446,10 +2491,10 @@
       if (!tbody) return;
 
       if (dateInput && !dateInput.value) {
-        dateInput.value = new Date().toISOString().split('T')[0];
+        dateInput.value = getTodayLocalDateStr();
       }
 
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       const savedDateAttendance = getStoredStudentAttendance(selectedDate);
       const candidates = getAttendanceCandidates(selectedDate);
       const tableWrap = document.getElementById('studentAttendanceTableWrap');
@@ -2736,7 +2781,7 @@
 
     document.getElementById('btnSaveStudentAttendance')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       if (!selectedDate) {
         alert('Please select an attendance date.');
         return;
@@ -2816,25 +2861,25 @@
     document.getElementById('btnPrevDate')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
       if (!dateInput) return;
-      const cur = new Date(dateInput.value || new Date());
+      const cur = parseLocalDate(dateInput.value);
       cur.setDate(cur.getDate() - 1);
-      dateInput.value = cur.toISOString().split('T')[0];
+      dateInput.value = formatLocalDate(cur);
       dateInput.dispatchEvent(new Event('change'));
     });
 
     document.getElementById('btnNextDate')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
       if (!dateInput) return;
-      const cur = new Date(dateInput.value || new Date());
+      const cur = parseLocalDate(dateInput.value);
       cur.setDate(cur.getDate() + 1);
-      dateInput.value = cur.toISOString().split('T')[0];
+      dateInput.value = formatLocalDate(cur);
       dateInput.dispatchEvent(new Event('change'));
     });
 
     document.getElementById('btnTodayShortcut')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
       if (!dateInput) return;
-      dateInput.value = new Date().toISOString().split('T')[0];
+      dateInput.value = getTodayLocalDateStr();
       dateInput.dispatchEvent(new Event('change'));
     });
 
@@ -2935,10 +2980,10 @@
       if (!tbody) return;
 
       if (dateInput && !dateInput.value) {
-        dateInput.value = new Date().toISOString().split('T')[0];
+        dateInput.value = getTodayLocalDateStr();
       }
 
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       const savedDateAttendance = getStoredCoachAttendance(selectedDate);
       const coaches = getAttendanceCoaches(selectedDate);
       const tableWrap = document.getElementById('coachAttendanceTableWrap');
@@ -3109,7 +3154,7 @@
 
     document.getElementById('btnSaveCoachAttendance')?.addEventListener('click', () => {
       const dateInput = document.getElementById('coachAttendDate');
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       if (!selectedDate) {
         alert('Please select a shift date.');
         return;
@@ -4011,67 +4056,64 @@
     // 5. SCHEDULE-BASED DAILY RATINGS SYSTEM
     // ----------------------------------------------------
 
-    // Extract schedule entries matching the given targetDate with programs, candidates, and coaches
+    // Extract schedule entries matching the given targetDate with programs, candidates, and coaches (strictly for that day)
     function getScheduleRatingsEntries(targetDate) {
       const list = [];
       const schedList = typeof getStoredSchedule === 'function' ? getStoredSchedule() : [];
       const allPrograms = typeof getStoredProgramRecords === 'function' ? getStoredProgramRecords() : [];
 
-      // Filter slots for targetDate (or match all if targetDate empty)
+      if (!targetDate) {
+        targetDate = typeof getTodayLocalDateStr === 'function' ? getTodayLocalDateStr() : new Date().toISOString().split('T')[0];
+      }
+
+      // Filter slots for targetDate ONLY - strictly matching that specific scheduled day
       const matchingSlots = schedList.filter(s => {
         if (!s) return false;
-        return !targetDate || !s.date || s.date === targetDate;
+        return s.date === targetDate;
       });
 
       matchingSlots.forEach((slot, sIdx) => {
-        let progs = Array.isArray(slot.programs) 
+        let progs = Array.isArray(slot.programs) && slot.programs.length > 0
           ? slot.programs 
           : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : []);
         if (progs.length === 0) progs = ['General Session'];
 
-        progs.forEach(progName => {
-          const progClean = progName.trim();
+        progs.forEach((progName, pIdx) => {
+          const progClean = (progName || '').trim();
           const pObj = allPrograms.find(p => (p.name || p.program || '').trim().toLowerCase() === progClean.toLowerCase());
-          const category = pObj?.category || 'General';
+          const category = pObj?.category || slot.category || 'General';
 
-          // Determine coach from slot or program definition
+          // Determine coach for this program specifically
           let coach = '';
-          if (progs.length > 1) {
-            if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
-              coach = (pObj.coach || pObj.coachName || pObj.lead).trim();
-            } else if (pObj && pObj.coaches) {
-              coach = Array.isArray(pObj.coaches) ? pObj.coaches.join(', ') : pObj.coaches;
-            }
-            if (!coach && slot.programCoaches) {
-              coach = (slot.programCoaches[progClean] || slot.programCoaches[progClean.toLowerCase()] || '').trim();
-            }
-            if (!coach && slot.coach) {
-              const parts = slot.coach.split(',').map(s => s.trim()).filter(Boolean);
-              if (parts.length === progs.length) {
-                const pIdx = progs.indexOf(progName);
-                if (pIdx >= 0 && parts[pIdx]) coach = parts[pIdx];
-              }
-            }
-          } else {
-            coach = slot.coach || '';
-            if (!coach && pObj) {
-              if (pObj.coaches) {
-                coach = Array.isArray(pObj.coaches) ? pObj.coaches.join(', ') : pObj.coaches;
-              } else if (pObj.coach) {
-                coach = pObj.coach;
-              }
+          if (slot.programCoaches && (slot.programCoaches[progClean] || slot.programCoaches[progClean.toLowerCase()])) {
+            coach = slot.programCoaches[progClean] || slot.programCoaches[progClean.toLowerCase()];
+          } else if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+            coach = pObj.coach || pObj.coachName || pObj.lead;
+          } else if (pObj && pObj.coaches) {
+            coach = Array.isArray(pObj.coaches) ? pObj.coaches.join(', ') : pObj.coaches;
+          } else if (slot.coach) {
+            const parts = slot.coach.split(',').map(s => s.trim()).filter(Boolean);
+            if (parts.length === progs.length && parts[pIdx]) {
+              coach = parts[pIdx];
+            } else if (parts.length === 1) {
+              coach = parts[0];
+            } else {
+              coach = slot.coach;
             }
           }
           if (!coach) coach = '—';
 
-          // Determine candidate(s)
+          // Determine candidate(s) specifically for this program
           let cands = [];
-          if (slot.candidate && typeof slot.candidate === 'string' && slot.candidate.trim()) {
-            cands = slot.candidate.split(',').map(c => c.trim()).filter(Boolean);
-          } else if (slot.candidates && Array.isArray(slot.candidates)) {
-            cands = slot.candidates.map(c => typeof c === 'string' ? c.trim() : (c.name || '')).filter(Boolean);
-          } else if (pObj && typeof extractProgramCandidates === 'function') {
+          if (pObj && typeof extractProgramCandidates === 'function') {
             cands = extractProgramCandidates(pObj);
+          }
+          if (cands.length === 0 && progs.length === 1) {
+            if (slot.candidate && typeof slot.candidate === 'string' && slot.candidate.trim()) {
+              cands = slot.candidate.split(/[,;\n]+/).map(c => c.trim()).filter(Boolean);
+            } else if (slot.candidates && Array.isArray(slot.candidates)) {
+              cands = slot.candidates.map(c => typeof c === 'string' ? c.trim() : (c.name || '')).filter(Boolean);
+            }
           }
           if (cands.length === 0) {
             cands = ['All Candidates'];
@@ -4108,10 +4150,10 @@
       if (!tbody) return;
 
       if (dateInput && !dateInput.value) {
-        dateInput.value = new Date().toISOString().split('T')[0];
+        dateInput.value = typeof getTodayLocalDateStr === 'function' ? getTodayLocalDateStr() : new Date().toISOString().split('T')[0];
       }
 
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : (typeof getTodayLocalDateStr === 'function' ? getTodayLocalDateStr() : new Date().toISOString().split('T')[0]);
       const savedRatings = getStoredRatings(selectedDate);
       const query = (searchInput?.value || '').toLowerCase().trim();
 
@@ -4161,8 +4203,14 @@
           <tr>
             <td colspan="9" style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; display: block; opacity: 0.5;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              <strong>No Scheduled Sessions Found for ${escapeHtml(selectedDate)}</strong>
-              <div style="font-size: 0.82rem; margin-top: 4px;">Sessions configured under "Schedule Set" for this date with candidates and coaches will populate here.</div>
+              <strong style="font-size: 1rem; color: var(--text-main); display: block; margin-bottom: 6px;">No Scheduled Sessions Found for ${escapeHtml(selectedDate)}</strong>
+              <div style="font-size: 0.84rem; margin-bottom: 14px;">Ratings are strictly generated for candidates and coaches scheduled on this specific date.</div>
+              <div style="display: inline-flex; gap: 8px;">
+                <button type="button" class="btn-empty-today" onclick="document.getElementById('btnTodayRatingShortcut')?.click()" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 0.83rem; border-radius: 8px; background: var(--brand-red); color: #fff; border: none; cursor: pointer; font-weight: 700;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                  View Today
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -4297,6 +4345,32 @@
       }
     });
 
+    // Ratings Date Stepper Navigation & Today Shortcut
+    document.getElementById('btnPrevRatingDate')?.addEventListener('click', () => {
+      const dateInput = document.getElementById('ratingDateSelect');
+      if (!dateInput) return;
+      const cur = parseLocalDate(dateInput.value);
+      cur.setDate(cur.getDate() - 1);
+      dateInput.value = formatLocalDate(cur);
+      dateInput.dispatchEvent(new Event('change'));
+    });
+
+    document.getElementById('btnNextRatingDate')?.addEventListener('click', () => {
+      const dateInput = document.getElementById('ratingDateSelect');
+      if (!dateInput) return;
+      const cur = parseLocalDate(dateInput.value);
+      cur.setDate(cur.getDate() + 1);
+      dateInput.value = formatLocalDate(cur);
+      dateInput.dispatchEvent(new Event('change'));
+    });
+
+    document.getElementById('btnTodayRatingShortcut')?.addEventListener('click', () => {
+      const dateInput = document.getElementById('ratingDateSelect');
+      if (!dateInput) return;
+      dateInput.value = getTodayLocalDateStr();
+      dateInput.dispatchEvent(new Event('change'));
+    });
+
     // Search filter listener for Ratings
     document.getElementById('ratingSearchInput')?.addEventListener('input', () => {
       renderRatingsTable();
@@ -4305,7 +4379,7 @@
     // Submit Ratings button listener
     document.getElementById('btnSubmitRatings')?.addEventListener('click', () => {
       const dateInput = document.getElementById('ratingDateSelect');
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       if (!selectedDate) {
         showToast('Please select a schedule date first.');
         return;
@@ -4866,63 +4940,90 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      if (badge) badge.textContent = `${coordinatorSchedule.length} Scheduled`;
-
       if (coordinatorSchedule.length === 0) {
+        if (badge) badge.textContent = `0 Scheduled`;
         tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 25px;">No program slots scheduled yet.</td></tr>`;
         return;
       }
 
-      coordinatorSchedule.forEach((slot, idx) => {
-        const tr = document.createElement('tr');
-        const progs = Array.isArray(slot.programs) 
-          ? slot.programs 
-          : (slot.program ? slot.program.split(',').map(s => s.trim()) : []);
+      const allProgs = getStoredProgramRecords();
+      const expandedRows = [];
 
-        const programPills = progs.map(p => `<span class="program-chip-tag">${escapeHtml(p)}</span>`).join('');
-        const timeSetLabel = slot.timeSetName ? `<div style="font-size: 0.76rem; color: #15803d; font-weight: 700;">${escapeHtml(slot.timeSetName)}</div>` : '';
+      coordinatorSchedule.forEach((slot) => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+          ? slot.programs
+          : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
 
-        // Candidate display: from slot.candidate/slot.candidates or auto-inferred from programs if old data
-        let candDisplay = slot.candidate || slot.candidates || '';
-        if (!candDisplay && progs.length > 0) {
-          const allProgs = getStoredProgramRecords();
-          const foundCands = [];
-          progs.forEach(prName => {
-            const pObj = allProgs.find(p => (p.name || p.program) === prName);
-            if (pObj) {
-              extractProgramCandidates(pObj).forEach(c => {
-                if (!foundCands.includes(c)) foundCands.push(c);
-              });
-            }
+        progs.forEach((progName) => {
+          const progClean = (progName || '').trim();
+          const pObj = allProgs.find(p => (p.name || p.program || '').trim().toLowerCase() === progClean.toLowerCase());
+
+          // Candidate display for this specific program
+          let candDisplay = '';
+          if (pObj) {
+            const foundCands = extractProgramCandidates(pObj);
+            if (foundCands.length > 0) candDisplay = foundCands.join(', ');
+          }
+          if (!candDisplay && progs.length === 1) {
+            candDisplay = slot.candidate || slot.candidates || '';
+          }
+
+          // Coach display for this specific program
+          let coachDisplay = '';
+          if (slot.programCoaches && slot.programCoaches[progClean]) {
+            coachDisplay = slot.programCoaches[progClean];
+          } else if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+            coachDisplay = pObj.coach || pObj.coachName || pObj.lead;
+          } else if (progs.length === 1 && slot.coach) {
+            coachDisplay = slot.coach;
+          } else {
+            coachDisplay = slot.coach || '—';
+          }
+
+          expandedRows.push({
+            id: slot.id,
+            slotTotalProgs: progs.length,
+            program: progClean,
+            date: slot.date || '—',
+            timeSetName: slot.timeSetName || '',
+            startTime: slot.startTime || '09:00',
+            endTime: slot.endTime || '12:00',
+            venue: slot.venue || 'Main Stage',
+            candidate: candDisplay || '—',
+            coach: coachDisplay || '—'
           });
-          if (foundCands.length > 0) candDisplay = foundCands.join(', ');
-        }
+        });
+      });
+
+      if (badge) badge.textContent = `${expandedRows.length} Scheduled`;
+
+      expandedRows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        const timeSetLabel = row.timeSetName ? `<div style="font-size: 0.76rem; color: #15803d; font-weight: 700;">${escapeHtml(row.timeSetName)}</div>` : '';
 
         tr.innerHTML = `
           <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
           <td style="font-weight: 700; color: var(--text-main); font-size: 0.88rem;">
-            ${escapeHtml(slot.date || '—')}
+            ${escapeHtml(row.date)}
           </td>
           <td>
             ${timeSetLabel}
             <span style="font-weight: 700; color: var(--brand-red); font-family: monospace; font-size: 0.88rem; background: var(--brand-red-soft); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 2px;">
-              ${escapeHtml(slot.startTime)} - ${escapeHtml(slot.endTime)}
+              ${escapeHtml(row.startTime)} - ${escapeHtml(row.endTime)}
             </span>
           </td>
           <td>
-            <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 250px;">
-              ${programPills || '—'}
-            </div>
+            <span class="program-chip-tag">${escapeHtml(row.program)}</span>
           </td>
           <td>
             <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; max-width: 200px; line-height: 1.35;">
-              ${candDisplay ? escapeHtml(candDisplay) : '<span style="color: var(--text-placeholder);">—</span>'}
+              ${escapeHtml(row.candidate)}
             </div>
           </td>
-          <td><span class="pill pill-yellow">${escapeHtml(slot.venue || 'Main Stage')}</span></td>
-          <td style="font-weight: 600;">${escapeHtml(slot.coach || '—')}</td>
+          <td><span class="pill pill-yellow">${escapeHtml(row.venue)}</span></td>
+          <td style="font-weight: 600;">${escapeHtml(row.coach)}</td>
           <td style="text-align: right;">
-            <button type="button" class="delete-action-btn" onclick="deleteScheduleSlot('${slot.id}')" title="Delete schedule slot">
+            <button type="button" class="delete-action-btn" onclick="deleteScheduleSlot('${row.id}', '${escapeHtml(row.program)}')" title="Delete schedule slot">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
           </td>
@@ -4931,17 +5032,27 @@
       });
     }
 
-    window.deleteScheduleSlot = function(id) {
+    window.deleteScheduleSlot = function(id, progNameToRemove = null) {
       if (confirm('Are you sure you want to remove this schedule slot?')) {
-        coordinatorSchedule = coordinatorSchedule.filter(s => s.id !== id);
-        saveStoredSchedule(coordinatorSchedule);
-        if (window.SibaqFirebase && window.SibaqFirebase.deleteScheduleFromFirestore) {
-          window.SibaqFirebase.deleteScheduleFromFirestore(id);
+        const slot = coordinatorSchedule.find(s => s.id === id);
+        if (slot && progNameToRemove && Array.isArray(slot.programs) && slot.programs.length > 1) {
+          slot.programs = slot.programs.filter(p => p !== progNameToRemove);
+          if (slot.programCoaches) delete slot.programCoaches[progNameToRemove];
+          saveStoredSchedule(coordinatorSchedule);
+          if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
+            window.SibaqFirebase.syncScheduleToFirestore(slot);
+          }
+        } else {
+          coordinatorSchedule = coordinatorSchedule.filter(s => s.id !== id);
+          saveStoredSchedule(coordinatorSchedule);
+          if (window.SibaqFirebase && window.SibaqFirebase.deleteScheduleFromFirestore) {
+            window.SibaqFirebase.deleteScheduleFromFirestore(id);
+          }
         }
         renderScheduleTable();
         renderStudentAttendanceTable();
         renderCoachAttendanceTable();
-        showToast('Schedule slot removed.');
+        showToast('Schedule slot updated.');
       }
     };
 
@@ -4951,8 +5062,8 @@
       const timeSetSelect = document.getElementById('schedTimePreset');
       const timeSetId = timeSetSelect.value;
       const venue = document.getElementById('schedVenue').value.trim() || 'Main Stage';
-      const candidate = document.getElementById('schedCandidate')?.value.trim() || '';
-      const coach = document.getElementById('schedCoach').value.trim() || (currentUser || 'Assigned Coordinator');
+      const candidateInput = document.getElementById('schedCandidate')?.value.trim() || '';
+      const coachInput = document.getElementById('schedCoach').value.trim() || '';
 
       if (!date) {
         alert('Please select an overall date.');
@@ -4971,37 +5082,56 @@
 
       const sets = getStoredTimeSets();
       const selectedSet = sets.find(s => s.id === timeSetId);
-
       const programRecords = getStoredProgramRecords();
-      const programCoaches = {};
-      selectedSchedulePrograms.forEach(progName => {
-        const found = programRecords.find(p => (p.name || p.program || '').trim().toLowerCase() === progName.trim().toLowerCase());
-        if (found && (found.coach || found.coachName || found.lead)) {
-          programCoaches[progName.trim()] = (found.coach || found.coachName || found.lead).trim();
+
+      const newSlots = [];
+      const baseTimestamp = Date.now();
+
+      selectedSchedulePrograms.forEach((progName, pIdx) => {
+        const pObj = programRecords.find(p => (p.name || p.program || '').trim().toLowerCase() === progName.trim().toLowerCase());
+
+        let pCoach = '';
+        if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+          pCoach = (pObj.coach || pObj.coachName || pObj.lead).trim();
+        } else if (selectedSchedulePrograms.length === 1 && coachInput) {
+          pCoach = coachInput;
+        } else {
+          pCoach = coachInput || (currentUser || 'Assigned Coordinator');
+        }
+
+        let pCand = '';
+        if (pObj) {
+          const cands = extractProgramCandidates(pObj);
+          if (cands.length > 0) pCand = cands.join(', ');
+        }
+        if (!pCand && selectedSchedulePrograms.length === 1 && candidateInput) {
+          pCand = candidateInput;
+        }
+
+        const slotItem = {
+          id: 'sched_' + (baseTimestamp + pIdx),
+          date,
+          timeSetId,
+          timeSetName: selectedSet ? selectedSet.name : '',
+          startTime: selectedSet ? selectedSet.startTime : '09:00',
+          endTime: selectedSet ? selectedSet.endTime : '12:00',
+          program: progName,
+          programs: [progName],
+          candidate: pCand,
+          venue,
+          coach: pCoach,
+          timestamp: new Date().toISOString()
+        };
+
+        newSlots.push(slotItem);
+        coordinatorSchedule.unshift(slotItem);
+
+        if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
+          window.SibaqFirebase.syncScheduleToFirestore(slotItem);
         }
       });
 
-      const newSlot = {
-        id: 'sched_' + Date.now(),
-        date,
-        timeSetId,
-        timeSetName: selectedSet ? selectedSet.name : '',
-        startTime: selectedSet ? selectedSet.startTime : '09:00',
-        endTime: selectedSet ? selectedSet.endTime : '12:00',
-        programs: [...selectedSchedulePrograms],
-        programCoaches,
-        candidate,
-        venue,
-        coach,
-        timestamp: new Date().toISOString()
-      };
-
-      coordinatorSchedule.unshift(newSlot);
       saveStoredSchedule(coordinatorSchedule);
-
-      if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
-        window.SibaqFirebase.syncScheduleToFirestore(newSlot);
-      }
 
       renderScheduleTable();
       renderStudentAttendanceTable();
@@ -5009,17 +5139,14 @@
 
       selectedSchedulePrograms = [];
       renderSelectedProgChips();
-      if (schedProgSearchInput) schedProgSearchInput.value = '';
       renderScheduleProgramList('');
       timeSetSelect.selectedIndex = 0;
       const preview = document.getElementById('schedTimeSetPreview');
       if (preview) preview.style.display = 'none';
-      document.getElementById('schedVenue').value = '';
       if (document.getElementById('schedCandidate')) document.getElementById('schedCandidate').value = '';
-      if (document.getElementById('schedCandidateSourceBadge')) document.getElementById('schedCandidateSourceBadge').style.display = 'none';
-      document.getElementById('schedCoach').value = '';
+      if (document.getElementById('schedCoach')) document.getElementById('schedCoach').value = '';
 
-      showToast(`Schedule saved with ${newSlot.programs.length} program(s)!`);
+      showToast(`Scheduled ${newSlots.length} program session(s) successfully!`);
     });
 
     // ----------------------------------------------------
@@ -5163,8 +5290,25 @@
           localStorage.setItem(SCHED_STORAGE_KEY, JSON.stringify(firestoreSchedules));
           coordinatorSchedule = firestoreSchedules;
           renderScheduleTable();
+          renderStudentAttendanceTable();
+          renderCoachAttendanceTable();
+          renderRatingsTable();
         }
       });
+    }
+
+    // Load initial Schedules from Firestore if available
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadSchedulesFromFirestore === 'function') {
+      window.SibaqFirebase.loadSchedulesFromFirestore().then(remoteSchedules => {
+        if (Array.isArray(remoteSchedules) && remoteSchedules.length > 0) {
+          localStorage.setItem(SCHED_STORAGE_KEY, JSON.stringify(remoteSchedules));
+          coordinatorSchedule = remoteSchedules;
+          renderScheduleTable();
+          renderStudentAttendanceTable();
+          renderCoachAttendanceTable();
+          renderRatingsTable();
+        }
+      }).catch(() => {});
     }
 
     // Real-time Firestore Listener for Program Records (syncs candidates & coaches directly)
@@ -5174,6 +5318,7 @@
           localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(records));
           renderStudentAttendanceTable();
           renderCoachAttendanceTable();
+          renderRatingsTable();
         }
       });
     }
@@ -5185,12 +5330,13 @@
           localStorage.setItem(PROGRAM_STORAGE_KEY, JSON.stringify(remoteRecords));
           renderStudentAttendanceTable();
           renderCoachAttendanceTable();
+          renderRatingsTable();
         }
       }).catch(() => {});
     }
 
     // Real-time Firestore Listener for Student Attendance on load
-    const todayDateStr = new Date().toISOString().split('T')[0];
+    const todayDateStr = getTodayLocalDateStr();
     if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
       window.SibaqFirebase.loadStudentAttendanceFromFirestore(todayDateStr).then(remoteList => {
         if (Array.isArray(remoteList)) {

@@ -2433,14 +2433,29 @@
       return {};
     }
 
-    function saveStoredStudentAttendance(date, recordsMap) {
-      if (!date) return;
-      try {
-        const raw = localStorage.getItem(STUDENT_ATTENDANCE_STORAGE_KEY);
-        const map = raw ? JSON.parse(raw) : {};
-        map[date] = recordsMap;
-        localStorage.setItem(STUDENT_ATTENDANCE_STORAGE_KEY, JSON.stringify(map));
-      } catch (e) { }
+    function getTodayLocalDateStr() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatLocalDate(d) {
+      if (!d || isNaN(d.getTime())) return getTodayLocalDateStr();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseLocalDate(dateStr) {
+      if (!dateStr) return new Date();
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      }
+      return new Date(dateStr);
     }
 
     function getAttendanceCandidates(targetDate) {
@@ -2464,7 +2479,7 @@
         if (Array.isArray(p.candidates)) {
           candidatesArr = p.candidates;
         } else if (typeof p.candidates === 'string' && p.candidates.trim()) {
-          candidatesArr = p.candidates.split(',');
+          candidatesArr = p.candidates.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
         } else if (p.candidate) {
           candidatesArr = [p.candidate];
         }
@@ -2474,14 +2489,16 @@
 
         // Find schedule slots for this program on targetDate
         const progSlots = matchingScheduleSlots.filter(s => {
-          const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
+          const progs = Array.isArray(s.programs) && s.programs.length > 0 
+            ? s.programs 
+            : (s.program ? s.program.split(',').map(pr => pr.trim()) : []);
           return progs.some(pr => pr && pr.trim().toLowerCase() === progNameLower);
         });
 
         if (progSlots.length === 0) return; // Only if schedule created!
 
-        progSlots.forEach(slot => {
-          if (slot.id) handledSlotKeys.add(slot.id);
+        progSlots.forEach((slot, sIdx) => {
+          handledSlotKeys.add(`${slot.id || sIdx}_${progNameLower}`);
         });
 
         if (candidatesArr.length > 0) {
@@ -2498,9 +2515,11 @@
 
             // Filter slots that specifically target this candidate or apply to the whole program
             const candSlots = progSlots.filter(s => {
+              const progs = Array.isArray(s.programs) ? s.programs : (s.program ? [s.program] : []);
+              if (progs.length > 1) return true; // Multi-program slot: include this program's candidates
               if (!s.candidate || !s.candidate.trim()) return true;
-              const candsInSlot = s.candidate.split(',').map(x => x.trim().toLowerCase());
-              return candsInSlot.includes(candNameLower);
+              const candsInSlot = s.candidate.split(/[,;\n]+/).map(x => x.trim().toLowerCase());
+              return candsInSlot.includes(candNameLower) || candsInSlot.includes('all candidates');
             });
 
             if (candSlots.length > 0) {
@@ -2524,7 +2543,7 @@
         } else {
           // Program record had no candidates; use candidates specified on schedule slot
           progSlots.forEach((slot, sIdx) => {
-            const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
+            const slotCands = (slot.candidate || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
             if (slotCands.length > 0) {
               slotCands.forEach(name => {
                 list.push({
@@ -2562,15 +2581,36 @@
 
       // Handle any schedule slots that were created for programs not in program records
       matchingScheduleSlots.forEach((slot, sIdx) => {
-        if (slot.id && handledSlotKeys.has(slot.id)) return;
-        const progs = Array.isArray(slot.programs) ? slot.programs : (slot.program ? [slot.program] : ['General Program']);
-        const progName = progs[0] || 'Scheduled Program';
-        const slotCands = (slot.candidate || '').split(',').map(x => x.trim()).filter(Boolean);
-        if (slotCands.length > 0) {
-          slotCands.forEach(name => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+          ? slot.programs
+          : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
+
+        progs.forEach((progName) => {
+          const progClean = (progName || '').trim();
+          const progKey = `${slot.id || sIdx}_${progClean.toLowerCase()}`;
+          if (handledSlotKeys.has(progKey)) return;
+
+          const slotCands = (slot.candidate || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
+          if (slotCands.length > 0) {
+            slotCands.forEach(name => {
+              list.push({
+                name,
+                program: progClean,
+                category: slot.category || 'General',
+                slotId: slot.id || `slot_extra_${sIdx + 1}`,
+                timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
+                startTime: slot.startTime || '',
+                endTime: slot.endTime || '',
+                timeSetName: slot.timeSetName || '',
+                venue: slot.venue || '',
+                slotIndex: 1,
+                totalSlots: 1
+              });
+            });
+          } else {
             list.push({
-              name,
-              program: progName,
+              name: 'All Program Candidates',
+              program: progClean,
               category: slot.category || 'General',
               slotId: slot.id || `slot_extra_${sIdx + 1}`,
               timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
@@ -2581,22 +2621,8 @@
               slotIndex: 1,
               totalSlots: 1
             });
-          });
-        } else {
-          list.push({
-            name: 'All Program Candidates',
-            program: progName,
-            category: slot.category || 'General',
-            slotId: slot.id || `slot_extra_${sIdx + 1}`,
-            timeSlot: `${slot.startTime || ''} - ${slot.endTime || ''}`.trim(),
-            startTime: slot.startTime || '',
-            endTime: slot.endTime || '',
-            timeSetName: slot.timeSetName || '',
-            venue: slot.venue || '',
-            slotIndex: 1,
-            totalSlots: 1
-          });
-        }
+          }
+        });
       });
 
       return list;
@@ -2643,10 +2669,10 @@
       if (!tbody) return;
 
       if (dateInput && !dateInput.value) {
-        dateInput.value = new Date().toISOString().split('T')[0];
+        dateInput.value = getTodayLocalDateStr();
       }
 
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       const savedDateAttendance = getStoredStudentAttendance(selectedDate);
       const candidates = getAttendanceCandidates(selectedDate);
       const tableWrap = document.getElementById('studentAttendanceTableWrap');
@@ -3013,25 +3039,25 @@
     document.getElementById('btnPrevDate')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
       if (!dateInput) return;
-      const cur = new Date(dateInput.value || new Date());
+      const cur = parseLocalDate(dateInput.value);
       cur.setDate(cur.getDate() - 1);
-      dateInput.value = cur.toISOString().split('T')[0];
+      dateInput.value = formatLocalDate(cur);
       dateInput.dispatchEvent(new Event('change'));
     });
 
     document.getElementById('btnNextDate')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
       if (!dateInput) return;
-      const cur = new Date(dateInput.value || new Date());
+      const cur = parseLocalDate(dateInput.value);
       cur.setDate(cur.getDate() + 1);
-      dateInput.value = cur.toISOString().split('T')[0];
+      dateInput.value = formatLocalDate(cur);
       dateInput.dispatchEvent(new Event('change'));
     });
 
     document.getElementById('btnTodayShortcut')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
       if (!dateInput) return;
-      dateInput.value = new Date().toISOString().split('T')[0];
+      dateInput.value = getTodayLocalDateStr();
       dateInput.dispatchEvent(new Event('change'));
     });
 
@@ -4959,62 +4985,88 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      if (badge) badge.textContent = `${coordinatorSchedule.length} Scheduled`;
-
       if (coordinatorSchedule.length === 0) {
+        if (badge) badge.textContent = `0 Scheduled`;
         tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">No program slots scheduled yet.</td></tr>`;
         return;
       }
 
-      coordinatorSchedule.forEach((slot, idx) => {
-        const tr = document.createElement('tr');
-        const progs = Array.isArray(slot.programs)
+      const allProgs = getStoredProgramRecords();
+      const expandedRows = [];
+
+      coordinatorSchedule.forEach((slot) => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
           ? slot.programs
-          : (slot.program ? slot.program.split(',').map(s => s.trim()) : []);
+          : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
 
-        const programPills = progs.map(p => `<span class="program-chip-tag">${escapeHtml(p)}</span>`).join('');
-        const timeSetLabel = slot.timeSetName ? `<div style="font-size: 0.76rem; color: #15803d; font-weight: 700;">${escapeHtml(slot.timeSetName)}</div>` : '';
+        progs.forEach((progName) => {
+          const progClean = (progName || '').trim();
+          const pObj = allProgs.find(p => (p.name || p.program || '').trim().toLowerCase() === progClean.toLowerCase());
 
-        // Candidate display: from slot.candidate/slot.candidates or auto-inferred from programs if old data
-        let candDisplay = slot.candidate || slot.candidates || '';
-        if (!candDisplay && progs.length > 0) {
-          const allProgs = getStoredProgramRecords();
-          const foundCands = [];
-          progs.forEach(prName => {
-            const pObj = allProgs.find(p => (p.name || p.program) === prName);
-            if (pObj) {
-              extractProgramCandidates(pObj).forEach(c => {
-                if (!foundCands.includes(c)) foundCands.push(c);
-              });
-            }
+          // Candidate display for this specific program
+          let candDisplay = '';
+          if (pObj) {
+            const foundCands = extractProgramCandidates(pObj);
+            if (foundCands.length > 0) candDisplay = foundCands.join(', ');
+          }
+          if (!candDisplay && progs.length === 1) {
+            candDisplay = slot.candidate || slot.candidates || '';
+          }
+
+          // Coach display for this specific program
+          let coachDisplay = '';
+          if (slot.programCoaches && slot.programCoaches[progClean]) {
+            coachDisplay = slot.programCoaches[progClean];
+          } else if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+            coachDisplay = pObj.coach || pObj.coachName || pObj.lead;
+          } else if (progs.length === 1 && slot.coach) {
+            coachDisplay = slot.coach;
+          } else {
+            coachDisplay = slot.coach || '—';
+          }
+
+          expandedRows.push({
+            id: slot.id,
+            slotTotalProgs: progs.length,
+            program: progClean,
+            date: slot.date || '—',
+            timeSetName: slot.timeSetName || '',
+            startTime: slot.startTime || '09:00',
+            endTime: slot.endTime || '12:00',
+            candidate: candDisplay || '—',
+            coach: coachDisplay || '—'
           });
-          if (foundCands.length > 0) candDisplay = foundCands.join(', ');
-        }
+        });
+      });
+
+      if (badge) badge.textContent = `${expandedRows.length} Scheduled`;
+
+      expandedRows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        const timeSetLabel = row.timeSetName ? `<div style="font-size: 0.76rem; color: #15803d; font-weight: 700;">${escapeHtml(row.timeSetName)}</div>` : '';
 
         tr.innerHTML = `
           <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
           <td style="font-weight: 700; color: var(--text-main); font-size: 0.88rem;">
-            ${escapeHtml(slot.date || '—')}
+            ${escapeHtml(row.date)}
           </td>
           <td>
             ${timeSetLabel}
             <span style="font-weight: 700; color: var(--brand-red); font-family: monospace; font-size: 0.88rem; background: var(--brand-red-soft); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 2px;">
-              ${escapeHtml(slot.startTime)} - ${escapeHtml(slot.endTime)}
+              ${escapeHtml(row.startTime)} - ${escapeHtml(row.endTime)}
             </span>
           </td>
           <td>
-            <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 250px;">
-              ${programPills || '—'}
-            </div>
+            <span class="program-chip-tag">${escapeHtml(row.program)}</span>
           </td>
           <td>
             <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; max-width: 200px; line-height: 1.35;">
-              ${candDisplay ? escapeHtml(candDisplay) : '<span style="color: var(--text-placeholder);">—</span>'}
+              ${escapeHtml(row.candidate)}
             </div>
           </td>
-          <td style="font-weight: 600;">${escapeHtml(slot.coach || '—')}</td>
+          <td style="font-weight: 600;">${escapeHtml(row.coach)}</td>
           <td style="text-align: right;">
-            <button type="button" class="delete-action-btn" onclick="deleteScheduleSlot('${slot.id}')" title="Delete schedule slot">
+            <button type="button" class="delete-action-btn" onclick="deleteScheduleSlot('${row.id}', '${escapeHtml(row.program)}')" title="Delete schedule slot">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
           </td>
@@ -5023,17 +5075,27 @@
       });
     }
 
-    window.deleteScheduleSlot = function (id) {
+    window.deleteScheduleSlot = function (id, progNameToRemove = null) {
       if (confirm('Are you sure you want to remove this schedule slot?')) {
-        coordinatorSchedule = coordinatorSchedule.filter(s => s.id !== id);
-        saveStoredSchedule(coordinatorSchedule);
-        if (window.SibaqFirebase && window.SibaqFirebase.deleteScheduleFromFirestore) {
-          window.SibaqFirebase.deleteScheduleFromFirestore(id);
+        const slot = coordinatorSchedule.find(s => s.id === id);
+        if (slot && progNameToRemove && Array.isArray(slot.programs) && slot.programs.length > 1) {
+          slot.programs = slot.programs.filter(p => p !== progNameToRemove);
+          if (slot.programCoaches) delete slot.programCoaches[progNameToRemove];
+          saveStoredSchedule(coordinatorSchedule);
+          if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
+            window.SibaqFirebase.syncScheduleToFirestore(slot);
+          }
+        } else {
+          coordinatorSchedule = coordinatorSchedule.filter(s => s.id !== id);
+          saveStoredSchedule(coordinatorSchedule);
+          if (window.SibaqFirebase && window.SibaqFirebase.deleteScheduleFromFirestore) {
+            window.SibaqFirebase.deleteScheduleFromFirestore(id);
+          }
         }
         renderScheduleTable();
         renderStudentAttendanceTable();
         renderCoachAttendanceTable();
-        showToast('Schedule slot removed.');
+        showToast('Schedule slot updated.');
       }
     };
 
@@ -5049,8 +5111,8 @@
       }
       const timeSetSelect = document.getElementById('schedTimePreset');
       const timeSetId = timeSetSelect.value;
-      const candidate = document.getElementById('schedCandidate')?.value.trim() || '';
-      const coach = document.getElementById('schedCoach')?.value.trim() || (currentUser || 'Assigned Coach');
+      const candidateInput = document.getElementById('schedCandidate')?.value.trim() || '';
+      const coachInput = document.getElementById('schedCoach')?.value.trim() || '';
 
       if (!date) {
         alert('Please select an overall date.');
@@ -5069,37 +5131,56 @@
 
       const sets = getStoredTimeSets();
       const selectedSet = sets.find(s => s.id === timeSetId);
-
       const programRecords = getStoredProgramRecords();
-      const programCoaches = {};
-      programList.forEach(pName => {
+
+      const newSlots = [];
+      const baseTimestamp = Date.now();
+
+      programList.forEach((pName, pIdx) => {
         const pObj = selectedSchedulePrograms.find(sp => (sp.name || '').trim().toLowerCase() === pName.trim().toLowerCase()) 
                   || programRecords.find(p => (p.name || p.program || '').trim().toLowerCase() === pName.trim().toLowerCase());
+
+        let pCoach = '';
         if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
-          programCoaches[pName.trim()] = (pObj.coach || pObj.coachName || pObj.lead).trim();
+          pCoach = (pObj.coach || pObj.coachName || pObj.lead).trim();
+        } else if (programList.length === 1 && coachInput) {
+          pCoach = coachInput;
+        } else {
+          pCoach = coachInput || (currentUser || 'Assigned Coach');
+        }
+
+        let pCand = '';
+        if (pObj) {
+          const cands = extractProgramCandidates(pObj);
+          if (cands.length > 0) pCand = cands.join(', ');
+        }
+        if (!pCand && programList.length === 1 && candidateInput) {
+          pCand = candidateInput;
+        }
+
+        const slotItem = {
+          id: 'sched_' + (baseTimestamp + pIdx),
+          date,
+          timeSetId,
+          timeSetName: selectedSet ? selectedSet.name : '',
+          startTime: selectedSet ? selectedSet.startTime : '09:00',
+          endTime: selectedSet ? selectedSet.endTime : '12:00',
+          program: pName,
+          programs: [pName],
+          candidate: pCand,
+          coach: pCoach,
+          timestamp: new Date().toISOString()
+        };
+
+        newSlots.push(slotItem);
+        coordinatorSchedule.unshift(slotItem);
+
+        if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
+          window.SibaqFirebase.syncScheduleToFirestore(slotItem);
         }
       });
 
-      const newSlot = {
-        id: 'sched_' + Date.now(),
-        date,
-        timeSetId,
-        timeSetName: selectedSet ? selectedSet.name : '',
-        startTime: selectedSet ? selectedSet.startTime : '09:00',
-        endTime: selectedSet ? selectedSet.endTime : '12:00',
-        programs: programList,
-        programCoaches,
-        candidate,
-        coach,
-        timestamp: new Date().toISOString()
-      };
-
-      coordinatorSchedule.unshift(newSlot);
       saveStoredSchedule(coordinatorSchedule);
-
-      if (window.SibaqFirebase && window.SibaqFirebase.syncScheduleToFirestore) {
-        window.SibaqFirebase.syncScheduleToFirestore(newSlot);
-      }
 
       renderScheduleTable();
       renderStudentAttendanceTable();
@@ -5113,7 +5194,7 @@
       if (document.getElementById('schedCandidateSourceBadge')) document.getElementById('schedCandidateSourceBadge').style.display = 'none';
       if (document.getElementById('schedCoach')) document.getElementById('schedCoach').value = '';
 
-      showToast(`Schedule slot created with ${programList.length} program(s)!`);
+      showToast(`Scheduled ${programList.length} program session(s) successfully!`);
     });
 
     // ----------------------------------------------------
@@ -5257,8 +5338,23 @@
           localStorage.setItem(SCHED_STORAGE_KEY, JSON.stringify(firestoreSchedules));
           coordinatorSchedule = firestoreSchedules;
           renderScheduleTable();
+          renderStudentAttendanceTable();
+          renderCoachAttendanceTable();
         }
       });
+    }
+
+    // Load initial Schedules from Firestore if available
+    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadSchedulesFromFirestore === 'function') {
+      window.SibaqFirebase.loadSchedulesFromFirestore().then(remoteSchedules => {
+        if (Array.isArray(remoteSchedules) && remoteSchedules.length > 0) {
+          localStorage.setItem(SCHED_STORAGE_KEY, JSON.stringify(remoteSchedules));
+          coordinatorSchedule = remoteSchedules;
+          renderScheduleTable();
+          renderStudentAttendanceTable();
+          renderCoachAttendanceTable();
+        }
+      }).catch(() => { });
     }
 
     // Real-time Firestore Listener for Program Records (syncs candidates & coaches directly)
@@ -5284,7 +5380,7 @@
     }
 
     // Real-time Firestore Listener for Student Attendance on load
-    const todayDateStr = new Date().toISOString().split('T')[0];
+    const todayDateStr = getTodayLocalDateStr();
     if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
       window.SibaqFirebase.loadStudentAttendanceFromFirestore(todayDateStr).then(remoteList => {
         if (Array.isArray(remoteList)) {

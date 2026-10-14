@@ -1671,61 +1671,91 @@
       if (!tbody) return;
       const schedules = getLocalData(STORAGE_SCHEDULE);
 
-      document.getElementById('metricScheduledCount').textContent = schedules.length;
-      document.getElementById('metricNextSlot').textContent = `${schedules.length} program session(s)`;
-
       if (schedules.length === 0) {
+        document.getElementById('metricScheduledCount').textContent = 0;
+        document.getElementById('metricNextSlot').textContent = `0 program session(s)`;
         tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">No programs currently scheduled on the staging board.</td></tr>`;
         return;
       }
 
       const allPrograms = getLocalData(STORAGE_PROGRAMS);
+      const expandedRows = [];
 
-      tbody.innerHTML = schedules.map((slot, idx) => {
-        const progs = Array.isArray(slot.programs) 
-          ? slot.programs 
-          : (slot.program ? slot.program.split(',').map(s => s.trim()) : []);
+      schedules.forEach(slot => {
+        const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+          ? slot.programs
+          : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
 
-        const progTags = progs.map(p => `<span style="background: #f1f5f9; padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 0.76rem; margin-right: 4px;">${escapeHtml(p)}</span>`).join('');
+        progs.forEach(progName => {
+          const progClean = (progName || '').trim();
+          const pObj = allPrograms.find(p => (p.name || p.program || '').trim().toLowerCase() === progClean.toLowerCase());
 
-        // Candidate display: stored or inferred
-        let candDisplay = slot.candidate || slot.candidates || '';
-        if (!candDisplay && progs.length > 0) {
-          const foundCands = [];
-          progs.forEach(prName => {
-            const pObj = allPrograms.find(p => (p.name || p.program) === prName);
-            if (pObj) {
-              const students = Array.isArray(pObj.students) ? pObj.students : (pObj.student ? [pObj.student] : (pObj.candidates ? (Array.isArray(pObj.candidates) ? pObj.candidates : [pObj.candidates]) : []));
-              students.forEach(s => {
-                const sName = typeof s === 'string' ? s : (s.name || s.student || '');
-                if (sName && !foundCands.includes(sName)) foundCands.push(sName);
-              });
-            }
+          // Candidates for this specific program
+          let candDisplay = '';
+          if (pObj) {
+            const students = Array.isArray(pObj.candidates)
+              ? pObj.candidates
+              : (typeof pObj.candidates === 'string'
+                  ? pObj.candidates.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean)
+                  : (pObj.student ? [pObj.student] : []));
+            candDisplay = students.join(', ');
+          }
+          if (!candDisplay && progs.length === 1) {
+            candDisplay = slot.candidate || slot.candidates || '';
+          }
+
+          // Coach for this specific program
+          let coachDisplay = '';
+          if (slot.programCoaches && slot.programCoaches[progClean]) {
+            coachDisplay = slot.programCoaches[progClean];
+          } else if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+            coachDisplay = pObj.coach || pObj.coachName || pObj.lead;
+          } else if (progs.length === 1 && slot.coach) {
+            coachDisplay = slot.coach;
+          } else {
+            coachDisplay = slot.coach || 'Stage Coordinator';
+          }
+
+          expandedRows.push({
+            date: slot.date || '—',
+            startTime: slot.startTime || '',
+            endTime: slot.endTime || '',
+            program: progClean,
+            candidates: candDisplay || '—',
+            venue: slot.venue || 'Main Stage',
+            coach: coachDisplay || 'Stage Coordinator',
+            id: slot.id
           });
-          if (foundCands.length > 0) candDisplay = foundCands.join(', ');
-        }
+        });
+      });
 
-        return `
-          <tr>
-            <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
-            <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(slot.date || '—')}</td>
-            <td>
-              <span style="font-family: monospace; font-weight: 700; color: var(--brand-red); background: var(--brand-red-soft); padding: 3px 8px; border-radius: 6px;">
-                ${escapeHtml(slot.startTime)} - ${escapeHtml(slot.endTime)}
-              </span>
-            </td>
-            <td><div style="max-width: 250px; display: flex; flex-wrap: wrap; gap: 4px;">${progTags}</div></td>
-            <td>
-              <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; max-width: 200px; line-height: 1.35;">
-                ${candDisplay ? escapeHtml(candDisplay) : '<span style="color: var(--text-placeholder);">—</span>'}
-              </div>
-            </td>
-            <td><span class="pill pill-yellow">${escapeHtml(slot.venue || 'Main Stage')}</span></td>
-            <td style="font-weight: 600;">${escapeHtml(slot.coach || 'Stage Coordinator')}</td>
-            <td><span class="pill pill-green">Active Staged</span></td>
-          </tr>
-        `;
-      }).join('');
+      document.getElementById('metricScheduledCount').textContent = expandedRows.length;
+      document.getElementById('metricNextSlot').textContent = `${expandedRows.length} program session(s)`;
+
+      tbody.innerHTML = expandedRows.map((item, idx) => `
+        <tr>
+          <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 700; color: var(--text-main);">${escapeHtml(item.date)}</td>
+          <td>
+            <span style="font-family: monospace; font-weight: 700; color: var(--brand-red); background: var(--brand-red-soft); padding: 3px 8px; border-radius: 6px;">
+              ${escapeHtml(item.startTime)} - ${escapeHtml(item.endTime)}
+            </span>
+          </td>
+          <td>
+            <span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; color: var(--text-main); display: inline-block;">
+              ${escapeHtml(item.program)}
+            </span>
+          </td>
+          <td>
+            <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; max-width: 200px; line-height: 1.35;">
+              ${escapeHtml(item.candidates)}
+            </div>
+          </td>
+          <td><span class="pill pill-yellow">${escapeHtml(item.venue)}</span></td>
+          <td style="font-weight: 600;">${escapeHtml(item.coach)}</td>
+          <td><span class="pill pill-green">Active Staged</span></td>
+        </tr>
+      `).join('');
     }
 
     // ----------------------------------------------------
@@ -1970,6 +2000,7 @@
           localStorage.setItem(STORAGE_SCHEDULE, JSON.stringify(schedules));
           renderStagingMonitor();
           renderAlertsList();
+          if (typeof renderChiefAttendanceTracker === 'function') renderChiefAttendanceTracker();
         }
       });
     }
@@ -1979,6 +2010,7 @@
         if (Array.isArray(progs) && progs.length > 0) {
           localStorage.setItem(STORAGE_PROGRAMS, JSON.stringify(progs));
           renderDataInspector(inspectorInput?.value || '');
+          if (typeof renderChiefAttendanceTracker === 'function') renderChiefAttendanceTracker();
         }
       });
     }
@@ -1990,6 +2022,7 @@
           if (Array.isArray(progs) && progs.length > 0) {
             localStorage.setItem(STORAGE_PROGRAMS, JSON.stringify(progs));
             renderDataInspector(inspectorInput?.value || '');
+            if (typeof renderChiefAttendanceTracker === 'function') renderChiefAttendanceTracker();
           }
         }).catch(() => {});
       }
@@ -2000,6 +2033,7 @@
             renderStagingMonitor();
             renderAlertsList();
             renderDataInspector(inspectorInput?.value || '');
+            if (typeof renderChiefAttendanceTracker === 'function') renderChiefAttendanceTracker();
           }
         }).catch(() => {});
       }
@@ -2047,8 +2081,16 @@
     const btnTrackCoaches = document.getElementById('btnTrackCoaches');
     const btnRefreshAttendance = document.getElementById('btnRefreshAttendance');
 
-    // Default to today's date in local ISO format (YYYY-MM-DD)
-    const todayIsoDate = new Date().toISOString().split('T')[0];
+    function getTodayLocalDateStr() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Default to today's date in local format (YYYY-MM-DD)
+    const todayIsoDate = getTodayLocalDateStr();
     if (chiefAttendDateInput) {
       chiefAttendDateInput.value = todayIsoDate;
     }
@@ -2128,87 +2170,161 @@
       trackBody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
-            Loading attendance records for ${selectedDate}...
+            Loading scheduled attendance records for ${selectedDate}...
           </td>
         </tr>
       `;
 
-      let records = [];
+      // 1. Strictly inspect scheduled sessions for selectedDate
+      const allSchedules = getLocalData(STORAGE_SCHEDULE, []);
+      const daySchedules = allSchedules.filter(s => s && s.date === selectedDate);
+      const allPrograms = getLocalData(STORAGE_PROGRAMS, []);
 
+      // 2. Fetch saved attendance records for selectedDate (Firestore & LocalStorage)
+      let savedRecordsMap = {};
       if (currentAttendanceMode === 'students') {
-        // Try Firestore first
         if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
           try {
             const remote = await window.SibaqFirebase.loadStudentAttendanceFromFirestore(selectedDate);
-            if (Array.isArray(remote) && remote.length > 0) {
-              records = remote;
+            if (Array.isArray(remote)) {
+              remote.forEach(item => {
+                const sName = (item.student || item.candidate || item.name || '').trim().toLowerCase();
+                const pName = (item.program || '').trim().toLowerCase();
+                const key = `${pName}___${sName}`;
+                savedRecordsMap[key] = item;
+                if (!savedRecordsMap[sName]) savedRecordsMap[sName] = item;
+              });
             }
           } catch (e) {}
         }
-
-        // Fallback to local storage map
-        if (records.length === 0) {
-          try {
-            const localMap = JSON.parse(localStorage.getItem('sibaq_student_attendance') || '{}');
-            const dayRecords = localMap[selectedDate];
-            if (dayRecords) {
-              records = Object.values(dayRecords);
-            }
-          } catch (e) {}
-        }
+        try {
+          const localMap = JSON.parse(localStorage.getItem('sibaq_student_attendance') || '{}');
+          const dayRecords = localMap[selectedDate] || {};
+          Object.values(dayRecords).forEach(item => {
+            const sName = (item.student || item.candidate || item.name || '').trim().toLowerCase();
+            const pName = (item.program || '').trim().toLowerCase();
+            const key = `${pName}___${sName}`;
+            if (!savedRecordsMap[key]) savedRecordsMap[key] = item;
+            if (!savedRecordsMap[sName]) savedRecordsMap[sName] = item;
+          });
+        } catch (e) {}
       } else {
-        // Coach Attendance mode
+        // Coaches mode
         if (window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
           try {
             const remote = await window.SibaqFirebase.loadCoachAttendanceFromFirestore(selectedDate);
-            if (Array.isArray(remote) && remote.length > 0) {
-              records = remote;
+            if (Array.isArray(remote)) {
+              remote.forEach(item => {
+                const cName = (item.coach || item.name || '').trim().toLowerCase();
+                const pName = (item.program || '').trim().toLowerCase();
+                const key = `${pName}___${cName}`;
+                savedRecordsMap[key] = item;
+                if (!savedRecordsMap[cName]) savedRecordsMap[cName] = item;
+              });
             }
           } catch (e) {}
         }
-
-        if (records.length === 0) {
-          try {
-            const localMap = JSON.parse(localStorage.getItem('sibaq_coach_attendance') || '{}');
-            const dayRecords = localMap[selectedDate];
-            if (dayRecords) {
-              records = Object.values(dayRecords);
-            }
-          } catch (e) {}
-        }
+        try {
+          const localMap = JSON.parse(localStorage.getItem('sibaq_coach_attendance') || '{}');
+          const dayRecords = localMap[selectedDate] || {};
+          Object.values(dayRecords).forEach(item => {
+            const cName = (item.coach || item.name || '').trim().toLowerCase();
+            const pName = (item.program || '').trim().toLowerCase();
+            const key = `${pName}___${cName}`;
+            if (!savedRecordsMap[key]) savedRecordsMap[key] = item;
+            if (!savedRecordsMap[cName]) savedRecordsMap[cName] = item;
+          });
+        } catch (e) {}
       }
 
-      // If no recorded attendance exists for this day, construct roster from program records
-      if (records.length === 0) {
-        const programs = getLocalData(STORAGE_PROGRAMS, []);
-        if (currentAttendanceMode === 'students') {
-          programs.forEach(prog => {
-            const candidatesStr = prog.candidates || '';
-            const list = candidatesStr.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
-            list.forEach(candidate => {
+      // 3. Construct roster ONLY from daySchedules
+      let records = [];
+
+      if (currentAttendanceMode === 'students') {
+        const seenStudentKeys = new Set();
+        daySchedules.forEach(slot => {
+          const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+            ? slot.programs
+            : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
+
+          progs.forEach(progName => {
+            const progClean = (progName || '').trim();
+            const pObj = allPrograms.find(p => (p.name || p.program || '').trim().toLowerCase() === progClean.toLowerCase());
+            const cat = pObj ? (pObj.category || 'General') : (slot.category || 'General');
+
+            let cands = [];
+            if (pObj) {
+              cands = Array.isArray(pObj.candidates)
+                ? pObj.candidates
+                : (typeof pObj.candidates === 'string'
+                    ? pObj.candidates.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean)
+                    : (pObj.student ? [pObj.student] : []));
+            }
+            if (cands.length === 0 && slot.candidate && progs.length === 1) {
+              cands = slot.candidate.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+            }
+            if (cands.length === 0) {
+              cands = ['All Candidates'];
+            }
+
+            cands.forEach(candName => {
+              const candClean = candName.trim();
+              const dedupeKey = `${progClean}___${candClean}`.toLowerCase();
+              if (seenStudentKeys.has(dedupeKey)) return;
+              seenStudentKeys.add(dedupeKey);
+
+              const saved = savedRecordsMap[dedupeKey] || savedRecordsMap[candClean.toLowerCase()];
+
               records.push({
-                student: candidate,
-                program: prog.name || 'General',
-                category: prog.category || 'Ūla',
-                status: 'Pending',
-                remarks: 'Not yet marked by coordinator',
+                student: candClean,
+                program: progClean,
+                category: cat,
+                status: saved ? (saved.status || 'Pending') : 'Pending',
+                remarks: saved ? (saved.remarks || 'Marked') : 'Not yet marked by coordinator',
                 date: selectedDate
               });
             });
           });
-        } else {
-          programs.forEach(prog => {
-            if (prog.coach && prog.coach !== '—') {
-              records.push({
-                coach: prog.coach,
-                program: prog.name || 'General',
-                status: 'Pending',
-                remarks: 'Not yet marked by coordinator',
-                date: selectedDate
-              });
+        });
+      } else {
+        // Coaches mode
+        const seenCoachKeys = new Set();
+        daySchedules.forEach(slot => {
+          const progs = Array.isArray(slot.programs) && slot.programs.length > 0
+            ? slot.programs
+            : (slot.program ? slot.program.split(',').map(s => s.trim()).filter(Boolean) : ['General Program']);
+
+          progs.forEach(progName => {
+            const progClean = (progName || '').trim();
+            const pObj = allPrograms.find(p => (p.name || p.program || '').trim().toLowerCase() === progClean.toLowerCase());
+
+            let coachName = '';
+            if (slot.programCoaches && slot.programCoaches[progClean]) {
+              coachName = slot.programCoaches[progClean];
+            } else if (pObj && (pObj.coach || pObj.coachName || pObj.lead)) {
+              coachName = pObj.coach || pObj.coachName || pObj.lead;
+            } else if (progs.length === 1 && slot.coach) {
+              coachName = slot.coach;
+            } else {
+              coachName = slot.coach || 'Stage Coordinator';
             }
+            coachName = coachName.trim();
+
+            const dedupeKey = `${progClean}___${coachName}`.toLowerCase();
+            if (seenCoachKeys.has(dedupeKey)) return;
+            seenCoachKeys.add(dedupeKey);
+
+            const saved = savedRecordsMap[dedupeKey] || savedRecordsMap[coachName.toLowerCase()];
+
+            records.push({
+              coach: coachName,
+              program: progClean,
+              status: saved ? (saved.status || 'Pending') : 'Pending',
+              remarks: saved ? (saved.remarks || 'Marked') : 'Not yet marked by coordinator',
+              date: selectedDate
+            });
           });
-        }
+        });
       }
 
       // Compute status breakdown

@@ -653,6 +653,24 @@
       background: var(--brand-red-soft);
     }
 
+    .edit-btn {
+      background: transparent;
+      border: none;
+      color: #9e9790;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .edit-btn:hover {
+      color: #2563eb;
+      background: #eff6ff;
+    }
+
     /* User Profile Page Tab */
     .user-profile-card {
       background: var(--surface);
@@ -2404,8 +2422,8 @@
         <!-- Left Side: Form -->
         <section class="form-panel">
           <div class="panel-header-badge">
-            <h3 style="font-size: 1.15rem; font-weight: 800;">Add Program</h3>
-            <span class="pill pill-red">Data</span>
+            <h3 style="font-size: 1.15rem; font-weight: 800;" id="formPanelTitle">Add Program</h3>
+            <span class="pill pill-red" id="formPanelBadge">Data</span>
           </div>
 
           <!-- Mode Switcher: Single vs Bulk Upload -->
@@ -2423,6 +2441,7 @@
           <!-- Mode 1: Single Form -->
           <div id="singleFormWrapper">
             <form id="programDataForm" autocomplete="off">
+              <input type="hidden" id="progEditId" value="" />
               <div class="form-group-item">
                 <label for="progName">Program Name</label>
                 <input
@@ -2468,9 +2487,12 @@
                 />
               </div>
 
-              <button type="submit" class="btn-submit-data">
+              <button type="submit" class="btn-submit-data" id="btnSubmitProgram">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                Submit Program
+                <span id="btnSubmitProgramText">Submit Program</span>
+              </button>
+              <button type="button" class="btn-cancel-modal" id="btnCancelFormEdit" style="display: none; width: 100%; height: 42px; margin-top: 8px; justify-content: center; align-items: center; gap: 6px;">
+                ✕ Cancel Edit
               </button>
             </form>
           </div>
@@ -3113,6 +3135,93 @@
       </div>
     </div>
 
+    <!-- ==================== EDIT PROGRAM RECORD MODAL ==================== -->
+    <div class="modal-overlay" id="editProgramModalOverlay" role="dialog" aria-modal="true" aria-labelledby="editProgramModalTitle">
+      <div class="modal-card" style="max-width: 520px;">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="modal-title" id="editProgramModalTitle" style="font-size: 1.15rem; margin-bottom: 2px;">Edit Program</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted);" id="editProgramModalSubtitle">Modify program name, category, candidates or coach</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseEditProgramModal" type="button" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form id="editProgramModalForm" autocomplete="off">
+          <input type="hidden" id="editProgId" />
+
+          <div class="form-group-item">
+            <label for="editProgName">Program Name <span style="color: var(--brand-red);">*</span></label>
+            <input
+              type="text"
+              id="editProgName"
+              class="form-input"
+              placeholder="e.g. 100m Sprint"
+              required
+            />
+          </div>
+
+          <div class="form-group-item">
+            <label for="editProgCategory">Category <span style="color: var(--brand-red);">*</span></label>
+            <select id="editProgCategory" class="form-input" required>
+              <option value="" disabled>Select category</option>
+              <option value="Bidāya">Bidāya</option>
+              <option value="Ūla">Ūla</option>
+              <option value="Thāniya">Thāniya</option>
+              <option value="Thānawiyya">Thānawiyya</option>
+              <option value="Āliya">Āliya</option>
+            </select>
+          </div>
+
+          <div class="form-group-item">
+            <label for="editProgCandidates">Candidate/s <span style="color: var(--brand-red);">*</span></label>
+            <input
+              type="text"
+              id="editProgCandidates"
+              class="form-input"
+              placeholder="e.g. Ahmed, Zaid, Omar"
+              required
+            />
+            <small style="color: var(--text-muted); font-size: 0.74rem; margin-top: 4px; display: block;">Separate multiple candidate names with commas</small>
+          </div>
+
+          <div class="form-group-item">
+            <label for="editProgCoach">Coach <span style="color: var(--brand-red);">*</span></label>
+            <input
+              type="text"
+              id="editProgCoach"
+              class="form-input"
+              placeholder="e.g. Coach Tariq"
+              required
+            />
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+            <button type="button" class="btn-cancel-modal" id="btnEditInFormOption" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem;" title="Switch to side panel form">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Edit in side panel
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn-cancel-modal" id="btnCancelEditProgram">Cancel</button>
+              <button type="submit" class="btn-modal-submit" id="btnSaveEditProgram" style="padding: 10px 22px; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Notification Toast for Copy -->
     <div id="copyToast" class="copy-toast" role="status">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5">
@@ -3491,13 +3600,21 @@
           <td><span class="pill ${pillClass}">${escapeHtml(item.category || 'Ūla')}</span></td>
           <td>${escapeHtml(item.candidates || '—')}</td>
           <td style="font-weight: 600;">${escapeHtml(item.coach || '—')}</td>
-          <td style="text-align: right;">
-            <button class="delete-btn" onclick="deleteRecord('${item.id}')" title="Remove item" aria-label="Delete record">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-            </button>
+          <td style="text-align: right; white-space: nowrap;">
+            <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px;">
+              <button class="edit-btn" onclick="openEditProgramModal('${item.id}')" title="Edit program" aria-label="Edit record">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button class="delete-btn" onclick="deleteRecord('${item.id}')" title="Remove item" aria-label="Delete record">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </div>
           </td>
         `;
 
@@ -3580,11 +3697,166 @@
       }
     };
 
-    // Single Program Form Submission
+    // ----------------------------------------------------
+    // Edit Program Record Functionality (Modal & In-Panel)
+    // ----------------------------------------------------
+    window.openEditProgramModal = function(id) {
+      const target = programRecords.find(r => String(r.id) === String(id));
+      if (!target) {
+        showToast('Program not found.');
+        return;
+      }
+
+      document.getElementById('editProgId').value = target.id;
+      document.getElementById('editProgName').value = target.name || '';
+      document.getElementById('editProgCategory').value = target.category || 'Ūla';
+      document.getElementById('editProgCandidates').value = target.candidates || '';
+      document.getElementById('editProgCoach').value = target.coach || '';
+
+      const subtitle = document.getElementById('editProgramModalSubtitle');
+      if (subtitle) {
+        subtitle.textContent = `Editing: ${target.name} [${target.category || 'General'}]`;
+      }
+
+      const modal = document.getElementById('editProgramModalOverlay');
+      if (modal) {
+        modal.classList.add('active');
+        setTimeout(() => document.getElementById('editProgName')?.focus(), 60);
+      }
+    };
+
+    function closeEditProgramModal() {
+      const modal = document.getElementById('editProgramModalOverlay');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+      document.getElementById('editProgramModalForm')?.reset();
+    }
+
+    document.getElementById('btnCloseEditProgramModal')?.addEventListener('click', closeEditProgramModal);
+    document.getElementById('btnCancelEditProgram')?.addEventListener('click', closeEditProgramModal);
+    document.getElementById('editProgramModalOverlay')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('editProgramModalOverlay')) {
+        closeEditProgramModal();
+      }
+    });
+
+    document.getElementById('btnEditInFormOption')?.addEventListener('click', () => {
+      const id = document.getElementById('editProgId')?.value;
+      if (id) {
+        loadProgramIntoForm(id);
+      }
+    });
+
+    document.getElementById('editProgramModalForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('editProgId').value;
+      const name = document.getElementById('editProgName').value.trim();
+      const category = document.getElementById('editProgCategory').value;
+      const candidates = document.getElementById('editProgCandidates').value.trim();
+      const coach = document.getElementById('editProgCoach').value.trim();
+
+      if (!name || !category || !candidates || !coach) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      const index = programRecords.findIndex(r => String(r.id) === String(id));
+      if (index === -1) {
+        alert('Program record not found.');
+        return;
+      }
+
+      const existing = programRecords[index];
+      const updatedRecord = {
+        ...existing,
+        name,
+        category,
+        candidates,
+        coach,
+        updatedAt: new Date().toISOString()
+      };
+
+      programRecords[index] = updatedRecord;
+      saveStoredProgramRecords(programRecords);
+      renderProgramTable();
+
+      if (window.SibaqFirebase && window.SibaqFirebase.syncProgramRecordToFirestore) {
+        window.SibaqFirebase.syncProgramRecordToFirestore(updatedRecord);
+      }
+
+      closeEditProgramModal();
+      showToast(`Program "${name}" updated successfully!`);
+    });
+
+    window.loadProgramIntoForm = function(id) {
+      closeEditProgramModal();
+      const target = programRecords.find(r => String(r.id) === String(id));
+      if (!target) return;
+
+      // Switch to single form tab if in bulk upload
+      const btnModeSingle = document.getElementById('btnModeSingle');
+      if (btnModeSingle && !btnModeSingle.classList.contains('active')) {
+        btnModeSingle.click();
+      }
+
+      document.getElementById('progEditId').value = target.id;
+      document.getElementById('progName').value = target.name || '';
+      document.getElementById('progCategory').value = target.category || 'Ūla';
+      document.getElementById('progCandidates').value = target.candidates || '';
+      document.getElementById('progCoach').value = target.coach || '';
+
+      const title = document.getElementById('formPanelTitle');
+      if (title) title.textContent = `Edit Program: ${target.name}`;
+
+      const badge = document.getElementById('formPanelBadge');
+      if (badge) {
+        badge.textContent = 'Editing';
+        badge.className = 'pill pill-yellow';
+      }
+
+      const submitText = document.getElementById('btnSubmitProgramText');
+      if (submitText) submitText.textContent = 'Update Program';
+
+      const cancelBtn = document.getElementById('btnCancelFormEdit');
+      if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+
+      document.getElementById('progName')?.focus();
+      document.querySelector('.form-panel')?.scrollIntoView({ behavior: 'smooth' });
+      showToast(`Loaded "${target.name}" into edit panel.`);
+    };
+
+    window.cancelFormEdit = function() {
+      const form = document.getElementById('programDataForm');
+      if (form) form.reset();
+      const editId = document.getElementById('progEditId');
+      if (editId) editId.value = '';
+
+      const title = document.getElementById('formPanelTitle');
+      if (title) title.textContent = 'Add Program';
+
+      const badge = document.getElementById('formPanelBadge');
+      if (badge) {
+        badge.textContent = 'Data';
+        badge.className = 'pill pill-red';
+      }
+
+      const submitText = document.getElementById('btnSubmitProgramText');
+      if (submitText) submitText.textContent = 'Submit Program';
+
+      const cancelBtn = document.getElementById('btnCancelFormEdit');
+      if (cancelBtn) cancelBtn.style.display = 'none';
+    };
+
+    document.getElementById('btnCancelFormEdit')?.addEventListener('click', cancelFormEdit);
+
+    // Single Program Form Submission (Supports Create & Edit)
     if (programDataForm) {
       programDataForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        const editId = document.getElementById('progEditId')?.value;
         const name = document.getElementById('progName').value.trim();
         const category = document.getElementById('progCategory').value;
         const candidates = document.getElementById('progCandidates').value.trim();
@@ -3595,6 +3867,34 @@
           return;
         }
 
+        if (editId) {
+          // Editing existing program
+          const index = programRecords.findIndex(r => String(r.id) === String(editId));
+          if (index !== -1) {
+            const existing = programRecords[index];
+            const updatedRecord = {
+              ...existing,
+              name,
+              category,
+              candidates,
+              coach,
+              updatedAt: new Date().toISOString()
+            };
+            programRecords[index] = updatedRecord;
+            saveStoredProgramRecords(programRecords);
+            renderProgramTable();
+
+            if (window.SibaqFirebase && window.SibaqFirebase.syncProgramRecordToFirestore) {
+              window.SibaqFirebase.syncProgramRecordToFirestore(updatedRecord);
+            }
+
+            cancelFormEdit();
+            showToast(`Program "${name}" updated successfully!`);
+            return;
+          }
+        }
+
+        // Creating new program
         const newRecord = {
           id: 'prog_' + Date.now(),
           name,
