@@ -387,6 +387,21 @@ window.SibaqFirebase = {
     }
   },
 
+  listenToCoachAttendance(date, callback) {
+    if (!firestoreDb) return null;
+    try {
+      return firestoreDb.collection('coach_attendance').doc(String(date)).onSnapshot(doc => {
+        if (doc && doc.exists) {
+          callback(doc.data().records || []);
+        }
+      }, err => {
+        console.warn("Firestore listener error for coach_attendance:", err.message);
+      });
+    } catch (e) {
+      return null;
+    }
+  },
+
   // --- Student Ratings Service ---
   async syncRatingsToFirestore(date, ratingsMap) {
     if (!firestoreDb) return false;

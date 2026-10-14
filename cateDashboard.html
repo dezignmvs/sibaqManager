@@ -2433,6 +2433,16 @@
       return {};
     }
 
+    function saveStoredStudentAttendance(date, recordsMap) {
+      if (!date) return;
+      try {
+        const raw = localStorage.getItem(STUDENT_ATTENDANCE_STORAGE_KEY);
+        const map = raw ? JSON.parse(raw) : {};
+        map[date] = recordsMap;
+        localStorage.setItem(STUDENT_ATTENDANCE_STORAGE_KEY, JSON.stringify(map));
+      } catch (e) { }
+    }
+
     function getTodayLocalDateStr() {
       const now = new Date();
       const year = now.getFullYear();
@@ -2728,7 +2738,11 @@
         else if (currentStatus === 'Leave') leaveCount++;
         else pendingCount++;
 
-        const isLocked = existing.status ? true : false;
+        const isLocked = existing.locked !== undefined
+          ? (existing.locked === true || existing.locked === 'true')
+          : (existing.registered !== undefined
+              ? (existing.registered === true || existing.registered === 'true')
+              : (currentStatus === 'Present' || currentStatus === 'Leave'));
         const currentRemarks = existing.remarks || '';
 
         const statusIcons = {
@@ -2929,29 +2943,50 @@
       });
     }, { passive: true });
 
+    let studentAttendanceUnsubscribe = null;
+    function syncAndListenStudentAttendance(selectedDate) {
+      if (!selectedDate) return;
+      if (typeof studentAttendanceUnsubscribe === 'function') {
+        studentAttendanceUnsubscribe();
+        studentAttendanceUnsubscribe = null;
+      }
+
+      const applyRemoteList = (remoteList) => {
+        if (Array.isArray(remoteList)) {
+          const map = {};
+          remoteList.forEach(item => {
+            const slotPart = item.slotId || item.timeSlot || '';
+            const key = slotPart
+              ? `${item.program}_${item.category}_${item.student || item.candidate}_${slotPart}`.toLowerCase()
+              : `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
+            map[key] = item;
+            const legacyKey = `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
+            if (!map[legacyKey]) map[legacyKey] = item;
+          });
+          saveStoredStudentAttendance(selectedDate, map);
+        }
+        renderStudentAttendanceTable();
+      };
+
+      if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToStudentAttendance === 'function') {
+        studentAttendanceUnsubscribe = window.SibaqFirebase.listenToStudentAttendance(selectedDate, applyRemoteList);
+      }
+
+      if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
+        window.SibaqFirebase.loadStudentAttendanceFromFirestore(selectedDate)
+          .then(applyRemoteList)
+          .catch(() => renderStudentAttendanceTable());
+      } else {
+        renderStudentAttendanceTable();
+      }
+    }
+
     // Date change listener
     document.getElementById('studentAttendDate')?.addEventListener('change', () => {
       const dateInput = document.getElementById('studentAttendDate');
       const selectedDate = dateInput ? dateInput.value : '';
-      if (selectedDate && window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
-        window.SibaqFirebase.loadStudentAttendanceFromFirestore(selectedDate).then(remoteList => {
-          if (Array.isArray(remoteList)) {
-            const map = {};
-            remoteList.forEach(item => {
-              const slotPart = item.slotId || item.timeSlot || '';
-              const key = slotPart
-                ? `${item.program}_${item.category}_${item.student || item.candidate}_${slotPart}`.toLowerCase()
-                : `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
-              map[key] = item;
-              const legacyKey = `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
-              if (!map[legacyKey]) map[legacyKey] = item;
-            });
-            saveStoredStudentAttendance(selectedDate, map);
-          }
-          renderStudentAttendanceTable();
-        }).catch(() => {
-          renderStudentAttendanceTable();
-        });
+      if (selectedDate) {
+        syncAndListenStudentAttendance(selectedDate);
       } else {
         renderStudentAttendanceTable();
       }
@@ -2959,7 +2994,7 @@
 
     document.getElementById('btnSaveStudentAttendance')?.addEventListener('click', () => {
       const dateInput = document.getElementById('studentAttendDate');
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       if (!selectedDate) {
         alert('Please select an attendance date.');
         return;
@@ -2977,10 +3012,40 @@
         const timeSlot = row.dataset.timeSlot || '';
         const slotIndex = row.dataset.slotIndex || '';
         const totalSlots = row.dataset.totalSlots || '';
-        const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Present';
+        const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Pending';
         const remarks = row.querySelector('.attend-notes-input')?.value.trim() || '';
 
-        const record = { program, category, student, slotId, timeSlot, slotIndex, totalSlots, status, remarks, date: selectedDate };
+        const isRegistered = row.dataset.locked === 'true' || (status === 'Present' || status === 'Leave');
+        if (isRegistered) {
+          row.dataset.locked = 'true';
+          const wrap = row.querySelector('.status-dropdown-wrap');
+          if (wrap) wrap.classList.add('is-locked');
+          const btn = row.querySelector('.btn-set-attend');
+          if (btn) {
+            btn.classList.add('is-set');
+            btn.innerHTML = `
+              <i class="hgi hgi-stroke hgi-rounded hgi-edit-table"></i>
+              Edit
+            `;
+          }
+        }
+
+        const record = {
+          program,
+          category,
+          student,
+          candidate: student,
+          name: student,
+          slotId,
+          timeSlot,
+          slotIndex,
+          totalSlots,
+          status,
+          remarks,
+          date: selectedDate,
+          locked: isRegistered,
+          registered: isRegistered
+        };
         const key = slotId
           ? `${program}_${category}_${student}_${slotId}`.toLowerCase()
           : `${program}_${category}_${student}`.toLowerCase();
@@ -2994,6 +3059,7 @@
         window.SibaqFirebase.syncStudentAttendanceToFirestore(selectedDate, firestoreList);
       }
 
+      recalcAttendanceLiveKpis();
       showToast(`Candidate attendance for ${selectedDate} saved successfully!`);
     });
 
@@ -3238,7 +3304,11 @@
         if (currentStatus !== 'Pending' && currentStatus !== 'Present' && currentStatus !== 'Leave') {
           currentStatus = 'Pending';
         }
-        const isLocked = existing.status ? true : false;
+        const isLocked = existing.locked !== undefined
+          ? (existing.locked === true || existing.locked === 'true')
+          : (existing.registered !== undefined
+              ? (existing.registered === true || existing.registered === 'true')
+              : (currentStatus === 'Present' || currentStatus === 'Leave'));
         const currentRemarks = existing.remarks || '';
 
         const statusIcons = {
@@ -3326,29 +3396,50 @@
       });
     }
 
+    let coachAttendanceUnsubscribe = null;
+    function syncAndListenCoachAttendance(selectedDate) {
+      if (!selectedDate) return;
+      if (typeof coachAttendanceUnsubscribe === 'function') {
+        coachAttendanceUnsubscribe();
+        coachAttendanceUnsubscribe = null;
+      }
+
+      const applyRemoteList = (remoteList) => {
+        if (Array.isArray(remoteList)) {
+          const map = {};
+          remoteList.forEach(item => {
+            const slotPart = item.slotId || item.timeSlot || '';
+            const key = slotPart
+              ? `${item.program}_${item.coach || item.name}_${slotPart}`.toLowerCase()
+              : `${item.program}_${item.coach || item.name}`.toLowerCase();
+            map[key] = item;
+            const legacyKey = `${item.program}_${item.coach || item.name}`.toLowerCase();
+            if (!map[legacyKey]) map[legacyKey] = item;
+          });
+          saveStoredCoachAttendance(selectedDate, map);
+        }
+        renderCoachAttendanceTable();
+      };
+
+      if (window.SibaqFirebase && typeof window.SibaqFirebase.listenToCoachAttendance === 'function') {
+        coachAttendanceUnsubscribe = window.SibaqFirebase.listenToCoachAttendance(selectedDate, applyRemoteList);
+      }
+
+      if (window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
+        window.SibaqFirebase.loadCoachAttendanceFromFirestore(selectedDate)
+          .then(applyRemoteList)
+          .catch(() => renderCoachAttendanceTable());
+      } else {
+        renderCoachAttendanceTable();
+      }
+    }
+
     // Coach date change listener
     document.getElementById('coachAttendDate')?.addEventListener('change', () => {
       const dateInput = document.getElementById('coachAttendDate');
       const selectedDate = dateInput ? dateInput.value : '';
-      if (selectedDate && window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
-        window.SibaqFirebase.loadCoachAttendanceFromFirestore(selectedDate).then(remoteList => {
-          if (Array.isArray(remoteList)) {
-            const map = {};
-            remoteList.forEach(item => {
-              const slotPart = item.slotId || item.timeSlot || '';
-              const key = slotPart
-                ? `${item.program}_${item.coach}_${slotPart}`.toLowerCase()
-                : `${item.program}_${item.coach}`.toLowerCase();
-              map[key] = item;
-              const legacyKey = `${item.program}_${item.coach}`.toLowerCase();
-              if (!map[legacyKey]) map[legacyKey] = item;
-            });
-            saveStoredCoachAttendance(selectedDate, map);
-          }
-          renderCoachAttendanceTable();
-        }).catch(() => {
-          renderCoachAttendanceTable();
-        });
+      if (selectedDate) {
+        syncAndListenCoachAttendance(selectedDate);
       } else {
         renderCoachAttendanceTable();
       }
@@ -3356,7 +3447,7 @@
 
     document.getElementById('btnSaveCoachAttendance')?.addEventListener('click', () => {
       const dateInput = document.getElementById('coachAttendDate');
-      const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const selectedDate = dateInput ? dateInput.value : getTodayLocalDateStr();
       if (!selectedDate) {
         alert('Please select a shift date.');
         return;
@@ -3376,7 +3467,35 @@
         const status = row.querySelector('.status-dropdown-wrap')?.dataset.status || 'Pending';
         const remarks = row.querySelector('.coach-notes-input')?.value.trim() || '';
 
-        const record = { coach, program, slotId, timeSlot, slotIndex, totalSlots, status, remarks, date: selectedDate };
+        const isRegistered = row.dataset.locked === 'true' || (status === 'Present' || status === 'Leave');
+        if (isRegistered) {
+          row.dataset.locked = 'true';
+          const wrap = row.querySelector('.status-dropdown-wrap');
+          if (wrap) wrap.classList.add('is-locked');
+          const btn = row.querySelector('.btn-set-attend');
+          if (btn) {
+            btn.classList.add('is-set');
+            btn.innerHTML = `
+              <i class="hgi hgi-stroke hgi-rounded hgi-edit-table"></i>
+              Edit
+            `;
+          }
+        }
+
+        const record = {
+          coach,
+          name: coach,
+          program,
+          slotId,
+          timeSlot,
+          slotIndex,
+          totalSlots,
+          status,
+          remarks,
+          date: selectedDate,
+          locked: isRegistered,
+          registered: isRegistered
+        };
         const key = slotId
           ? `${program}_${coach}_${slotId}`.toLowerCase()
           : `${program}_${coach}`.toLowerCase();
@@ -5381,44 +5500,10 @@
 
     // Real-time Firestore Listener for Student Attendance on load
     const todayDateStr = getTodayLocalDateStr();
-    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadStudentAttendanceFromFirestore === 'function') {
-      window.SibaqFirebase.loadStudentAttendanceFromFirestore(todayDateStr).then(remoteList => {
-        if (Array.isArray(remoteList)) {
-          const map = {};
-          remoteList.forEach(item => {
-            const slotPart = item.slotId || item.timeSlot || '';
-            const key = slotPart
-              ? `${item.program}_${item.category}_${item.student || item.candidate}_${slotPart}`.toLowerCase()
-              : `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
-            map[key] = item;
-            const legacyKey = `${item.program}_${item.category}_${item.student || item.candidate}`.toLowerCase();
-            if (!map[legacyKey]) map[legacyKey] = item;
-          });
-          saveStoredStudentAttendance(todayDateStr, map);
-          renderStudentAttendanceTable();
-        }
-      }).catch(() => { });
-    }
+    syncAndListenStudentAttendance(todayDateStr);
 
     // Real-time Firestore Listener for Coach Attendance on load
-    if (window.SibaqFirebase && typeof window.SibaqFirebase.loadCoachAttendanceFromFirestore === 'function') {
-      window.SibaqFirebase.loadCoachAttendanceFromFirestore(todayDateStr).then(remoteList => {
-        if (Array.isArray(remoteList)) {
-          const map = {};
-          remoteList.forEach(item => {
-            const slotPart = item.slotId || item.timeSlot || '';
-            const key = slotPart
-              ? `${item.program}_${item.coach}_${slotPart}`.toLowerCase()
-              : `${item.program}_${item.coach}`.toLowerCase();
-            map[key] = item;
-            const legacyKey = `${item.program}_${item.coach}`.toLowerCase();
-            if (!map[legacyKey]) map[legacyKey] = item;
-          });
-          saveStoredCoachAttendance(todayDateStr, map);
-          renderCoachAttendanceTable();
-        }
-      }).catch(() => { });
-    }
+    syncAndListenCoachAttendance(todayDateStr);
 
     // Live 1-second interval for countdown tickers
     setInterval(() => {
